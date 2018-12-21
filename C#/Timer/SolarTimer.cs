@@ -18,6 +18,7 @@ public class SolarTimer : Poolable
         Over
     }
 
+
     // 回调次数(-1表示无限次)
     private int m_Times;
 
@@ -27,6 +28,12 @@ public class SolarTimer : Poolable
     // 回调间隔时间
     private float m_IntervalTime;
 
+    private ulong m_TimerID;              // timer id
+    public ulong ID
+    {
+        get { return m_TimerID; }
+    }
+
     private State m_State;               // 计时器状态
 
     private float m_CurTimeCount;        // 当前计时
@@ -35,13 +42,15 @@ public class SolarTimer : Poolable
 
     private UnityAction m_TimerCallback; // 回调函数
 
-    public SolarTimer(int times, float delayTime, float interval, UnityAction callback) : base(TimerIdentifier)
+    public SolarTimer(ulong timerID, int times, float delayTime, float interval, UnityAction callback) : base(TimerIdentifier)
     {
-        Set(times, delayTime, interval, callback);
+        Set(timerID, times, delayTime, interval, callback);
     }
 
-    public void Set(int times, float delayTime, float interval, UnityAction callback)
+    public void Set(ulong timerID, int times, float delayTime, float interval, UnityAction callback)
     {
+        m_TimerID = timerID;
+
         m_Times = times;
         m_DelayTime = delayTime;
         m_IntervalTime = interval;
@@ -49,17 +58,12 @@ public class SolarTimer : Poolable
 
         m_State = State.Running;
 
-        Reset();
-    }
-
-    void Reset()
-    {
         m_CurTimeCount = 0;
         m_CurRunTimes = 0;
     }
 
     /// <summary>
-    /// 暂定计时器
+    /// 暂停计时器
     /// </summary>
     public void Pause()
     {
@@ -72,7 +76,20 @@ public class SolarTimer : Poolable
     }
 
     /// <summary>
-    /// 更新计时器状态
+    /// 结束计时器
+    /// </summary>
+    public void Over()
+    {
+        if (m_State == State.Over)
+        {
+            return;
+        }
+
+        m_State = State.Over;
+    }
+
+    /// <summary>
+    /// 更新计时器状态(只能在SolarTimerManager中被调用)
     /// </summary>
     /// <param name="dt"></param>
     /// <returns></returns>
@@ -116,6 +133,6 @@ public class SolarTimer : Poolable
 
     public override string ToString()
     {
-        return string.Format("[Times:{0} Delay:{1} Interval:{2}]", m_Times, m_DelayTime, m_IntervalTime);
+        return string.Format("[ID:{0} Times:{1} Delay:{2} Interval:{3}]", (m_TimerID << 16) >> 16, m_Times, m_DelayTime, m_IntervalTime);
     }
 }

@@ -26,6 +26,12 @@ public class SolarTimerManager
         }
     }
 
+    // 最多支持2^(48)个timer
+    const int TimerIDMaxBit = 48;
+
+    // 递增的Timer ID
+    static ulong IncreaseTimerID = 0;
+
     // Timer缓存池
     TimerPool m_TimerPool;
 
@@ -39,26 +45,46 @@ public class SolarTimerManager
         m_Timers = new List<SolarTimer>(10);
     }
 
-    SolarTimer CreateTimer(int times, float delayTime, float interval, UnityAction callback)
+    /// <summary>
+    /// 创建Timer ID(有两部分构成: Timer在m_Timer中的下标index(左16位)和IncreaseTimerID(右48位))
+    /// </summary>
+    /// <returns></returns>
+    ulong CalcTimerID()
+    {
+        ulong newTimerID = IncreaseTimerID++;
+
+        if (m_Timers.Count > ushort.MaxValue)
+        {
+            throw new System.Exception("SolarTimerManager: Create too much timers(over 65535)!");
+        }
+
+        ulong realTimerID = (((ulong)m_Timers.Count) << TimerIDMaxBit) + newTimerID;
+
+        return realTimerID;
+    }
+
+    ulong CreateTimer(int times, float delayTime, float interval, UnityAction callback)
     {
         SolarTimer timer = m_TimerPool.Pop(SolarTimer.TimerIdentifier);
 
-        bool cache = (timer != null);
+        //bool cache = (timer != null);
+
+        ulong realTimerID = CalcTimerID();
 
         if (timer == null)
         {
-            timer = new SolarTimer(times, delayTime, interval, callback);
+            timer = new SolarTimer(realTimerID, times, delayTime, interval, callback);
         }
         else
         {
-            timer.Set(times, delayTime, interval, callback);
+            timer.Set(realTimerID, times, delayTime, interval, callback);
         }
 
         m_Timers.Add(timer);
 
         //SolarLogger.LogInfoFormat(eOutPutModule.General, "SolarTimerManager CreateTimer Cache:{0} Time:{1} Timer:{2}", cache, Time.time, timer);
 
-        return timer;
+        return realTimerID;
     }
 
     /// <summary>
@@ -67,11 +93,9 @@ public class SolarTimerManager
     /// <param name="delayTime"></param>
     /// <param name="callback"></param>
     /// <returns></returns>
-    public SolarTimer CreateSingleTimer(float delayTime, UnityAction callback)
+    public ulong CreateSingleTimer(float delayTime, UnityAction callback)
     {
-        SolarTimer timer = CreateTimer(1, delayTime, 0, callback);
-
-        return timer;
+        return CreateTimer(1, delayTime, 0, callback);
     }
 
     /// <summary>
@@ -82,11 +106,9 @@ public class SolarTimerManager
     /// <param name="interval"></param>
     /// <param name="callback"></param>
     /// <returns></returns>
-    public SolarTimer CreateMultiTimer(int times, float delayTime, float interval, UnityAction callback)
+    public ulong CreateMultiTimer(int times, float delayTime, float interval, UnityAction callback)
     {
-        SolarTimer timer = CreateTimer(times, delayTime, interval, callback);
-
-        return timer;
+        return CreateTimer(times, delayTime, interval, callback);
     }
 
     /// <summary>
@@ -96,11 +118,9 @@ public class SolarTimerManager
     /// <param name="interval"></param>
     /// <param name="callback"></param>
     /// <returns></returns>
-    public SolarTimer CreateForeverTimer(float delayTime, float interval, UnityAction callback)
+    public ulong CreateForeverTimer(float delayTime, float interval, UnityAction callback)
     {
-        SolarTimer timer = CreateTimer(SolarTimer.ForeverTimes, delayTime, interval, callback);
-
-        return timer;
+        return CreateTimer(SolarTimer.ForeverTimes, delayTime, interval, callback);
     }
 
     /// <summary>
@@ -139,18 +159,69 @@ public class SolarTimerManager
     }
 
     /// <summary>
-    /// 删除对应Timer
+    /// 根据Timer ID获取Timer对象
     /// </summary>
-    /// <param name="timerToBeRemoved"></param>
-    public void RemoveTimer(SolarTimer timerToBeRemoved)
+    /// <param name="timerID"></param>
+    /// <returns></returns>
+    SolarTimer PeekTimer(ulong timerID)
     {
-        if (timerToBeRemoved == null)
+        int timerIndex = (int)(timerID >> TimerIDMaxBit);
+
+        SolarTimer peekTimer = null;
+        if (timerIndex >= 0 && timerIndex < m_Timers.Count)
         {
-            return;
+            peekTimer = m_Timers[timerIndex];
+
+            // invalid timer id
+            if (peekTimer.ID != timerID)
+            {
+                peekTimer = null;
+            }
         }
 
-        m_TimerPool.Push(timerToBeRemoved);
+        return peekTimer;
+    }
 
-        m_Timers.Remove(timerToBeRemoved);
+    ///// <summary>
+    ///// 删除对应Timer
+    ///// </summary>
+    //public void RemoveTimer(ulong timerID)
+    //{
+    //    SolarTimer timerToBeRemoved = PeekTimer(timerID);
+
+    //    if (timerToBeRemoved != null)
+    //    {
+    //        timerToBeRemoved.Over();
+
+    //        m_Timers.Remove(timerToBeRemoved);
+    //    }
+    //}
+
+    /// <summary>
+    /// 暂停指定计时器
+    /// </summary>
+    /// <param name="timerID"></param>
+    public void PauseTimer(ulong timerID)
+    {
+        SolarTimer timerToBePaused = PeekTimer(timerID);
+
+        if (timerToBePaused != null)
+        {
+            timerToBePaused.Pause();
+        }
+    }
+
+    /// <summary>
+    /// 停止指定计时器(计时器会在下一帧被删除)
+    /// </summary>
+    /// <param name="timerID"></param>
+    public void StopTimer(ulong timerID)
+    {
+        SolarTimer timerToBeStoped = PeekTimer(timerID);
+
+        if (timerToBeStoped != null)
+        {
+            timerToBeStoped.Over();
+        }
     }
 }
