@@ -29,8 +29,20 @@ public class SolarTimerManager
     // 最多支持2^(48)个timer
     const int TimerIDMaxBit = 48;
 
+    // TimerID的最大值
+    const ulong TimerIDMaxValue = 281474976710655;
+
+    // 默认Timer ID的起点
+    const ulong DefaultTimerID = 10000;
+
+    // 无效的TimerID
+    const ulong InvalidTimerID = 0;
+
+    // 无效的Timer下标
+    const int InvalidTimerIndex = -1;
+
     // 递增的Timer ID
-    static ulong IncreaseTimerID = 0;
+    static ulong IncreaseTimerID = DefaultTimerID;
 
     // Timer缓存池
     TimerPool m_TimerPool;
@@ -38,27 +50,56 @@ public class SolarTimerManager
     // 当前所有活动的Timer
     List<SolarTimer> m_Timers;
 
+    // 存储已经删除的Timer下标
+    List<int> m_RemovedTimerIndexs;
+
     private SolarTimerManager()
     {
         m_TimerPool = new TimerPool();
 
         m_Timers = new List<SolarTimer>(10);
+
+        m_RemovedTimerIndexs = new List<int>(10);
     }
 
     /// <summary>
     /// 创建Timer ID(有两部分构成: Timer在m_Timer中的下标index(左16位)和IncreaseTimerID(右48位))
     /// </summary>
     /// <returns></returns>
-    ulong CalcTimerID()
+    ulong CalcTimerID(ref int newTimerIndex)
     {
+        if (IncreaseTimerID > TimerIDMaxValue)
+        {
+            IncreaseTimerID = DefaultTimerID;
+        }
+
         ulong newTimerID = IncreaseTimerID++;
 
         if (m_Timers.Count > ushort.MaxValue)
         {
-            throw new System.Exception("SolarTimerManager: Create too much timers(over 65535)!");
+            SolarLogger.LogInfo(eOutPutModule.General, "SolarTimerManager: Create too much timers(over 65535)!");
+
+            return DefaultTimerID;
         }
 
-        ulong realTimerID = (((ulong)m_Timers.Count) << TimerIDMaxBit) + newTimerID;
+        ulong nextTimerIndex;
+
+        // 当前m_Timers没有空位, 需要在m_Timers后面添加
+        if (m_RemovedTimerIndexs.Count == 0)
+        {
+            nextTimerIndex = (ulong)m_Timers.Count;
+        }
+        // 有空位优先利用空位
+        else
+        {
+            nextTimerIndex = (ulong)m_RemovedTimerIndexs[m_RemovedTimerIndexs.Count - 1];
+
+            m_RemovedTimerIndexs.RemoveAt(m_RemovedTimerIndexs.Count - 1);
+
+            newTimerIndex = (int)nextTimerIndex;
+        }
+
+        ulong realTimerID = (nextTimerIndex << TimerIDMaxBit) | newTimerID;
 
         return realTimerID;
     }
@@ -69,7 +110,9 @@ public class SolarTimerManager
 
         //bool cache = (timer != null);
 
-        ulong realTimerID = CalcTimerID();
+        int newTimerIndex = -1;
+
+        ulong realTimerID = CalcTimerID(ref newTimerIndex);
 
         if (timer == null)
         {
@@ -80,7 +123,14 @@ public class SolarTimerManager
             timer.Set(realTimerID, times, delayTime, interval, callback);
         }
 
-        m_Timers.Add(timer);
+        if (newTimerIndex < 0 || newTimerIndex >= m_Timers.Count)
+        {
+            m_Timers.Add(timer);
+        }
+        else
+        {
+            m_Timers[newTimerIndex] = timer;
+        }
 
         //SolarLogger.LogInfoFormat(eOutPutModule.General, "SolarTimerManager CreateTimer Cache:{0} Time:{1} Timer:{2}", cache, Time.time, timer);
 
@@ -133,9 +183,9 @@ public class SolarTimerManager
         {
             SolarTimer timer = m_Timers[i];
 
-            if (timer.Update(dt) == SolarTimer.State.Over)
+            if (timer != null && timer.Update(dt) == SolarTimer.State.Over)
             {
-                RemoveTimer(i);
+                RemoveTimerAt(i);
             }
         }
     }
@@ -144,9 +194,10 @@ public class SolarTimerManager
     /// 删除对应下标的Timer
     /// </summary>
     /// <param name="removeIndex"></param>
-    void RemoveTimer(int removeIndex)
+    void RemoveTimerAt(int removeIndex)
     {
-        if (removeIndex < 0 || removeIndex >= m_Timers.Count)
+        // 'm_Timers[removeIndex] == null' 用于避免在Timer的Callback中StopTimer, 以导致重复性删除
+        if (removeIndex < 0 || removeIndex >= m_Timers.Count || m_Timers[removeIndex] == null)
         {
             return;
         }
@@ -155,15 +206,22 @@ public class SolarTimerManager
 
         m_TimerPool.Push(timerToBeRemoved);
 
-        m_Timers.RemoveAt(removeIndex);
+        /*
+         *     这里直接置空就好, 空位可以重复利用(算法效率更高); 不能调用m_Timers.RemoveAt, 因为
+         * 这样会破坏m_Timers的存储结构, 导致无法正常获取removeIndex后面的Timer
+         */
+        m_Timers[removeIndex] = null;
+
+        // 标记空位
+        m_RemovedTimerIndexs.Add(removeIndex);
     }
 
     /// <summary>
-    /// 根据Timer ID获取Timer对象
+    /// 根据Timer ID获取Timer的下标
     /// </summary>
     /// <param name="timerID"></param>
     /// <returns></returns>
-    SolarTimer PeekTimer(ulong timerID)
+    int PeekTimer(ulong timerID)
     {
         int timerIndex = (int)(timerID >> TimerIDMaxBit);
 
@@ -173,41 +231,42 @@ public class SolarTimerManager
             peekTimer = m_Timers[timerIndex];
 
             // invalid timer id
-            if (peekTimer.ID != timerID)
+            if (peekTimer == null || peekTimer.ID != timerID)
             {
-                peekTimer = null;
+                timerIndex = InvalidTimerIndex;
             }
         }
 
-        return peekTimer;
+        return timerIndex;
     }
 
-    ///// <summary>
-    ///// 删除对应Timer
-    ///// </summary>
-    //public void RemoveTimer(ulong timerID)
-    //{
-    //    SolarTimer timerToBeRemoved = PeekTimer(timerID);
-
-    //    if (timerToBeRemoved != null)
-    //    {
-    //        timerToBeRemoved.Over();
-
-    //        m_Timers.Remove(timerToBeRemoved);
-    //    }
-    //}
+    /// <summary>
+    /// 判断timerID是否合法
+    /// </summary>
+    /// <param name="timerID"></param>
+    /// <returns></returns>
+    public bool IsTimerIDVallid(ulong timerID)
+    {
+        return timerID != InvalidTimerID && PeekTimer(timerID) != InvalidTimerIndex;
+    }
 
     /// <summary>
     /// 暂停指定计时器
     /// </summary>
     /// <param name="timerID"></param>
-    public void PauseTimer(ulong timerID)
+    public void PauseTimer(ref ulong timerID)
     {
-        SolarTimer timerToBePaused = PeekTimer(timerID);
+        int timerIndexToBePaused = PeekTimer(timerID);
 
-        if (timerToBePaused != null)
+        if (timerIndexToBePaused != InvalidTimerIndex)
         {
-            timerToBePaused.Pause();
+            m_Timers[timerIndexToBePaused].Pause();
+
+            //SolarLogger.LogInfoFormat(eOutPutModule.General, "SolarTimerManager StopTimer Timer:{0}", m_Timers[timerIndexToBePaused]);
+        }
+        else
+        {
+            timerID = InvalidTimerID;
         }
     }
 
@@ -215,13 +274,19 @@ public class SolarTimerManager
     /// 停止指定计时器(计时器会在下一帧被删除)
     /// </summary>
     /// <param name="timerID"></param>
-    public void StopTimer(ulong timerID)
+    public void StopTimer(ref ulong timerID)
     {
-        SolarTimer timerToBeStoped = PeekTimer(timerID);
+        int timerIndexToBeStoped = PeekTimer(timerID);
 
-        if (timerToBeStoped != null)
+        if (timerIndexToBeStoped != InvalidTimerIndex)
         {
-            timerToBeStoped.Over();
+            m_Timers[timerIndexToBeStoped].Over();
+
+            //SolarLogger.LogInfoFormat(eOutPutModule.General, "SolarTimerManager StopTimer Timer:{0}", m_Timers[timerIndexToBeStoped]);
+
+            RemoveTimerAt(timerIndexToBeStoped);
         }
+
+        timerID = InvalidTimerID;
     }
 }
