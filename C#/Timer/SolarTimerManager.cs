@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 using UnityEngine.Events;
 
 /// <summary>
@@ -10,9 +8,9 @@ using UnityEngine.Events;
 /// </summary>
 public class SolarTimerManager
 {
-    private class TimerPool : ManagedPool<SolarTimer> { }
+    protected class TimerPool : ManagedPool<SolarTimer> { }
 
-    static SolarTimerManager m_Instance;
+    private static SolarTimerManager m_Instance;
     public static SolarTimerManager Instance
     {
         get
@@ -26,124 +24,78 @@ public class SolarTimerManager
         }
     }
 
-    // 最多支持2^(48)个timer
-    const int TimerIDMaxBit = 48;
-
-    // TimerID的最大值
-    const ulong TimerIDMaxValue = 281474976710655;
+    // Timer的默认数量
+    const int TimerDefaultSize = 10;
 
     // 默认Timer ID的起点
-    const ulong DefaultTimerID = 10000;
+    const int DefaultTimerID = 10000;
 
     // 无效的TimerID
-    const ulong InvalidTimerID = 0;
+    const int InvalidTimerID = 0;
 
-    // 无效的Timer下标
-    const int InvalidTimerIndex = -1;
+    // 标记递增的Timer ID
+    static int IncreaseTimerID = DefaultTimerID;
 
-    // 递增的Timer ID
-    static ulong IncreaseTimerID = DefaultTimerID;
 
     // Timer缓存池
-    TimerPool m_TimerPool;
+    protected TimerPool m_TimerPool;
 
-    // 当前所有活动的Timer
-    List<SolarTimer> m_Timers;
+    // 保存需要增加的Timer对象(延时处理, 保证可以嵌套增加Timer)
+    List<SolarTimer> m_TimersToBeAdded;
 
-    // 存储已经删除的Timer下标
-    List<int> m_RemovedTimerIndexs;
+    // 保存需要删除的Timer对象(延时处理, 保证可以嵌套删除Timer)
+    List<SolarTimer> m_TimersToBeRemoved;
+
+    // Timer对象管理
+    Dictionary<int, SolarTimer> m_Timers;
 
     private SolarTimerManager()
     {
         m_TimerPool = new TimerPool();
 
-        m_Timers = new List<SolarTimer>(10);
+        m_Timers = new Dictionary<int, SolarTimer>(TimerDefaultSize);
 
-        m_RemovedTimerIndexs = new List<int>(10);
+        m_TimersToBeAdded = new List<SolarTimer>(TimerDefaultSize);
+        m_TimersToBeRemoved = new List<SolarTimer>(TimerDefaultSize);
     }
 
-    /// <summary>
-    /// 创建Timer ID(有两部分构成: Timer在m_Timer中的下标index(左16位)和IncreaseTimerID(右48位))
-    /// </summary>
-    /// <returns></returns>
-    ulong CalcTimerID(ref int newTimerIndex)
+    int CalcTimerID()
     {
-        if (IncreaseTimerID > TimerIDMaxValue)
+        if (IncreaseTimerID > int.MaxValue)
         {
             IncreaseTimerID = DefaultTimerID;
         }
 
-        ulong newTimerID = IncreaseTimerID++;
-
-        if (m_Timers.Count > ushort.MaxValue)
-        {
-            SolarLogger.LogInfo(eOutPutModule.General, "SolarTimerManager: Create too much timers(over 65535)!");
-
-            return DefaultTimerID;
-        }
-
-        ulong nextTimerIndex;
-
-        // 当前m_Timers没有空位, 需要在m_Timers后面添加
-        if (m_RemovedTimerIndexs.Count == 0)
-        {
-            nextTimerIndex = (ulong)m_Timers.Count;
-        }
-        // 有空位优先利用空位
-        else
-        {
-            nextTimerIndex = (ulong)m_RemovedTimerIndexs[m_RemovedTimerIndexs.Count - 1];
-
-            m_RemovedTimerIndexs.RemoveAt(m_RemovedTimerIndexs.Count - 1);
-
-            newTimerIndex = (int)nextTimerIndex;
-        }
-
-        ulong realTimerID = (nextTimerIndex << TimerIDMaxBit) | newTimerID;
-
-        return realTimerID;
+        return IncreaseTimerID++;
     }
 
-    ulong CreateTimer(int times, float delayTime, float interval, UnityAction callback)
+    int CreateTimer(int times, float delayTime, float interval, UnityAction callback)
     {
-        SolarTimer timer = m_TimerPool.Pop(SolarTimer.TimerIdentifier);
-
-        //bool cache = (timer != null);
-
-        int newTimerIndex = -1;
-
-        ulong realTimerID = CalcTimerID(ref newTimerIndex);
+        SolarTimer timer = m_TimerPool.Pop();
+        
+        int newTimerID = CalcTimerID();
 
         if (timer == null)
         {
-            timer = new SolarTimer(realTimerID, times, delayTime, interval, callback);
+            timer = new SolarTimer(newTimerID, times, delayTime, interval, callback);
         }
         else
         {
-            timer.Set(realTimerID, times, delayTime, interval, callback);
+            timer.Set(newTimerID, times, delayTime, interval, callback);
         }
 
-        if (newTimerIndex < 0 || newTimerIndex >= m_Timers.Count)
-        {
-            m_Timers.Add(timer);
-        }
-        else
-        {
-            m_Timers[newTimerIndex] = timer;
-        }
+        m_TimersToBeAdded.Add(timer);
 
-        //SolarLogger.LogInfoFormat(eOutPutModule.General, "SolarTimerManager CreateTimer Cache:{0} Time:{1} Timer:{2}", cache, Time.time, timer);
-
-        return realTimerID;
+        return newTimerID;
     }
 
     /// <summary>
     /// 创建只会执行1次的Timer
     /// </summary>
-    /// <param name="delayTime"></param>
-    /// <param name="callback"></param>
+    /// <param name="delayTime">单位为秒</param>
+    /// <param name="callback">回调</param>
     /// <returns></returns>
-    public ulong CreateSingleTimer(float delayTime, UnityAction callback)
+    public int CreateSingleTimer(float delayTime, UnityAction callback)
     {
         return CreateTimer(1, delayTime, 0, callback);
     }
@@ -152,11 +104,11 @@ public class SolarTimerManager
     /// 创建执行多次的Timer
     /// </summary>
     /// <param name="times"></param>
-    /// <param name="delayTime"></param>
-    /// <param name="interval"></param>
+    /// <param name="delayTime">秒</param>
+    /// <param name="interval">秒</param>
     /// <param name="callback"></param>
     /// <returns></returns>
-    public ulong CreateMultiTimer(int times, float delayTime, float interval, UnityAction callback)
+    public int CreateMultiTimer(int times, float delayTime, float interval, UnityAction callback)
     {
         return CreateTimer(times, delayTime, interval, callback);
     }
@@ -164,11 +116,11 @@ public class SolarTimerManager
     /// <summary>
     /// 创建执行无限次的Timer
     /// </summary>
-    /// <param name="delayTime"></param>
-    /// <param name="interval"></param>
+    /// <param name="delayTime">秒</param>
+    /// <param name="interval">秒</param>
     /// <param name="callback"></param>
     /// <returns></returns>
-    public ulong CreateForeverTimer(float delayTime, float interval, UnityAction callback)
+    public int CreateForeverTimer(float delayTime, float interval, UnityAction callback)
     {
         return CreateTimer(SolarTimer.ForeverTimes, delayTime, interval, callback);
     }
@@ -179,90 +131,104 @@ public class SolarTimerManager
     /// <param name="dt"></param>
     public void Update(float dt)
     {
-        for (int i = m_Timers.Count - 1; i >= 0; i--)
+        // 先更新所有的Timer
+        foreach (var item in m_Timers)
         {
-            SolarTimer timer = m_Timers[i];
+            SolarTimer timer = item.Value;
 
             if (timer != null && timer.Update(dt) == SolarTimer.State.Over)
             {
-                RemoveTimerAt(i);
-            }
-        }
-    }
-
-    /// <summary>
-    /// 删除对应下标的Timer
-    /// </summary>
-    /// <param name="removeIndex"></param>
-    void RemoveTimerAt(int removeIndex)
-    {
-        // 'm_Timers[removeIndex] == null' 用于避免在Timer的Callback中StopTimer, 以导致重复性删除
-        if (removeIndex < 0 || removeIndex >= m_Timers.Count || m_Timers[removeIndex] == null)
-        {
-            return;
-        }
-
-        SolarTimer timerToBeRemoved = m_Timers[removeIndex];
-
-        m_TimerPool.Push(timerToBeRemoved);
-
-        /*
-         *     这里直接置空就好, 空位可以重复利用(算法效率更高); 不能调用m_Timers.RemoveAt, 因为
-         * 这样会破坏m_Timers的存储结构, 导致无法正常获取removeIndex后面的Timer
-         */
-        m_Timers[removeIndex] = null;
-
-        // 标记空位
-        m_RemovedTimerIndexs.Add(removeIndex);
-    }
-
-    /// <summary>
-    /// 根据Timer ID获取Timer的下标
-    /// </summary>
-    /// <param name="timerID"></param>
-    /// <returns></returns>
-    int PeekTimer(ulong timerID)
-    {
-        int timerIndex = (int)(timerID >> TimerIDMaxBit);
-
-        SolarTimer peekTimer = null;
-        if (timerIndex >= 0 && timerIndex < m_Timers.Count)
-        {
-            peekTimer = m_Timers[timerIndex];
-
-            // invalid timer id
-            if (peekTimer == null || peekTimer.ID != timerID)
-            {
-                timerIndex = InvalidTimerIndex;
+                m_TimersToBeRemoved.Add(timer);
             }
         }
 
-        return timerIndex;
+        // 再增加或删除Timer
+        foreach (var addTimer in m_TimersToBeAdded)
+        {
+            m_Timers.Add(addTimer.ID, addTimer);
+        }
+        m_TimersToBeAdded.Clear();
+
+        foreach (var removeTimer in m_TimersToBeRemoved)
+        {
+            m_Timers.Remove(removeTimer.ID);
+        }
+        m_TimersToBeRemoved.Clear();
+    }
+
+    private SolarTimer PeekTimer(int timerID)
+    {
+        if (timerID == InvalidTimerID)
+        {
+            return null;
+        }
+
+        SolarTimer timer = null;
+        if (m_Timers.TryGetValue(timerID, out timer))
+        {
+            return timer;
+        }
+
+        return null;
     }
 
     /// <summary>
-    /// 判断timerID是否合法
+    /// Timer ID是否有效
     /// </summary>
     /// <param name="timerID"></param>
     /// <returns></returns>
-    public bool IsTimerIDVallid(ulong timerID)
+    public bool IsTimerIDVallid(int timerID)
     {
-        return timerID != InvalidTimerID && PeekTimer(timerID) != InvalidTimerIndex;
+        return PeekTimer(timerID) != null;
+    }
+
+    /// <summary>
+    /// 获取指定Timer的时间进度
+    /// </summary>
+    /// <param name="timerID"></param>
+    /// <returns></returns>
+    public float GetTimerProgress(ref int timerID)
+    {
+        SolarTimer timer = PeekTimer(timerID);
+
+        if (timer != null)
+        {
+            return timer.TimeProgress;
+        }
+
+        timerID = InvalidTimerID;
+        return 0;
+    }
+
+    /// <summary>
+    /// 获取指定Timer的剩余时间
+    /// </summary>
+    /// <param name="timerID"></param>
+    /// <returns></returns>
+    public float GetTimerLeft(ref int timerID)
+    {
+        SolarTimer timer = PeekTimer(timerID);
+
+        if (timer != null)
+        {
+            return timer.TimeLeft;
+        }
+
+        timerID = InvalidTimerID;
+        return 0;
     }
 
     /// <summary>
     /// 暂停指定计时器
     /// </summary>
     /// <param name="timerID"></param>
-    public void PauseTimer(ref ulong timerID)
+    public void PauseTimer(ref int timerID)
     {
-        int timerIndexToBePaused = PeekTimer(timerID);
+        SolarTimer timer = PeekTimer(timerID);
 
-        if (timerIndexToBePaused != InvalidTimerIndex)
+        if (timer != null)
         {
-            m_Timers[timerIndexToBePaused].Pause();
-
-            //SolarLogger.LogInfoFormat(eOutPutModule.General, "SolarTimerManager StopTimer Timer:{0}", m_Timers[timerIndexToBePaused]);
+            timer.Pause();
         }
         else
         {
@@ -271,22 +237,39 @@ public class SolarTimerManager
     }
 
     /// <summary>
-    /// 停止指定计时器(计时器会在下一帧被删除)
+    /// 恢复计时器
     /// </summary>
     /// <param name="timerID"></param>
-    public void StopTimer(ref ulong timerID)
+    public void ResumeTimer(ref int timerID)
     {
-        int timerIndexToBeStoped = PeekTimer(timerID);
+        SolarTimer timer = PeekTimer(timerID);
 
-        if (timerIndexToBeStoped != InvalidTimerIndex)
+        if (timer != null)
         {
-            m_Timers[timerIndexToBeStoped].Over();
-
-            //SolarLogger.LogInfoFormat(eOutPutModule.General, "SolarTimerManager StopTimer Timer:{0}", m_Timers[timerIndexToBeStoped]);
-
-            RemoveTimerAt(timerIndexToBeStoped);
+            timer.Resume();
         }
+        else
+        {
+            timerID = InvalidTimerID;
+        }
+    }
 
-        timerID = InvalidTimerID;
+    /// <summary>
+    /// 停止指定计时器
+    /// </summary>
+    /// <param name="timerID"></param>
+    public void StopTimer(ref int timerID)
+    {
+        SolarTimer timer = PeekTimer(timerID);
+
+        if (timer != null)
+        {
+            timer.Over();
+            m_TimersToBeRemoved.Add(timer);
+        }
+        else
+        {
+            timerID = InvalidTimerID;
+        }
     }
 }

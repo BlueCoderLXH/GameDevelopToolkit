@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
 
 /// <summary>
@@ -10,7 +8,7 @@ public class SolarTimer : Poolable
 {
     public const int ForeverTimes = -1;
     public const int TimerIdentifier = 0;
-
+    
     public enum State
     {
         Running,
@@ -25,11 +23,11 @@ public class SolarTimer : Poolable
     // 初次回调延时时间(s)
     private float m_DelayTime;
 
-    // 回调间隔时间
+    // 回调间隔时间(s)
     private float m_IntervalTime;
 
-    private ulong m_TimerID;              // timer id
-    public ulong ID
+    private int m_TimerID;               // timer id
+    public int ID
     {
         get { return m_TimerID; }
     }
@@ -42,12 +40,50 @@ public class SolarTimer : Poolable
 
     private UnityAction m_TimerCallback; // 回调函数
 
-    public SolarTimer(ulong timerID, int times, float delayTime, float interval, UnityAction callback) : base(TimerIdentifier)
+    /// <summary>
+    /// 当前Timer的时间进度值
+    /// </summary>
+    public float TimeProgress
+    {
+        get
+        {
+            float interval = m_IntervalTime;
+            if (m_CurRunTimes == 0)
+            {
+                interval = m_DelayTime;
+            }
+
+            if (interval <= 0)
+            {
+                return 0;
+            }
+
+            return m_CurTimeCount / interval;
+        }
+    }
+
+    /// <summary>
+    /// 当前Timer的剩余执行时间
+    /// </summary>
+    public float TimeLeft
+    {
+        get
+        {
+            float interval = m_IntervalTime;
+            if (m_CurRunTimes == 0)
+            {
+                interval = m_DelayTime;
+            }
+            return Mathf.Clamp(interval - m_CurTimeCount,0.0f,float.MaxValue);
+        }
+    }
+
+    public SolarTimer(int timerID, int times, float delayTime, float interval, UnityAction callback) : base(TimerIdentifier)
     {
         Set(timerID, times, delayTime, interval, callback);
     }
 
-    public void Set(ulong timerID, int times, float delayTime, float interval, UnityAction callback)
+    public void Set(int timerID, int times, float delayTime, float interval, UnityAction callback)
     {
         m_TimerID = timerID;
 
@@ -73,6 +109,19 @@ public class SolarTimer : Poolable
         }
 
         m_State = State.Pause;
+    }
+
+    /// <summary>
+    /// 恢复计时器
+    /// </summary>
+    public void Resume()
+    {
+        if (m_State == State.Over)
+        {
+            return;
+        }
+
+        m_State = State.Running;
     }
 
     /// <summary>
@@ -114,9 +163,7 @@ public class SolarTimer : Poolable
         if (m_CurTimeCount >= checkTime)
         {
             m_CurTimeCount -= checkTime;
-
-            m_CurRunTimes += (m_Times != ForeverTimes) ? 1 : 0;
-
+            m_CurRunTimes += 1;
             m_TimerCallback.Invoke();
 
             //SolarLogger.LogInfoFormat(eOutPutModule.General, "SolarTimer Invoke Time:{0} Timer:{1}", Time.time, this);
