@@ -1,8 +1,8 @@
-﻿using System;
-using System.Reflection;
-
-namespace Framework.Service
+﻿namespace Framework.DesignPattern
 {
+    using System;
+    using System.Reflection;
+
     static class ServiceMaker
     {
         /// <summary>

@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Framework.Service
+﻿namespace Framework.DesignPattern
 {
+    using System;
+    using System.Collections.Generic;
+
     /// <summary>
     /// ServiceLocator的抽象接口
     /// </summary>
     public interface ICommonService
     {
+        void Init();
         void Release();
     }
 
@@ -19,6 +20,9 @@ namespace Framework.Service
     /// </summary>
     public abstract class ServiceLocator
     {
+        /// <summary>
+        /// [Type of 'ICommonService's subclass]
+        /// </summary>
         private Dictionary<Type, ICommonService> m_Services;
 
         public ServiceLocator()
@@ -49,7 +53,7 @@ namespace Framework.Service
 
             if (service == null)
             {
-                SolarLogger.LogWarningFormat(eOutPutModule.General, "ServiceLocator type '{0}' is not found!", typeof(T));
+                string errorStr = string.Format("ServiceLocator type '{0}' is not found!", typeof(T));
                 return null;
             }
 
@@ -101,6 +105,18 @@ namespace Framework.Service
             {
                 service.Release();
                 m_Services.Remove(serviceType);
+            }
+        }
+
+        /// <summary>
+        /// 初始化所有的服务对象
+        /// (初始化游戏时调用)
+        /// </summary>
+        public void Init()
+        {
+            foreach (var service in m_Services)
+            {
+                service.Value.Init();
             }
         }
 

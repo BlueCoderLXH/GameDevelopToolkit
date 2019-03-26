@@ -1,21 +1,19 @@
-﻿namespace Framework.LogicComponent
+﻿namespace Framework.DesignPattern
 {
     using System;
     using System.Collections.Generic;
 
-    /// <summary>
-    /// 游戏逻辑组件接口
-    /// </summary>
     public interface ILogicComponent
     {
-        //void OnInit();
+        void OnInit();
         void OnUpdate(float dt);
         void OnDestroy();
     }
 
     /// <summary>
-    /// 游戏逻辑组件集合
-    /// 采用组件设计模式(Component Pattern)实现
+    /// [LogicComponents]
+    /// 
+    /// 采用组件模式(Component Pattern)实现, 包含继承'ILogicComponent'的逻辑对象集合
     /// </summary>
     public class LogicComponents
     {
@@ -24,7 +22,7 @@
         /// <summary>
         /// 构造
         /// </summary>
-        /// <param name="capacity">组件数</param>
+        /// <param name="capacity">预先缓存的组件个数</param>
         public LogicComponents(int capacity)
         {
             if (capacity <= 0)
@@ -36,7 +34,7 @@
         }
 
         /// <summary>
-        /// 添加组件
+        /// 添加一个指定T类型的组件对象(自动初始化)
         /// </summary>
         /// <typeparam name="T"></typeparam>
         public void AddComponent<T>() where T : ILogicComponent, new()
@@ -52,11 +50,11 @@
         }
 
         /// <summary>
-        /// 添加组件
+        /// 添加一个指定T类型且已经初始化的组件对象
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="component"></param>
-        public void AddCompnent<T>(T component) where T : ILogicComponent
+        public void AddComponent<T>(T component) where T : ILogicComponent
         {
             Type compType = component.GetType();
 
@@ -67,7 +65,7 @@
         }
 
         /// <summary>
-        /// 获取组件
+        /// 获取组件对象
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
@@ -86,10 +84,21 @@
         }
 
         /// <summary>
-        /// 更新所有组件
+        /// 初始化所有的组件
+        /// </summary>
+        public void InitAll()
+        {
+            foreach (var component in m_Components)
+            {
+                component.Value.OnInit();
+            }
+        }
+
+        /// <summary>
+        /// 更新所有的组件
         /// </summary>
         /// <param name="dt"></param>
-        public void Update(float dt)
+        public void UpdateAll(float dt)
         {
             foreach (var component in m_Components)
             {
@@ -98,9 +107,9 @@
         }
 
         /// <summary>
-        /// 释放所有的组件
+        /// 销毁所有的组件
         /// </summary>
-        public void Destroy()
+        public void DestroyAll()
         {
             foreach (var component in m_Components)
             {
