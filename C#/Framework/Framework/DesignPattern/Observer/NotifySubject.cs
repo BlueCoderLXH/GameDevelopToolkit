@@ -30,7 +30,7 @@
         {
             if (m_Events != null)
             {
-                m_Events.AddLast(callback);
+                m_Events.Remove(callback);
             }
         }
 
