@@ -2,3 +2,6 @@
 C#/Framework/.vs/Framework/v15
 C#/Framework/Framework/Framework.csproj
 C#/Framework/Framework/obj
+*.ide-wal
+C#/Framework/.vs/Framework/v15/Server/sqlite3/storage.ide-wal
+C#/Framework/.vs/Framework/v15/.suo
