@@ -1,4 +1,4 @@
-﻿namespace Framwork.DesignPattern.Command
+﻿namespace Framework.DesignPattern.Command
 {
     /// <summary>
     /// 命令基类
@@ -8,17 +8,14 @@
         private bool m_IsExcuted = false;
         public bool IsExcuted { get { return m_IsExcuted; } }
 
-        protected GameActor m_gameActor;
-
         /// <summary>
-        /// 指定命令
+        /// 执行命令
         /// </summary>
         /// <param name="actor"></param>
         public void Execute(GameActor actor)
         {
             if (actor != null && !m_IsExcuted)
             {
-                m_gameActor = actor;
                 m_IsExcuted = OnExecute(actor);
             }
         }
@@ -30,15 +27,40 @@
         /// </summary>
         public void Undo()
         {
-            if (m_gameActor != null && m_IsExcuted)
+            if ( m_IsExcuted)
             {
                 OnUndo();
-                m_gameActor = null;
             }
         }
 
         protected abstract bool OnExecute(GameActor actor);
         protected virtual void OnUndo() { }
+    }
+
+    /// <summary>
+    /// 游戏角色相关的命令基类
+    /// </summary>
+    public abstract class GameActorCommand : Command
+    {
+        protected GameActor m_gameActor;
+
+        protected override bool OnExecute(GameActor actor)
+        {
+            if (actor != null)
+            {
+                m_gameActor = actor;
+            }
+
+            return true;
+        }
+
+        protected override void OnUndo()
+        {
+            if (m_gameActor != null)
+            {
+                m_gameActor = null;
+            }
+        }
     }
 
     #region Command Example Code
@@ -50,7 +72,7 @@
         public void Move(float x, float y) { X = x; Y = y; }
     }
 
-    public class MoveCommand : Command
+    public class MoveCommand : GameActorCommand
     {
         private float m_X;
         private float m_Y;
@@ -65,6 +87,8 @@
 
         protected override bool OnExecute(GameActor gameActor)
         {
+            base.OnExecute(gameActor);
+
             m_BeforeX = gameActor.X;
             m_BeforeY = gameActor.Y;
             gameActor.Move(m_X, m_Y);
@@ -75,6 +99,8 @@
         protected override void OnUndo()
         {
             m_gameActor.Move(m_BeforeX, m_BeforeY);
+
+            base.Undo();
         }
     }
     #endregion

@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="DesignPattern\Command\Command.cs" />
     <Compile Include="DesignPattern\Component\LogicComponents.cs" />
+    <Compile Include="DesignPattern\ObjectPool\ObjectPool.cs" />
     <Compile Include="DesignPattern\Observer\Event.cs" />
     <Compile Include="DesignPattern\Observer\EventData.cs" />
     <Compile Include="DesignPattern\Observer\EventDataFactory.cs" />
