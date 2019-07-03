@@ -34,3 +34,6 @@ C#/Framework/.vs/Framework/v15/.suo
 *.ide-wal
 *.csproj
 *.cache
+C#/Framework/.vs/Framework/v15/Server/sqlite3/storage.ide-wal
+C#/Framework/.vs/Framework/v15/Server/sqlite3/storage.ide-shm
+C#/Framework/.vs/Framework/v15/Server/sqlite3/storage.ide
