@@ -27,3 +27,10 @@ C#/Framework/.vs/Framework/v15/Server/sqlite3/storage.ide-wal
 C#/Framework/Framework/Framework.csproj
 C#/Framework/Framework/obj/Debug/Framework.csproj.CoreCompileInputs.cache
 C#/Framework/Framework/Program.cs
+*.cache
+*.ide
+C#/Framework/.vs/Framework/v15/.suo
+*.ide-shm
+*.ide-wal
+*.csproj
+*.cache
