@@ -16,11 +16,8 @@ public class StateMachine<T> where T : System.Enum
     /// <summary>
     /// 状态
     /// </summary>
-    private struct State
+    private class State
     {
-        // null 状态
-        public static readonly State Null = new State(default(T), null, null, null);
-
         // 状态id
         public T Id;
 
@@ -37,16 +34,6 @@ public class StateMachine<T> where T : System.Enum
             Enter = enter;
             Update = update;
             Leave = leave;
-        }
-
-        public static bool operator == (State a, State b)
-        {
-            return EqualityComparer<T>.Default.Equals(a.Id, b.Id);
-        }
-
-        public static bool operator !=(State a, State b)
-        {
-            return !(a == b);
         }
     }
 
@@ -90,7 +77,7 @@ public class StateMachine<T> where T : System.Enum
         GameDebug.LogClient(msg);
 #endif
 
-        if (m_CurrentState != State.Null && m_CurrentState.Leave != null)
+        if (m_CurrentState != null && m_CurrentState.Leave != null)
             m_CurrentState.Leave();
 
         if (newState.Enter != null)
@@ -101,8 +88,8 @@ public class StateMachine<T> where T : System.Enum
 
     public void Shutdown()
     {
-        if (m_CurrentState != State.Null && m_CurrentState.Leave != null)
+        if (m_CurrentState != null && m_CurrentState.Leave != null)
             m_CurrentState.Leave();
-        m_CurrentState = State.Null;
+        m_CurrentState = null;
     }
 }
