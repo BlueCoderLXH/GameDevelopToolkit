@@ -1,4 +1,8 @@
-
+C#/Network/Netwrok/.vs
+C#/Network/Netwrok/Netwrok/bin
+C#/Network/Netwrok/Netwrok/obj
+*.csproj
+*.sln
 C#/Framework/.vs/Framework/v15
 C#/Framework/Framework/Framework.csproj
 C#/Framework/Framework/obj
