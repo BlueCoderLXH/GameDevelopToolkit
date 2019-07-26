@@ -1,4 +1,5 @@
-﻿namespace Framework.DesignPattern.Command
+﻿test submit
+namespace Framework.DesignPattern.Command
 {
     /// <summary>
     /// 命令基类
