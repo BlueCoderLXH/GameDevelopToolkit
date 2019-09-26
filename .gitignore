@@ -7,6 +7,8 @@
 *.ide-wal
 *.csproj
 *.cache
+*.suo
+*.lock
 *.meta
 
 QuadTree/Library/
