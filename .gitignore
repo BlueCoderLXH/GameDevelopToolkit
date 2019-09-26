@@ -12,6 +12,11 @@
 *.meta
 
 QuadTree/Library/
+QuadTree/obj/
+QuadTree/Temp/
+QuadTree/Logs/
+QuadTree/.vs/
+
 UnityProject/Library/
 UnityProject/obj/
 UnityProject/Temp/
