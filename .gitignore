@@ -9,8 +9,8 @@
 *.cache
 *.meta
 
-QuadTree/Library/*
-UnityProject/Library/*
-UnityProject/obj/*
-UnityProject/Temp/*
-UnityProject/Logs/*
+QuadTree/Library/
+UnityProject/Library/
+UnityProject/obj/
+UnityProject/Temp/
+UnityProject/Logs/
