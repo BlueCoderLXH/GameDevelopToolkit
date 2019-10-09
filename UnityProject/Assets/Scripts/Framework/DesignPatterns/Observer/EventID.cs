@@ -1,5 +1,4 @@
-﻿
-namespace Framework.DesignPattern
+﻿namespace Framework.DesignPattern
 {
     using System;
 

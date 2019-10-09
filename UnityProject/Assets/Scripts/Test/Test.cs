@@ -16,13 +16,11 @@ public interface ITestCase
 /// </summary>
 public class Test : MonoBehaviour
 {
-    List<ITestCase> m_TestCases = new List<ITestCase>();
-
-    void Awake()
+    List<ITestCase> m_TestCases = new List<ITestCase>()
     {
-        EventTest eTest = new EventTest();
-        m_TestCases.Add(eTest);
-    }
+        //new EventTest(),
+        new StateMachineTest()
+    };
 
     void Start()
     {

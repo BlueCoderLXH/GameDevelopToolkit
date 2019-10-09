@@ -1,91 +1,80 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-/// <summary>
-/// 状态机
-/// </summary>
-/// <typeparam name="T"></typeparam>
-public class StateMachine<T> where T : System.Enum
+﻿namespace Framework.StateMachine
 {
-    /// <summary>
-    /// 状态回调
-    /// </summary>
-    public delegate void StateFunc();
+    using System;
+    using System.Collections.Generic;
 
     /// <summary>
-    /// 状态
+    /// 状态机
+    /// 
+    /// 特点:
+    ///   1、状态ID支持模板
+    ///   2、无GC开销
     /// </summary>
-    private class State
+    public class StateMachine<T>
+        where T : Enum
     {
-        // 状态id
-        public T Id;
+        T m_CurrentStateId;
 
-        // 进入状态回调
-        public StateFunc Enter;
-        // 更新状态回调
-        public StateFunc Update;
-        // 离开状态回调
-        public StateFunc Leave;
+        // 当前状态 
+        State m_CurrentState;
 
-        public State(T id, StateFunc enter, StateFunc update, StateFunc leave)
+        // 状态集合 [StateId, State]
+        Dictionary<int, State> m_States;
+
+        public T CurrentState
         {
-            Id = id;
-            Enter = enter;
-            Update = update;
-            Leave = leave;
+            get { return m_CurrentStateId; }
         }
-    }
 
-    // 当前状态 
-    State m_CurrentState;
+        public StateMachine(int stateCount = 4)
+        {
+            m_CurrentStateId = default;
+            m_CurrentState = State.Null;
 
-    // 状态集合
-    Dictionary<T, State> m_States;
+            m_States = new Dictionary<int, State>(stateCount);
+        }
 
-    public T CurrentState
-    {
-        get { return m_CurrentState.Id; }
-    }
+        public void Add(T stateId, StateFunc onEnter = null, StateFunc onUpdate = null, StateFunc onLeave = null)
+        {
+            // 枚举类型内部是整型, int的hashcode就是其本身, 因此枚举值的hashcode就是其对应的整型值
+            int int_id = stateId.GetHashCode();
+            m_States.Add(int_id, new State(int_id, onEnter, onUpdate, onLeave));
+        }
 
-    public StateMachine()
-    {
-        m_States = new Dictionary<T, State>();
-    }
+        public void Update()
+        {
+            m_CurrentState.OnUpdate();
+        }
 
-    public void Add(T id, StateFunc enter, StateFunc update, StateFunc leave)
-    {
-        m_States.Add(id, new State(id, enter, update, leave));
-    }
+        public void SwitchTo(T stateId)
+        {
+            int int_StateId = stateId.GetHashCode();
 
-    public void Update()
-    {
-        m_CurrentState.Update();
-    }
+            State nextState;
+            if (!m_States.TryGetValue(int_StateId, out nextState))
+            {
+                GDebug.Assert(false, $"Trying to switch to unknown state '{stateId}'");
+            }
 
-    public void SwitchTo(T state)
-    {
-        Debug.Assert(m_States.ContainsKey(state), "Trying to switch to unknown state " + state.ToString());
-        Debug.Assert(m_CurrentState == null || !m_CurrentState.Id.Equals(state), "Trying to switch to " + state.ToString() + " but that is already current state");
+            if (m_CurrentState == nextState)
+            {
+                GDebug.Assert(false, $"Trying to switch to '{stateId}' but that is already current state");
+            }
 
-        var newState = m_States[state];
+            GDebug.Log($"Switching state: {m_CurrentStateId} -> {stateId}");
 
-        string msg = "Switching state: " + (m_CurrentState != null ? m_CurrentState.Id.ToString() : "null") + " -> " + state.ToString();
-        Debug.Log(msg);
+            m_CurrentState.OnLeave();
 
-        if (m_CurrentState != null && m_CurrentState.Leave != null)
-            m_CurrentState.Leave();
+            nextState.OnEnter();
 
-        if (newState.Enter != null)
-            newState.Enter();
+            m_CurrentState = nextState;
+            m_CurrentStateId = stateId;
+        }
 
-        m_CurrentState = newState;
-    }
-
-    public void Shutdown()
-    {
-        if (m_CurrentState != null && m_CurrentState.Leave != null)
-            m_CurrentState.Leave();
-        m_CurrentState = null;
+        public void Shutdown()
+        {
+            m_CurrentState.OnLeave();
+            m_CurrentState = State.Null;
+        }
     }
 }

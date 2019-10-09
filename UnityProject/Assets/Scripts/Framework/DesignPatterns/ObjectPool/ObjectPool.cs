@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-
-using UnityEngine;
-
-namespace Framework.DesignPattern
+﻿namespace Framework.DesignPattern
 {
-
-    //using UnityEngine;
+    using System;
+    using System.Collections.Generic;
 
     /// <summary>
     /// 可重复利用的对象
@@ -25,7 +19,7 @@ namespace Framework.DesignPattern
 
         public T CacheObj
         {
-            get { return  m_CacheObj; }
+            get { return m_CacheObj; }
         }
 
         public ReusableObject(T cacheObj)
@@ -69,7 +63,8 @@ namespace Framework.DesignPattern
         /// </summary>
         /// <param name="factory"></param>
         public ObjectPool(Func<T> factory, Action<T> objResetFunc = null) :
-            this(s_DefaultCapacity, factory, objResetFunc) { }
+            this(s_DefaultCapacity, factory, objResetFunc)
+        { }
 
         /// <summary>
         /// 创建一个T类型的对象池, 指定大小
@@ -78,7 +73,7 @@ namespace Framework.DesignPattern
         /// <param name="factory"></param>
         public ObjectPool(int capacity, Func<T> factory, Action<T> objResetFunc = null)
         {
-            Debug.Assert(factory != null, "You should set a factory of type 'T' to create 'T'-type objects");
+            GDebug.Assert(factory != null, "You should set a factory of type 'T' to create 'T'-type objects");
 
             capacity = Math.Max(s_MinCapacity, capacity);
 
@@ -106,7 +101,7 @@ namespace Framework.DesignPattern
         /// <param name="count"></param>
         private void Expand(int count)
         {
-            Debug.Assert(m_BufferPool != null, "Pool cache is null!");
+            GDebug.Assert(m_BufferPool != null, "Pool cache is null!");
 
             m_Capacity += count;
 
@@ -119,7 +114,7 @@ namespace Framework.DesignPattern
 
                 int objKey = newObj.GetHashCode();
 
-                Debug.Assert(!m_BufferPool.ContainsKey(objKey), "Can't add the same obj to buffer pool!");
+                GDebug.Assert(!m_BufferPool.ContainsKey(objKey), "Can't add the same obj to buffer pool!");
 
                 m_BufferPool.Add(objKey, usableObj);
                 m_UsableObjKeys.Add(objKey);
@@ -132,7 +127,7 @@ namespace Framework.DesignPattern
         /// <returns></returns>
         private bool IsEmpty()
         {
-            Debug.Assert(m_BufferPool != null, "Pool cache is null!");
+            GDebug.Assert(m_BufferPool != null, "Pool cache is null!");
             return m_UsableObjKeys.Count <= 0;
         }
 
@@ -142,7 +137,7 @@ namespace Framework.DesignPattern
         /// <returns></returns>
         public T Take()
         {
-            Debug.Assert(m_BufferPool != null, "Pool cache is null!");
+            GDebug.Assert(m_BufferPool != null, "Pool cache is null!");
 
             if (IsEmpty())
             {
@@ -165,7 +160,7 @@ namespace Framework.DesignPattern
         /// <param name="returnObj"></param>
         public void Return(ref T returnObj)
         {
-            Debug.Assert(m_BufferPool != null, "Pool cache is null!");
+            GDebug.Assert(m_BufferPool != null, "Pool cache is null!");
 
             int returnObjKey = returnObj.GetHashCode();
             if (m_BufferPool.ContainsKey(returnObjKey))
@@ -186,7 +181,7 @@ namespace Framework.DesignPattern
         /// </summary>
         public void Clear()
         {
-            Debug.Assert(m_BufferPool != null, "Pool cache is null!");
+            GDebug.Assert(m_BufferPool != null, "Pool cache is null!");
 
             m_BufferPool.Clear();
             m_BufferPool = null;
