@@ -53,15 +53,15 @@
             State nextState;
             if (!m_States.TryGetValue(int_StateId, out nextState))
             {
-                GDebug.Assert(false, $"Trying to switch to unknown state '{stateId}'");
+                //GDebug.Assert(false, $"Trying to switch to unknown state '{stateId}'");
             }
 
             if (m_CurrentState == nextState)
             {
-                GDebug.Assert(false, $"Trying to switch to '{stateId}' but that is already current state");
+                //GDebug.Assert(false, $"Trying to switch to '{stateId}' but that is already current state");
             }
 
-            GDebug.Log($"Switching state: {m_CurrentStateId} -> {stateId}");
+            //GDebug.Log($"Switching state: {m_CurrentStateId} -> {stateId}");
 
             m_CurrentState.OnLeave();
 

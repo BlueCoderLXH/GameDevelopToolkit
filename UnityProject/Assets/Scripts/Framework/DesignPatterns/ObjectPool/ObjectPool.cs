@@ -73,7 +73,7 @@
         /// <param name="factory"></param>
         public ObjectPool(int capacity, Func<T> factory, Action<T> objResetFunc = null)
         {
-            GDebug.Assert(factory != null, "You should set a factory of type 'T' to create 'T'-type objects");
+            //GDebug.Assert(factory != null, "You should set a factory of type 'T' to create 'T'-type objects");
 
             capacity = Math.Max(s_MinCapacity, capacity);
 
@@ -101,7 +101,7 @@
         /// <param name="count"></param>
         private void Expand(int count)
         {
-            GDebug.Assert(m_BufferPool != null, "Pool cache is null!");
+            //GDebug.Assert(m_BufferPool != null, "Pool cache is null!");
 
             m_Capacity += count;
 
@@ -114,7 +114,7 @@
 
                 int objKey = newObj.GetHashCode();
 
-                GDebug.Assert(!m_BufferPool.ContainsKey(objKey), "Can't add the same obj to buffer pool!");
+                //GDebug.Assert(!m_BufferPool.ContainsKey(objKey), "Can't add the same obj to buffer pool!");
 
                 m_BufferPool.Add(objKey, usableObj);
                 m_UsableObjKeys.Add(objKey);
@@ -127,7 +127,7 @@
         /// <returns></returns>
         private bool IsEmpty()
         {
-            GDebug.Assert(m_BufferPool != null, "Pool cache is null!");
+            //GDebug.Assert(m_BufferPool != null, "Pool cache is null!");
             return m_UsableObjKeys.Count <= 0;
         }
 
@@ -137,7 +137,7 @@
         /// <returns></returns>
         public T Take()
         {
-            GDebug.Assert(m_BufferPool != null, "Pool cache is null!");
+            //GDebug.Assert(m_BufferPool != null, "Pool cache is null!");
 
             if (IsEmpty())
             {
@@ -160,7 +160,7 @@
         /// <param name="returnObj"></param>
         public void Return(ref T returnObj)
         {
-            GDebug.Assert(m_BufferPool != null, "Pool cache is null!");
+            //GDebug.Assert(m_BufferPool != null, "Pool cache is null!");
 
             int returnObjKey = returnObj.GetHashCode();
             if (m_BufferPool.ContainsKey(returnObjKey))
@@ -181,7 +181,7 @@
         /// </summary>
         public void Clear()
         {
-            GDebug.Assert(m_BufferPool != null, "Pool cache is null!");
+            //GDebug.Assert(m_BufferPool != null, FastString.Format("Pool cache is null!"));
 
             m_BufferPool.Clear();
             m_BufferPool = null;

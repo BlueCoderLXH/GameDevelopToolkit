@@ -28,22 +28,22 @@ public class StateMachineTest : ITestCase
 
     void OnBrowsing()
     {
-        //GDebug.Log("OnBrowsing");
+        ////GDebug.Log("OnBrowsing");
     }
 
     void OnConnecting()
     {
-        //GDebug.Log("OnConnecting");
+        ////GDebug.Log("OnConnecting");
     }
 
     void OnConnected()
     {
-        //GDebug.Log("OnConnected");
+        ////GDebug.Log("OnConnected");
     }
 
     void OnShutdown()
     {
-        //GDebug.Log("OnShutdown");
+        ////GDebug.Log("OnShutdown");
     }
 
     void ITestCase.Update()

@@ -19,7 +19,8 @@ public class Test : MonoBehaviour
     List<ITestCase> m_TestCases = new List<ITestCase>()
     {
         //new EventTest(),
-        new StateMachineTest()
+        //new StateMachineTest()
+        new GCTest()
     };
 
     void Start()

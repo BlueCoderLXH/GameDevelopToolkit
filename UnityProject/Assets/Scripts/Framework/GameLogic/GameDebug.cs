@@ -13,22 +13,22 @@ namespace Framework.Debug
             m_SwitchFlag = switchFlag;
         }
 
-        public void Assert(bool flag, string msg, TLabel label = default)
+        public void Assert(bool flag, FastString msg, TLabel label = default)
         {
-            if (m_SwitchFlag) Debug.Assert(flag, $"[A] - [{label}] {msg}");
+            if (m_SwitchFlag && !flag) Debug.Assert(flag, $"[A] - [{label}] {msg}");
         }
 
-        public void Log(string msg, TLabel label = default)
+        public void Log(FastString msg, TLabel label = default)
         {
             if (m_SwitchFlag) Debug.Log($"[L] - [{label}] {msg}");
         }
 
-        public void Warn(string msg, TLabel label = default)
+        public void Warn(FastString msg, TLabel label = default)
         {
             if (m_SwitchFlag) Debug.LogWarning($"[W] - [{label}] {msg}");
         }
 
-        public void Error(string msg, TLabel label = default)
+        public void Error(FastString msg, TLabel label = default)
         {
             if (m_SwitchFlag) Debug.LogError($"[E] - [{label}] {msg}");
         }
@@ -58,22 +58,22 @@ public static class GDebug
         s_Debug.Config(s_Flag);
     }
 
-    public static void Assert(bool flag, string msg, DebugFlag label = default)
+    public static void Assert(bool flag, FastString msg, DebugFlag label = default)
     {
         s_Debug.Assert(flag, msg, label);
     }
 
-    public static void Log(string msg, DebugFlag label = default)
+    public static void Log(FastString msg, DebugFlag label = default)
     {
         s_Debug.Log(msg, label);
     }
 
-    public static void Warn(string msg, DebugFlag label = default)
+    public static void Warn(FastString msg, DebugFlag label = default)
     {
         s_Debug.Log(msg, label);
     }
 
-    public static void Error(string msg, DebugFlag label = default)
+    public static void Error(FastString msg, DebugFlag label = default)
     {
         s_Debug.Log(msg, label);
     }
