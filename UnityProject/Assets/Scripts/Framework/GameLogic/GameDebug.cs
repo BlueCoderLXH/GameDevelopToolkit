@@ -1,11 +1,20 @@
-﻿
-namespace Framework.Debug
+﻿namespace Framework.Debug
 {
     using UnityEngine;
 
     internal class GameDebug<TLabel>
         where TLabel : System.Enum
     {
+        static string[] s_ColorStringArray = new string[] {
+            "ffffffff", // White
+            "000000ff", // Black
+            "ff0000ff", // Red
+            "1bf625ff", // Green
+            "00d6fdff", // Blue
+            "fdd617ff", // Yellow
+            "f66c96ff"  // Pink
+        };
+
         private bool m_SwitchFlag = true;
 
         public void Config(bool switchFlag)
@@ -13,26 +22,37 @@ namespace Framework.Debug
             m_SwitchFlag = switchFlag;
         }
 
-        public void Assert(bool flag, FastString msg, TLabel label = default)
+        public void Assert(TLabel label, bool flag, FastString msg)
         {
-            if (m_SwitchFlag && !flag) Debug.Assert(flag, $"[A] - [{label}] {msg}");
+            if (m_SwitchFlag && !flag) Debug.Assert(flag, $"<color=#ff0000ff>[A] - [{label}] {msg}</color>");
         }
 
-        public void Log(FastString msg, TLabel label = default)
+        public void Log(TLabel label, FastString msg, DebugColor colorType = DebugColor.White)
         {
-            if (m_SwitchFlag) Debug.Log($"[L] - [{label}] {msg}");
+            if (m_SwitchFlag) Debug.Log($"<color=#{s_ColorStringArray[(int)colorType]}>[L] - [{label}] {msg}</color>");
         }
 
-        public void Warn(FastString msg, TLabel label = default)
+        public void Warn(TLabel label, FastString msg)
         {
-            if (m_SwitchFlag) Debug.LogWarning($"[W] - [{label}] {msg}");
+            if (m_SwitchFlag) Debug.LogWarning($"<color=#fdd617ff>[W] - [{label}] {msg}</color>");
         }
 
-        public void Error(FastString msg, TLabel label = default)
+        public void Error(TLabel label, FastString msg)
         {
-            if (m_SwitchFlag) Debug.LogError($"[E] - [{label}] {msg}");
+            if (m_SwitchFlag) Debug.LogError($"<color=#ff0000ff>[E] - [{label}] {msg}</color>");
         }
     }
+}
+
+public enum DebugColor
+{
+    White,
+    Black,
+    Red,
+    Green,
+    Blue,
+    Yellow,
+    Pink
 }
 
 public enum DebugFlag
@@ -58,27 +78,27 @@ public static class GDebug
         s_Debug.Config(s_Flag);
     }
 
-    public static void Assert(bool flag, FastString msg, DebugFlag label = default)
+    public static void Assert(DebugFlag label, bool flag, FastString msg)
     {
-        s_Debug.Assert(flag, msg, label);
+        s_Debug.Assert(label, flag, msg);
         FastString.Release(msg);
     }
 
-    public static void Log(FastString msg, DebugFlag label = default)
+    public static void Log(DebugFlag label, FastString msg, DebugColor colorType = DebugColor.White)
     {
-        s_Debug.Log(msg, label);
+        s_Debug.Log(label, msg, colorType);
         FastString.Release(msg);
     }
 
-    public static void Warn(FastString msg, DebugFlag label = default)
+    public static void Warn(DebugFlag label, FastString msg)
     {
-        s_Debug.Log(msg, label);
+        s_Debug.Warn(label, msg);
         FastString.Release(msg);
     }
 
-    public static void Error(FastString msg, DebugFlag label = default)
+    public static void Error(DebugFlag label, FastString msg)
     {
-        s_Debug.Log(msg, label);
+        s_Debug.Error(label, msg);
         FastString.Release(msg);
     }
 }
