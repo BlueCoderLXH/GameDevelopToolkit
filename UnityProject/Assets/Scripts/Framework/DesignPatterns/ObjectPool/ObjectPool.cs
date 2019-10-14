@@ -11,8 +11,10 @@
     /// 注:对于一个类型为X的数组array,
     /// => 当X为引用类型时, GC除了需要判断array是否为空外, 还需要遍历判断所有的数组元素array[i]是否为空
     /// => 当X为值类型时, GC只需要判断array是否为空即可, 因为值类型不可能为空
+    /// 
+    /// PS:
+    ///     GDebug使用了FastString, FastString使用了ObjectPool, 因此ObjectPool内不要使用GDebug打印日志, 否则会触发死递归
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     public struct ReusableObject<T> where T : class
     {
         public T Target { get; private set; }
@@ -27,7 +29,7 @@
     /// 类型T的对象池
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class ObjectPool<T> where T : class
+    public sealed class ObjectPool<T> where T : class
     {
         // 对象池默认容量
         const int s_DefaultCapacity = 16;
@@ -53,15 +55,12 @@
         // 当前对象池的容量
         private int m_Capacity = 0;
 
-        public int Count => m_UsableObjKeys.Count;
-
         /// <summary>
         /// 创建一个T类型的对象池, 默认大小
         /// </summary>
         /// <param name="factory"></param>
         public ObjectPool(Func<T> factory, Action<T> objResetFunc = null) :
-            this(s_DefaultCapacity, factory, objResetFunc)
-        { }
+            this(s_DefaultCapacity, factory, objResetFunc) { }
 
         /// <summary>
         /// 创建一个T类型的对象池, 指定大小
@@ -70,7 +69,8 @@
         /// <param name="factory"></param>
         public ObjectPool(int capacity, Func<T> factory, Action<T> objResetFunc)
         {
-            //GDebug.Assert(factory != null, "You should set a factory of type 'T' to create 'T'-type objects");
+            if (factory == null)
+                throw new Exception("You should set a factory of type 'T' to create 'T'-type objects");
 
             capacity = Math.Max(s_MinCapacity, capacity);
 
@@ -98,7 +98,8 @@
         /// <param name="count"></param>
         private void Expand(int count)
         {
-            //GDebug.Assert(m_BufferPool != null, "Pool cache is null!");
+            if (m_BufferPool == null)
+                throw new Exception("Pool cache is null!");
 
             m_Capacity += count;
 
@@ -111,7 +112,8 @@
 
                 int objKey = newObj.GetHashCode();
 
-                //GDebug.Assert(!m_BufferPool.ContainsKey(objKey), "Can't add the same obj to buffer pool!");
+                if (m_BufferPool.ContainsKey(objKey))
+                    throw new Exception("Can't add the same obj to buffer pool!");
 
                 m_BufferPool.Add(objKey, usableObj);
                 m_UsableObjKeys.Add(objKey);
@@ -124,7 +126,8 @@
         /// <returns></returns>
         private bool IsEmpty()
         {
-            //GDebug.Assert(m_BufferPool != null, "Pool cache is null!");
+            if (m_BufferPool == null)
+                throw new Exception("Pool cache is null!");
             return m_UsableObjKeys.Count <= 0;
         }
 
@@ -134,7 +137,8 @@
         /// <returns></returns>
         public T Take()
         {
-            //GDebug.Assert(m_BufferPool != null, "Pool cache is null!");
+            if (m_BufferPool == null)
+                throw new Exception("Pool cache is null!");
 
             if (IsEmpty())
             {
@@ -157,7 +161,8 @@
         /// <param name="returnObj"></param>
         public void Return(ref T target)
         {
-            //GDebug.Assert(m_BufferPool != null, "Pool cache is null!");
+            if (m_BufferPool == null)
+                throw new Exception("Pool cache is null!");
 
             int returnObjKey = target.GetHashCode();
             if (m_BufferPool.TryGetValue(returnObjKey, out var returnObj))
@@ -173,7 +178,8 @@
         /// </summary>
         public void Clear()
         {
-            //GDebug.Assert(m_BufferPool != null, FastString.Format("Pool cache is null!"));
+            if (m_BufferPool == null)
+                throw new Exception("Pool cache is null!");
 
             m_BufferPool.Clear();
             m_BufferPool = null;
