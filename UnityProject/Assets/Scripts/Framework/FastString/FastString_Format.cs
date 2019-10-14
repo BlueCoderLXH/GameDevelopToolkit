@@ -1,41 +1,116 @@
-﻿using Framework.DesignPattern;
-
+﻿/// <summary>
+/// Format FastString object, just like the string.Format
+/// </summary>
 public partial class FastString
 {
-    public static ObjectPool<FastString> Pool = new ObjectPool<FastString>(() => { return new FastString(); });
-
-    public static FastString Format(FastString fs1)
+    public static FastString Format(
+        FastString format,
+        FastString args0)
     {
-        return fs1;
+        format.Replace("{0}", args0);
+
+        Release(args0);
+
+        return format;
     }
 
-    public static FastString Format(FastString fs1, FastString fs2)
+    public static FastString Format(
+        FastString format,
+        FastString args0,
+        FastString args1)
     {
-        fs1.Append(fs2);
-        return fs1;
+        format.Replace("{0}", args0);
+        format.Replace("{1}", args1);
+
+        Release(args0);
+        Release(args1);
+
+        return format;
     }
 
-    public static FastString Format(FastString fs1, FastString fs2, FastString fs3)
+    public static FastString Format(
+        FastString format,
+        FastString args0,
+        FastString args1,
+        FastString args2)
     {
-        fs1.Append(fs2).Append(fs3);
-        return fs1;
+        format.Replace("{0}", args0);
+        format.Replace("{1}", args1);
+        format.Replace("{2}", args2);
+
+        Release(args0);
+        Release(args1);
+        Release(args2);
+
+        return format;
     }
 
-    public static FastString Format(FastString fs1, FastString fs2, FastString fs3, FastString fs4)
+    public static FastString Format(
+        FastString format,
+        FastString args0,
+        FastString args1,
+        FastString args2,
+        FastString args3)
     {
-        fs1.Append(fs2).Append(fs3).Append(fs4);
-        return fs1;
+        format.Replace("{0}", args0);
+        format.Replace("{1}", args1);
+        format.Replace("{2}", args2);
+        format.Replace("{3}", args3);
+
+        Release(args0);
+        Release(args1);
+        Release(args2);
+        Release(args3);
+
+        return format;
     }
 
-    public static FastString Format(FastString fs1, FastString fs2, FastString fs3, FastString fs4, FastString fs5)
+    public static FastString Format(
+        FastString format,
+        FastString args0,
+        FastString args1,
+        FastString args2,
+        FastString args3,
+        FastString args4)
     {
-        fs1.Append(fs2).Append(fs3).Append(fs4).Append(fs5);
-        return fs1;
+        format.Replace("{0}", args0);
+        format.Replace("{1}", args1);
+        format.Replace("{2}", args2);
+        format.Replace("{3}", args3);
+        format.Replace("{4}", args4);
+
+        Release(args0);
+        Release(args1);
+        Release(args2);
+        Release(args3);
+        Release(args4);
+
+        return format;
     }
 
-    public static FastString Format(FastString fs1, FastString fs2, FastString fs3, FastString fs4, FastString fs5, FastString fs6)
+    public static FastString Format(
+        FastString format,
+        FastString args0,
+        FastString args1,
+        FastString args2,
+        FastString args3,
+        FastString args4,
+        FastString args5)
     {
-        fs1.Append(fs2).Append(fs3).Append(fs4).Append(fs5).Append(fs6);
-        return fs1;
+        format.Replace("{0}", args0);
+        format.Replace("{1}", args1);
+        format.Replace("{2}", args2);
+        format.Replace("{3}", args3);
+        format.Replace("{4}", args4);
+        format.Replace("{5}", args5);
+
+        Release(args0);
+        Release(args1);
+        Release(args2);
+        Release(args3);
+        Release(args4);
+        Release(args5);
+
+        return format;
     }
 }

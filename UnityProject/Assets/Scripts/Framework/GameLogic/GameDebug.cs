@@ -61,20 +61,24 @@ public static class GDebug
     public static void Assert(bool flag, FastString msg, DebugFlag label = default)
     {
         s_Debug.Assert(flag, msg, label);
+        FastString.Release(msg);
     }
 
     public static void Log(FastString msg, DebugFlag label = default)
     {
         s_Debug.Log(msg, label);
+        FastString.Release(msg);
     }
 
     public static void Warn(FastString msg, DebugFlag label = default)
     {
         s_Debug.Log(msg, label);
+        FastString.Release(msg);
     }
 
     public static void Error(FastString msg, DebugFlag label = default)
     {
         s_Debug.Log(msg, label);
+        FastString.Release(msg);
     }
 }

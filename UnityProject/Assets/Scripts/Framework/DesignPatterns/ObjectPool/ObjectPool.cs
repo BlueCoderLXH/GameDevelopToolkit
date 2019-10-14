@@ -15,16 +15,11 @@
     /// <typeparam name="T"></typeparam>
     public struct ReusableObject<T> where T : class
     {
-        private T m_CacheObj;
-
-        public T CacheObj
-        {
-            get { return m_CacheObj; }
-        }
+        public T Target { get; private set; }
 
         public ReusableObject(T cacheObj)
         {
-            m_CacheObj = cacheObj;
+            Target = cacheObj;
         }
     }
 
@@ -58,6 +53,8 @@
         // 当前对象池的容量
         private int m_Capacity = 0;
 
+        public int Count => m_UsableObjKeys.Count;
+
         /// <summary>
         /// 创建一个T类型的对象池, 默认大小
         /// </summary>
@@ -71,7 +68,7 @@
         /// </summary>
         /// <param name="capacity"></param>
         /// <param name="factory"></param>
-        public ObjectPool(int capacity, Func<T> factory, Action<T> objResetFunc = null)
+        public ObjectPool(int capacity, Func<T> factory, Action<T> objResetFunc)
         {
             //GDebug.Assert(factory != null, "You should set a factory of type 'T' to create 'T'-type objects");
 
@@ -107,7 +104,7 @@
 
             int realExpandCount = Math.Max(count, s_MinGrowSize);
 
-            for (int i = 0; i < realExpandCount; i++)
+            for (int i = 0; i <= realExpandCount; i++)
             {
                 T newObj = m_ObjFactory();
                 var usableObj = new ReusableObject<T>(newObj);
@@ -147,32 +144,27 @@
 
             int takeObjIndex = m_UsableObjKeys.Count - 1;
             int takedObjKey = m_UsableObjKeys[takeObjIndex];
-            var takedObj = m_BufferPool[takedObjKey];
-
             m_UsableObjKeys.RemoveAt(takeObjIndex);
 
-            return takedObj.CacheObj;
+            m_BufferPool.TryGetValue(takedObjKey, out var takedObj);
+
+            return takedObj.Target;
         }
 
         /// <summary>
         /// 将对象返回对象池
         /// </summary>
         /// <param name="returnObj"></param>
-        public void Return(ref T returnObj)
+        public void Return(ref T target)
         {
             //GDebug.Assert(m_BufferPool != null, "Pool cache is null!");
 
-            int returnObjKey = returnObj.GetHashCode();
-            if (m_BufferPool.ContainsKey(returnObjKey))
+            int returnObjKey = target.GetHashCode();
+            if (m_BufferPool.TryGetValue(returnObjKey, out var returnObj))
             {
-                if (m_ObjResetFunc != null)
-                {
-                    m_ObjResetFunc(returnObj);
-                }
-
+                m_ObjResetFunc?.Invoke(target);
                 m_UsableObjKeys.Add(returnObjKey);
-
-                returnObj = null;
+                target = null;
             }
         }
 

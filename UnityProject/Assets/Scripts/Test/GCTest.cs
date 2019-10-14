@@ -1,26 +1,54 @@
 ﻿using System;
 using System.Text;
 using Framework.DesignPattern;
+using UnityEngine;
 
 public class GCTest : ITestCase
 {
     const int Times = 50;
 
-    string m_str = "123456789";
+    string m_str = "";
     StringBuilder m_sb = new StringBuilder("123456789");
-    FastString m_fs = new FastString(10);
+    FastString m_fs = FastString.Aquire();
 
     void ITestCase.Init()
     {
-        m_fs.Append(123456789);
+    }
+
+    void ITestCase.Update()
+    {
+        //TestStringOperation();
+        TestLog();
+    }
+
+    void ITestCase.Release()
+    {
+        FastString.Release(m_fs);
+        FastString.ReleasePool();
+    }
+
+    void TestStringOperation()
+    {
+        NewString();
+
+        NewStringBuilder();
+
+        NewStringFast();
+    }
+
+    void TestLog()
+    {
+        NewStringFormat();
+        NewStringFormatFastString();
     }
 
     void NewString()
     {
         for (int i = 0; i < Times; i++)
         {
-            //m_str.Replace("123456789", "123456789");
-            m_str.ToString();
+            m_str = 123.ToString() + 456.ToString() + 789.ToString();
+            m_str.Replace("123456789", "123456789");
+            //m_str.ToString();
         }
     }
 
@@ -28,8 +56,15 @@ public class GCTest : ITestCase
     {
         for (int i = 0; i < Times; i++)
         {
-            //m_sb.Replace("123456789", "123456789");
-            m_sb.ToString();
+            m_sb.Clear();
+
+            m_sb.Append("123");
+            m_sb.Append("456");
+            m_sb.Append("789");
+
+            m_sb.Replace("123456789", "123456789");
+
+            //m_sb.ToString();
         }
     }
 
@@ -41,21 +76,26 @@ public class GCTest : ITestCase
             //m_fs.Replace("1", "1");
             //m_fs.ToString();
 
-            FastString.Format("123", "456", "789");
-            //FastString.Pool.Return(ref str);
+            m_fs.Clear();
+
+            m_fs.Append(123).Append(456).Append(789);
+            m_fs.Replace("123456789", "123456789");
         }
     }
 
-    void ITestCase.Update()
+    void NewStringFormat()
     {
-        NewString();
-
-        NewStringBuilder();
-
-        NewStringFast();
+        for (int i = 0; i < Times; i++)
+        {
+            GDebug.Log($"{123} {456} {789}");
+        }
     }
 
-    void ITestCase.Release()
+    void NewStringFormatFastString()
     {
+        for (int i = 0; i < Times; i++)
+        {
+            GDebug.Log(FastString.Format("[F]{0} {1} {2}", 123, 456, 789));
+        }
     }
 }

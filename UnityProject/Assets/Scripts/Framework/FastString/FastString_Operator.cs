@@ -1,5 +1,8 @@
 ﻿using System;
 
+/// <summary>
+/// Override some operator, for some convenient case
+/// </summary>
 public partial class FastString
 {
     public static FastString operator +(FastString left, string right)
@@ -46,20 +49,16 @@ public partial class FastString
         return left;
     }
 
-    //public static explicit operator FastString(string str)
-    //{
-    //    //var fastStr = Pool.Take();
-    //    //fastStr.Append(str);
+    public static implicit operator bool(FastString fastString) => fastString != null;
 
-    //    return new FastString(str);
-    //}
+    public static implicit operator FastString(string str_value) => Aquire().Append(str_value);
 
-    public static implicit operator FastString(string str_value) => Pool.Take().Append(str_value);
+    public static implicit operator FastString(bool bool_value) => Aquire().Append(bool_value);
 
-    public static implicit operator FastString(byte byte_value) => Pool.Take().Append(byte_value);
-    public static implicit operator FastString(short short_value) => Pool.Take().Append(short_value);
-    public static implicit operator FastString(int int_value) => Pool.Take().Append(int_value);
-    public static implicit operator FastString(long long_value) => Pool.Take().Append(long_value);
-    public static implicit operator FastString(float float_value) => Pool.Take().Append(float_value);
-    public static implicit operator FastString(double double_value) => Pool.Take().Append(double_value);
+    public static implicit operator FastString(byte byte_value) => Aquire().Append(byte_value);
+    public static implicit operator FastString(short short_value) => Aquire().Append(short_value);
+    public static implicit operator FastString(int int_value) => Aquire().Append(int_value);
+    public static implicit operator FastString(long long_value) => Aquire().Append(long_value);
+    public static implicit operator FastString(float float_value) => Aquire().Append(float_value);
+    public static implicit operator FastString(double double_value) => Aquire().Append(double_value);
 }

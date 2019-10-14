@@ -4,42 +4,49 @@ using System;
 using System.Text;
 
 ///<summary>
+/// FastString
+/// 
 /// Mutable String class, optimized for speed and memory allocations while retrieving the final result as a string.
 /// Similar use than StringBuilder, but avoid a lot of allocations done by StringBuilder (conversion of int and float to string, frequent capacity change, etc.)
-/// Author: Nicolas Gadenne contact@gaddygames.com
+/// 
+/// PS: Don't new 'FastString' object yourself, call FastString.Create instead
 ///</summary>
 public partial class FastString
 {
-    private const int DefaultCapacity = 32;
+    private const int DefaultCapacity = 128;
 
-    public static FastString Null = new FastString(0);
 
     /// <summary>
     /// Cache the string object
     /// </summary>
     private string m_generatedString;
     ///<summary>
-    ///Is m_stringGenerated is up to date ?
+    /// Is m_stringGenerated is up to date ?
     ///</summary>
     private bool m_isStringGenerated;
 
     ///<summary>
-    ///Working mutable string
+    /// Working mutable string
     ///</summary>
     private char[] m_buffer;
     private int m_bufferPos;
     private int m_charsCapacity;
 
     ///<summary>
-    ///Temporary string used for the Replace method
+    /// Temporary string used for the Replace method
     ///</summary>
     private List<char> m_replacement;
 
     /// <summary>
+    /// Is string empty
+    /// </summary>
+    /// <returns></returns>
+    public bool IsEmpty => m_bufferPos == 0;
+
+    /// <summary>
     /// Create a new FastString with a specified capacity
     /// </summary>
-    /// <param name="initialCapacity"></param>
-    public FastString(int initialCapacity = DefaultCapacity)
+    internal FastString(int initialCapacity = DefaultCapacity)
     {
         m_buffer = new char[m_charsCapacity = initialCapacity];
         m_bufferPos = 0;
@@ -47,31 +54,21 @@ public partial class FastString
         m_generatedString = "";
         m_isStringGenerated = false;
 
-        m_replacement = null;
+        m_replacement = new List<char>(m_charsCapacity);
 
-        m_nextNode = Null;
+        m_nextNode = null;
     }
 
     /// <summary>
     /// Create a new FastString with a string object
     /// </summary>
-    /// <param name="str_value"></param>
-    public FastString(string str_value) : this()
+    internal FastString(string str_value) : this()
     {
         Set(str_value);
     }
 
-    /// <summary>
-    /// Is string empty
-    /// </summary>
-    /// <returns></returns>
-    public bool IsEmpty()
-    {
-        return m_bufferPos == 0;
-    }
-
     ///<summary>
-    ///Set a string, no memorry allocation
+    /// Set a string, no memorry allocation
     ///</summary>
     public void Set(string str)
     {
@@ -85,44 +82,7 @@ public partial class FastString
     }
 
     ///<summary>
-    ///Caution, allocate some memory
-    ///</summary>
-    public void Set(object str)
-    {
-        Set(str.ToString());
-    }
-
-    ///<summary>
-    ///Append several params: no memory allocation unless params are of object type
-    ///</summary>
-    public void Set<T1, T2>(T1 str1, T2 str2)
-    {
-        Clear();
-        Append(str1); Append(str2);
-    }
-    public void Set<T1, T2, T3>(T1 str1, T2 str2, T3 str3)
-    {
-        Clear();
-        Append(str1); Append(str2); Append(str3);
-    }
-    public void Set<T1, T2, T3, T4>(T1 str1, T2 str2, T3 str3, T4 str4)
-    {
-        Clear();
-        Append(str1); Append(str2); Append(str3); Append(str4);
-    }
-
-    ///<summary>
-    ///Allocate a little memory (20 byte)
-    ///</summary>
-    public void Set(params object[] str)
-    {
-        Clear();
-        for (int i = 0; i < str.Length; i++)
-            Append(str[i]);
-    }
-
-    ///<summary>
-    ///Append a string without memory allocation
+    /// Append a string without memory allocation
     ///</summary>
     public FastString Append(string value)
     {
@@ -139,7 +99,7 @@ public partial class FastString
     }
 
     ///<summary>
-    ///Append an object.ToString(), allocate some memory
+    /// Append an object.ToString(), allocate some memory
     ///</summary>
     public FastString Append(object value)
     {
@@ -147,6 +107,9 @@ public partial class FastString
         return this;
     }
 
+    /// <summary>
+    /// Append a boolean value
+    /// </summary>
     public FastString Append(bool flag)
     {
         Append(flag ? "true" : "false");
@@ -154,7 +117,7 @@ public partial class FastString
     }
 
     ///<summary>
-    ///Append an int without memory allocation
+    /// Append an integer value
     ///</summary>
     public FastString Append(byte value)
     {
@@ -174,7 +137,7 @@ public partial class FastString
     }
 
     ///<summary>
-    ///Append a float without memory allocation.
+    /// Append a float value
     ///</summary>
     public FastString Append(float valueF)
     {
@@ -185,6 +148,33 @@ public partial class FastString
         return Append_Float(valueF);
     }
 
+    ///<summary>
+    /// Replace all occurences of a string by another one
+    ///</summary>
+    public FastString Replace(string oldStr, string newStr)
+    {
+        return ReplaceInternal(oldStr, newStr, newStr.Length);
+    }
+    public FastString Replace(string oldStr, FastString newStr)
+    {
+        return ReplaceInternal(oldStr, newStr.m_buffer, newStr.m_bufferPos);
+    }
+
+    ///<summary>
+    /// Reset the m_char array
+    ///</summary>
+    public FastString Clear()
+    {
+        m_bufferPos = 0;
+        m_isStringGenerated = false;
+        m_nextNode = null;
+        return this;
+    }
+
+    #region Internal Algorithm
+    ///<summary>
+    /// Append an integer without memory allocation
+    ///</summary>
     private FastString Append_Integer(long integer_value)
     {
         // Allocate enough memory to handle any int number
@@ -219,6 +209,9 @@ public partial class FastString
         return this;
     }
 
+    ///<summary>
+    /// Append a float without memory allocation.
+    ///</summary>
     private FastString Append_Float(double float_value)
     {
         m_isStringGenerated = false;
@@ -281,38 +274,46 @@ public partial class FastString
         return this;
     }
 
-    ///<summary>
-    ///Replace all occurences of a string by another one
-    ///</summary>
-    public FastString Replace(string oldStr, string newStr)
+    /// <summary>
+    /// Replace string
+    /// </summary>
+    private FastString ReplaceInternal(string matchString, IEnumerable<char> replaceString, int replaceLength)
     {
         if (m_bufferPos == 0)
             return this;
-
-        if (m_replacement == null)
-            m_replacement = new List<char>();
 
         // Create the new string into m_replacement
         for (int i = 0; i < m_bufferPos; i++)
         {
             bool isToReplace = false;
-            if (m_buffer[i] == oldStr[0]) // If first character found, check for the rest of the string to replace
+            if (m_buffer[i] == matchString[0]) // If first character found, check for the rest of the string to replace
             {
                 int k = 1;
 
-                while (k < oldStr.Length && m_buffer[i + k] == oldStr[k]) k++;
+                while (k < matchString.Length && m_buffer[i + k] == matchString[k]) k++;
 
-                isToReplace = (k >= oldStr.Length);
+                isToReplace = (k >= matchString.Length);
             }
 
             if (isToReplace) // Do the replacement
             {
-                i += oldStr.Length - 1;
-                if (newStr != null)
+                i += matchString.Length - 1;
+
+                if (replaceString != null)
                 {
-                    for (int k = 0; k < newStr.Length; k++)
+                    // TODO lxh: Code like this just for avoiding using 'delegate' which can cause GC
+                    if (replaceString is string)
                     {
-                        m_replacement.Add(newStr[k]);
+                        m_replacement.AddRange(replaceString);
+                    }
+                    else if (replaceString is char[])
+                    {
+                        char[] replaceCharArray = replaceString as char[];
+
+                        for (int index = 0; index < replaceLength; index++)
+                        {
+                            m_replacement.Add(replaceCharArray[index]);
+                        }
                     }
                 }
             }
@@ -324,7 +325,6 @@ public partial class FastString
 
         // Copy back the new string into m_chars
         ChecklExpandBuffer(m_replacement.Count - m_bufferPos);
-
         for (int k = 0; k < m_replacement.Count; k++)
             m_buffer[k] = m_replacement[k];
 
@@ -338,12 +338,11 @@ public partial class FastString
     /// <summary>
     /// Check if we should expand the char buffer
     /// </summary>
-    /// <param name="nbCharsToAdd"></param>
     private void ChecklExpandBuffer(int nbCharsToAdd)
     {
         if (m_bufferPos + nbCharsToAdd > m_charsCapacity)
         {
-            m_charsCapacity = System.Math.Max(m_charsCapacity + nbCharsToAdd, m_charsCapacity * 2);
+            m_charsCapacity = Math.Max(m_charsCapacity + nbCharsToAdd, m_charsCapacity * 2);
             char[] newChars = new char[m_charsCapacity];
             m_buffer.CopyTo(newChars, 0);
             m_buffer = newChars;
@@ -351,19 +350,9 @@ public partial class FastString
     }
 
     ///<summary>
-    ///Reset the m_char array
+    /// Return the string itself
     ///</summary>
-    public FastString Clear()
-    {
-        m_bufferPos = 0;
-        m_isStringGenerated = false;
-        return this;
-    }
-
-    ///<summary>
-    ///Return the string
-    ///</summary>
-    public override string ToString()
+    private string ToNormalString()
     {
         if (!m_isStringGenerated) // Regenerate the immutable string if needed
         {
@@ -373,4 +362,5 @@ public partial class FastString
 
         return m_generatedString;
     }
+    #endregion
 }
