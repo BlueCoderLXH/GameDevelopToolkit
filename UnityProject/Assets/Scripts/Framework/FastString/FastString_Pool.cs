@@ -1,5 +1,4 @@
-﻿using System;
-using Framework.DesignPattern;
+﻿using Framework.DesignPattern;
 
 /// <summary>
 /// ObjectPool<FastString>

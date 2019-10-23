@@ -13,24 +13,24 @@ public class GCTest : ITestCase
 
     void ITestCase.Init()
     {
-        GDebug.Assert(DebugFlag.Common, false, "Assert");
+        //GDebug.Assert(DebugFlag.Common, false, "Assert");
 
-        GDebug.Log(DebugFlag.Common, "Log", DebugColor.White);
-        GDebug.Log(DebugFlag.Common, "Log", DebugColor.Black);
-        GDebug.Log(DebugFlag.Common, "Log", DebugColor.Red);
-        GDebug.Log(DebugFlag.Common, "Log", DebugColor.Green);
-        GDebug.Log(DebugFlag.Common, "Log", DebugColor.Blue);
-        GDebug.Log(DebugFlag.Common, "Log", DebugColor.Yellow);
-        GDebug.Log(DebugFlag.Common, "Log", DebugColor.Pink);
+        //GDebug.Log(DebugFlag.Common, "Log", DebugColor.White);
+        //GDebug.Log(DebugFlag.Common, "Log", DebugColor.Black);
+        //GDebug.Log(DebugFlag.Common, "Log", DebugColor.Red);
+        //GDebug.Log(DebugFlag.Common, "Log", DebugColor.Green);
+        //GDebug.Log(DebugFlag.Common, "Log", DebugColor.Blue);
+        //GDebug.Log(DebugFlag.Common, "Log", DebugColor.Yellow);
+        //GDebug.Log(DebugFlag.Common, "Log", DebugColor.Pink);
 
-        GDebug.Warn(DebugFlag.Common, "Warn");
-        GDebug.Error(DebugFlag.Common, "Error");
+        //GDebug.Warn(DebugFlag.Common, "Warn");
+        //GDebug.Error(DebugFlag.Common, "Error");
     }
 
     void ITestCase.Update()
     {
         //TestStringOperation();
-        //TestLog();
+        TestLog();
     }
 
     void ITestCase.Release()
@@ -107,7 +107,7 @@ public class GCTest : ITestCase
     {
         for (int i = 0; i < Times; i++)
         {
-            GDebug.Log(DebugFlag.Common, FastString.Format("[F]{0} {1} {2}", 123, 456, 789));
+            GDebug.Log(DebugFlag.Common, FastString.Format("{0} {1} {2}", 123, 456, 789));
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System;
-
-/// <summary>
+﻿/// <summary>
 /// Override some operator, for some convenient case
 /// </summary>
 public partial class FastString

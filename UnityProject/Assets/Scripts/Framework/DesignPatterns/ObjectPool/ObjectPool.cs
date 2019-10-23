@@ -128,6 +128,7 @@
         {
             if (m_BufferPool == null)
                 throw new Exception("Pool cache is null!");
+
             return m_UsableObjKeys.Count <= 0;
         }
 
