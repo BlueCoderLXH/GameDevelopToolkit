@@ -9,7 +9,7 @@ using System;
 /// 
 /// PS: Don't new 'FastString' object yourself, call FastString.Create instead
 ///</summary>
-public partial class FastString
+public sealed partial class FastString
 {
     private const int DefaultCapacity = 128;
 
@@ -44,7 +44,7 @@ public partial class FastString
     /// <summary>
     /// Create a new FastString with a specified capacity
     /// </summary>
-    internal FastString(int initialCapacity = DefaultCapacity)
+    private FastString(int initialCapacity = DefaultCapacity)
     {
         m_buffer = new char[m_charsCapacity = initialCapacity];
         m_bufferPos = 0;
@@ -60,7 +60,7 @@ public partial class FastString
     /// <summary>
     /// Create a new FastString with a string object
     /// </summary>
-    internal FastString(string str_value) : this()
+    private FastString(string str_value) : this()
     {
         Set(str_value);
     }
