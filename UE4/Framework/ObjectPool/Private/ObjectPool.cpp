@@ -20,7 +20,6 @@ bool UObjectPool::Init(const FObjectPoolConfig& InConfig)
 	Capacity = 0;
 
 	const int32 RealSize = FMath::Max(Config.InitCapacity, C_DefaultCapacity);
-	UnusedObjects.Reset(RealSize);
 	bInit = Expand(RealSize);
 
 	return bInit;
@@ -38,34 +37,41 @@ bool UObjectPool::InitDefault(const TSoftClassPtr<UObject> ClassType)
 
 bool UObjectPool::Expand(const int32 ExpandSize)
 {
-	const int32 RealExpandSize = FMath::Max(ExpandSize, C_MinGrowSize);
-
-	for (int32 i = 0; i < RealExpandSize; i++)
+	if (ExpandSize <= 0)
 	{
-		UClass* ClassType = Config.ClassType.LoadSynchronous();
+		return false;
+	}
+	
+	const int32 RealExpandSize = FMath::Max(ExpandSize, C_MinGrowSize);
+	Capacity += RealExpandSize;
+
+	UnusedObjects.Reserve(Capacity);
+
+	for (int32 i = Capacity; i > (Capacity - RealExpandSize); --i)
+	{
+		const UClass* ClassType = Config.ClassType.LoadSynchronous();
 		if (!ClassType)
 		{
 			return false;
 		}
 
-		const FString RecycleName = FString::Printf(TEXT("%s_Recycled_%d"), *(ClassType->GetName()), (Capacity + i));
+		const FString RecycleName = FString::Printf(TEXT("%s_Recycled_%d"), *(ClassType->GetName()), i);
 		UObject* NewSpawnObject = NewObject<UObject>(GetOuter(), ClassType, FName(RecycleName));	
 		if (!NewSpawnObject)
 		{
 			return false;
 		}
 
-		IReusable::Execute_OnRecycle(NewSpawnObject);
-		
-		UnusedObjects.Add(NewSpawnObject);
+		UnusedObjects.Push(NewSpawnObject);
+
+		UE_LOG(LogObjectPool, VeryVerbose, TEXT("UObjectPool::Expand Expand '%s' Success For Type:%s PoolSize:%d Capacity:%d"),
+			*RecycleName, *(Config.ClassType->GetName()), UnusedObjects.Num(), Capacity);
 	}
-
-	Capacity += RealExpandSize;
-
+	
 	return true;
 }
 
-UObject* UObjectPool::Spawn(UObject* InOuter)
+UObject* UObjectPool::Spawn(UObject* InOuter, const FOnSpawnObjectFromPoolDelegate OnSpawnObjectFromPool/* = FOnSpawnObjectFromPoolDelegate()*/)
 {
 	if (!bInit)
 	{
@@ -89,22 +95,22 @@ UObject* UObjectPool::Spawn(UObject* InOuter)
 		}
 	}
 
-	UObject* SpawnObject = UnusedObjects[0];
-	if (!SpawnObject)
+	UObject* SpawnObject = UnusedObjects.Pop(false);
+	if (!IsValid(SpawnObject))
 	{
 		UE_LOG(LogObjectPool, Fatal, TEXT("UObjectPool::Spawn Failed to spawn a object(Type:%s) from object pool!"), *(Config.ClassType.ToString()));
 		return nullptr;
 	}
-	
-	UnusedObjects.RemoveAt(0);
 
 	const FString SpawnName = SpawnObject->GetName().Replace(TEXT("Recycled"), TEXT("Spawned"));
 	SpawnObject->Rename(*SpawnName, InOuter);
 
-	UE_LOG(LogObjectPool, Verbose, TEXT("UObjectPool::Spawn Spawn '%s' Success For Type:%s PoolSize:%d Capacity:%d"),
+	UE_LOG(LogObjectPool, VeryVerbose, TEXT("UObjectPool::Spawn Spawn '%s' Success For Type:%s PoolSize:%d Capacity:%d"),
 		*SpawnName, *(Config.ClassType->GetName()), UnusedObjects.Num(), Capacity);
 
-	// IReusable::Execute_OnSpawn(SpawnObject);
+	OnSpawnObjectFromPool.ExecuteIfBound(SpawnObject);
+	
+	IReusable::Execute_OnSpawn(SpawnObject);
 
 	return SpawnObject;
 }
@@ -116,9 +122,9 @@ bool UObjectPool::Recycle(UObject* RecycleObject)
 		return false;
 	}
 	
-	if (Config.ClassType.IsNull())
+	if (!Config.ClassType.IsValid())
 	{
-		UE_LOG(LogObjectPool, Error, TEXT("UObjectPool::Recycle ObjectType is invalid!"), *(Config.ClassType.ToString()));
+		UE_LOG(LogObjectPool, Error, TEXT("UObjectPool::Recycle ObjectType:%s is invalid!"), *(Config.ClassType.ToString()));
 		return false;
 	}
 	
@@ -134,15 +140,20 @@ bool UObjectPool::Recycle(UObject* RecycleObject)
 		return false;
 	}
 
+	if (UnusedObjects.Contains(RecycleObject))
+	{
+		return false;
+	}
+
 	const FString RecycleName = RecycleObject->GetName().Replace(TEXT("Spawned"), TEXT("Recycled"));	
 	RecycleObject->Rename(*RecycleName);
 	
 	UnusedObjects.Push(RecycleObject);
 
-	UE_LOG(LogObjectPool, Verbose, TEXT("UObjectPool::Recycle Recycle '%s' Success For Type:%s PoolSize:%d Capacity:%d"),
+	UE_LOG(LogObjectPool, VeryVerbose, TEXT("UObjectPool::Recycle Recycle '%s' Success For Type:%s PoolSize:%d Capacity:%d"),
 		*RecycleName, *(Config.ClassType->GetName()), UnusedObjects.Num(), Capacity);
 
-	// IReusable::Execute_OnRecycle(RecycleObject);
+	IReusable::Execute_OnRecycle(RecycleObject);
 
 	return true;
 }
@@ -156,11 +167,12 @@ void UObjectPool::Clear()
 	
 	if (Capacity != UnusedObjects.Num())
 	{
-		UE_LOG(LogObjectPool, Error, TEXT("UObjectPool::Clear not all object has been recycled to this object pool!"));
+		UE_LOG(LogObjectPool, Verbose, TEXT("UObjectPool::Clear Type:%s PoolSize:%d < PoolCapacity:%d, check it if necessary!"),
+			   *(Config.ClassType->GetName()), UnusedObjects.Num(), Capacity);
+	} else {
+		UE_LOG(LogObjectPool, Verbose, TEXT("UObjectPool::Clear Type:%s PoolSize:%d PoolCapacity:%d"),
+		       *(Config.ClassType->GetName()), UnusedObjects.Num(), Capacity);
 	}
-	
-	UE_LOG(LogObjectPool, VeryVerbose, TEXT("UObjectPool::Clear Type:%s PoolSize:%d Capacity:%d"),
-		*(Config.ClassType->GetName()), UnusedObjects.Num(), Capacity);
 	
 	UnusedObjects.Empty();
 	Config.Reset();

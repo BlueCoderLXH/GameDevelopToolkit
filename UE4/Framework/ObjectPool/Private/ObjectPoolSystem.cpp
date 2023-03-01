@@ -1,8 +1,9 @@
 #include "ObjectPoolSystem.h"
 
-static TAutoConsoleVariable<bool> CVarEnableObjectPool(
+static bool GEnableObjectPool = true;
+TAutoConsoleVariable<bool> CVarEnableObjectPool(
 	TEXT("g.EnableObjectPool"),
-	true,
+	GEnableObjectPool,
 	TEXT("Whether to enable object pool, true:enable ; false:disable"),
 	ECVF_Default
 );
@@ -159,7 +160,8 @@ void UObjectPoolSystem::Remove(const TSoftClassPtr<UObject>& ClassType)
 	PoolMap.Remove(ClassType);
 }
 
-UObject* UObjectPoolSystem::Spawn(const TSoftClassPtr<UObject>& ClassType, UObject* InOuter)
+UObject* UObjectPoolSystem::SpawnInner(const TSoftClassPtr<>& ClassType, UObject* InOuter,
+	const FOnSpawnObjectFromPoolDelegate OnSpawnObjectFromPool)
 {
 	UObjectPool** ObjectPoolPtr = PoolMap.Find(ClassType);
 	if (!ObjectPoolPtr)
@@ -182,8 +184,19 @@ UObject* UObjectPoolSystem::Spawn(const TSoftClassPtr<UObject>& ClassType, UObje
 			return nullptr;
 		}
 	}
-	
-	return (*ObjectPoolPtr)->Spawn(InOuter);
+
+	return (*ObjectPoolPtr)->Spawn(InOuter, OnSpawnObjectFromPool);
+}
+
+UObject* UObjectPoolSystem::Spawn(const TSoftClassPtr<UObject>& ClassType, UObject* InOuter,
+	const FOnSpawnObjectFromPoolDelegate OnSpawnObjectFromPool)
+{
+	return SpawnInner(ClassType, InOuter, OnSpawnObjectFromPool);
+}
+
+UObject* UObjectPoolSystem::Spawn(const TSoftClassPtr<UObject>& ClassType, UObject* InOuter)
+{
+	return SpawnInner(ClassType, InOuter, FOnSpawnObjectFromPoolDelegate());;
 }
 
 bool UObjectPoolSystem::Recycle(UObject* RecycleObject)

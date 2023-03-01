@@ -3,6 +3,8 @@
 #include "ObjectPool.h"
 #include "ObjectPoolSystem.generated.h"
 
+extern OBJECTPOOL_API TAutoConsoleVariable<bool> CVarEnableObjectPool;
+
 /**
  * UObjectPoolSystem
  *
@@ -41,7 +43,13 @@ public:
 	void Remove(UPARAM(ref) const TSoftClassPtr<UObject>& ClassType);
 
 	/**
-	 * Spawn a object from pool
+	 * Spawn a object from pool in native
+	 */
+	UObject* Spawn(UPARAM(ref) const TSoftClassPtr<UObject>& ClassType, UObject* InOuter,
+		const FOnSpawnObjectFromPoolDelegate OnSpawnObjectFromPool);
+
+	/**
+	 * Spawn a object from pool in blueprints
 	 */
 	UFUNCTION(BlueprintCallable, Category=ObjectPoolSystem)
 	UObject* Spawn(UPARAM(ref) const TSoftClassPtr<UObject>& ClassType, UObject* InOuter);
@@ -55,7 +63,6 @@ public:
 	/**
 	 * Clear the pool cache, usually called when current world is being destroyed
 	 */
-	UFUNCTION(BlueprintCallable, Category=ObjectPoolSystem)
 	void Clear();
 
 private:
@@ -64,6 +71,9 @@ private:
 	static bool CanLevelUseObjectPool(const FString& LevelName, const FString& ExcludeLevelNames);
 	
 	void AddInner(const FObjectPoolConfig& PoolConfig, const bool bMakeDefault = false);
+
+	UObject* SpawnInner(UPARAM(ref) const TSoftClassPtr<UObject>& ClassType, UObject* InOuter,
+		const FOnSpawnObjectFromPoolDelegate OnSpawnObjectFromPool);
 	
 	/** Config data from .ini file */
 	UPROPERTY(Config)

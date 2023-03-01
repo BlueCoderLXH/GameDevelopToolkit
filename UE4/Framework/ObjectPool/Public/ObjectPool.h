@@ -4,6 +4,8 @@
 #include "CoreMinimal.h"
 #include "ObjectPool.generated.h"
 
+DECLARE_DELEGATE_OneParam(FOnSpawnObjectFromPoolDelegate, UObject*);
+
 USTRUCT(BlueprintType)
 struct OBJECTPOOL_API FObjectPoolConfig
 {
@@ -45,29 +47,24 @@ public:
 	UObjectPool() {}
 	
 	UObjectPool(const FObjectPoolConfig& InConfig);
-
-	UFUNCTION(BlueprintCallable, Category = "ObjectPool")
+	
 	bool Init(UPARAM(ref) const FObjectPoolConfig& InConfig);
-
-	UFUNCTION(BlueprintCallable, Category = "ObjectPool")
+	
 	bool InitDefault(const TSoftClassPtr<UObject> ClassType);	
 
 	/**
 	 * Spawn a object from pool
 	 */
-	UFUNCTION(BlueprintCallable, Category=ObjectPool)
-	UObject* Spawn(UObject* InOuter);
+	UObject* Spawn(UObject* InOuter, const FOnSpawnObjectFromPoolDelegate OnSpawnObjectFromPool = FOnSpawnObjectFromPoolDelegate());
 
 	/**
 	 * Recycle a object to pool
 	 */
-	UFUNCTION(BlueprintCallable, Category=ObjectPool)
 	bool Recycle(UObject* RecycleObject);
 
 	/**
 	 * Clear the pool
 	 */
-	UFUNCTION(BlueprintCallable, Category=ObjectPool)
 	void Clear();
 
 private:
