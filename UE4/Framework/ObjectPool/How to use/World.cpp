@@ -1,5 +1,12 @@
+extern OBJECTPOOL_API TAutoConsoleVariable<bool> CVarEnableObjectPool;
+
 void UWorld::InitObjectPool()
 {
+	if (!CVarEnableObjectPool.GetValueOnGameThread())
+	{
+		return;
+	}	
+	
 	if (!bUseObjectPool || ObjectPoolSystem)
 	{
 		return;
