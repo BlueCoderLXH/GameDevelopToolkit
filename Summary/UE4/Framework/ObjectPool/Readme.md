@@ -1,0 +1,2 @@
+AdditionalCode：引擎层其他代码的适配性修改，主要用于解决一些网络同步相关的问题
+Module：ObjectPool独立的代码，作为独立的Module嵌入引擎层恰当的位置， eg /Engine/Source/Runtime/
