@@ -109,8 +109,12 @@ UObject* UObjectPool::Spawn(UObject* InOuter, const FOnSpawnObjectFromPoolDelega
 		*SpawnName, *(Config.ClassType->GetName()), UnusedObjects.Num(), Capacity);
 
 	OnSpawnObjectFromPool.ExecuteIfBound(SpawnObject);
-	
-	IReusable::Execute_OnSpawn(SpawnObject);
+
+	IReusable* ReusableObject = Cast<IReusable>(SpawnObject);
+	if (ReusableObject)
+	{
+		ReusableObject->SpawnFromPool();
+	}
 
 	return SpawnObject;
 }
@@ -153,7 +157,11 @@ bool UObjectPool::Recycle(UObject* RecycleObject)
 	UE_LOG(LogObjectPool, VeryVerbose, TEXT("UObjectPool::Recycle Recycle '%s' Success For Type:%s PoolSize:%d Capacity:%d"),
 		*RecycleName, *(Config.ClassType->GetName()), UnusedObjects.Num(), Capacity);
 
-	IReusable::Execute_OnRecycle(RecycleObject);
+	IReusable* ReusableObject = Cast<IReusable>(RecycleObject);
+	if (ReusableObject)
+	{
+		ReusableObject->RecycleToPool();
+	}
 
 	return true;
 }

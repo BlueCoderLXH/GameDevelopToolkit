@@ -17,6 +17,12 @@ AActor* UWorld::SpawnActor( UClass* Class, FTransform const* UserTransformPtr, c
 		{
 			break;
 		}
+
+		const IReusable* DefaultObjectFromClass = Cast<IReusable>(Class->GetDefaultObject());
+		if (!DefaultObjectFromClass || !DefaultObjectFromClass->ShouldUseObjectPool())
+		{
+			break;
+		}
 		
 		UObjectPoolSystem* PoolSystem = World->GetObjectPoolSystem();
 		if (!PoolSystem)
@@ -90,6 +96,12 @@ bool UWorld::DestroyActor( AActor* ThisActor, bool bNetForce, bool bShouldModify
 		}
 
 		if (!ActorClass->ImplementsInterface(UReusable::StaticClass()))
+		{
+			break;
+		}
+
+		const IReusable* DefaultObjectFromClass = Cast<IReusable>(ActorClass->GetDefaultObject());
+		if (!DefaultObjectFromClass || !DefaultObjectFromClass->ShouldUseObjectPool())
 		{
 			break;
 		}

@@ -20,14 +20,54 @@ class OBJECTPOOL_API IReusable
 
 public:
 	/**
-	 * Called when object is spawning from Object Pool
+	 * @brief Should the objects of this class use object pool 
+	 * @return bool
+	 */
+	bool ShouldUseObjectPool() const { return bShouldUseObjectPool; }
+
+	/**
+	 * @brief Flag this object that is spawned from object pool
+	 * @return bool
+	 */
+	bool IsSpawnedFromPool() const { return bSpawnedFromPool; }
+
+	/**
+	 * @brief Called when object is spawning from Object Pool
+	 * @warning Do not call it from outside
+	 */
+	void SpawnFromPool()
+	{
+		Execute_OnSpawn(Cast<UObject>(this));
+		bSpawnedFromPool = true;
+	}
+
+	/**
+	 * @brief Called when object is recycling to Object Pool
+	 * @warning Do not call it from outside
+	 */
+	void RecycleToPool()
+	{
+		Execute_OnRecycle(Cast<UObject>(this));
+		bSpawnedFromPool = false;
+	}
+
+protected:
+	/**
+	 * @brief [BlueprintNativeEvent] Called when object is spawning from Object Pool
 	 */
 	UFUNCTION(BlueprintNativeEvent)
 	void OnSpawn();
 
 	/**
-	* Called when object is recycling to Object Pool
-	*/
+	 * @brief [BlueprintNativeEvent] Called when object is recycling to Object Pool
+	 */
 	UFUNCTION(BlueprintNativeEvent)
 	void OnRecycle();
+
+	// Whether should use object pool, if setting it to 'false', the object of this class will be spawned without pool
+	bool bShouldUseObjectPool = true;
+
+private:
+	// Whether this object is spawned from pool
+	bool bSpawnedFromPool = false;
 };
