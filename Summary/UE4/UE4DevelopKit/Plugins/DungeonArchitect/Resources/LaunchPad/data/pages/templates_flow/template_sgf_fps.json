@@ -1,0 +1,12 @@
+{
+  "title": "Default",
+  "layout": "Details",
+  "desc": "Multi-story graph with key-locks, treasure room, shop etc",
+  "image": "detail/sample_sgf_layout",
+  "actions": [
+    {
+      "type": "CloneSnapGridFlow",
+      "path": "/DungeonArchitect/Samples/DA_SnapGridFlow_FPS/Snap/FlowGraphs/SGF_FPS_Demo"
+    },
+  ]
+}

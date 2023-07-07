@@ -1,0 +1,17 @@
+{
+  "title": "Snap Negation Vol 1",
+  "layout": "Details",
+  "desc": "Build your Snap Dungeon within the specifed volume bounds.  This demo uses a Negation Volume with Reversed flag check, so the snap modules will only be allowed inside this volume. these are great for restricting the area where you dungeon generates",
+  "image": "detail/sample_snap_negation_1",
+  "actions": [
+    {
+      "type": "CloneSceneAndBuild",
+      "path": "/DungeonArchitect/Samples/DA_SnapMap_Negation/SnapMap_Negation1"
+    },
+    {
+      "type": "Documentation",
+      "path": "https://docs.dungeonarchitect.dev/ue4/snap-flow
+"
+    }
+  ]
+}

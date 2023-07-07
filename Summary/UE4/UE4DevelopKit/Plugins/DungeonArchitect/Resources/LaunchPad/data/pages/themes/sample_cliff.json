@@ -1,0 +1,16 @@
+{
+  "title": "Outdoor Cliff",
+  "layout": "Details",
+  "desc": "A toon forest theme made using low poly free assets",
+  "image": "detail/sample_cliff",
+  "actions": [
+    {
+      "type": "CloneTheme",
+      "path": "/DungeonArchitect/Samples/DA_OutdoorCliff/Themes/D_ToonLand"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=_RdZeXH8LGY"
+    }
+  ]
+}

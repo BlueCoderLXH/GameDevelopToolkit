@@ -1,0 +1,33 @@
+{
+  "title": "Hell Forge (Design)",
+  "layout": "Details",
+  "desc": "Hell scene made using Infinity Blade's FireLands free asset",
+  "image": "detail/sample_firelands",
+  "actions": [
+    {
+      "type": "CloneSceneAndBuild",
+      "path": "/DungeonArchitect/Samples/DA_InfinityBlade_Fire/Maps/DA_InfinityBlade_DesignTime"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=dbDak6J61zw"
+    },
+	{
+      "type": "LauncherURL",
+	  "path": "https://www.unrealengine.com/marketplace/en-US/product/infinity-blade-fire-lands",
+	  "title": "Download Fire Lands",
+	  "width": 72
+    },
+	{
+      "type": "LauncherURL",
+	  "path": "https://www.unrealengine.com/marketplace/en-US/product/infinity-blade-effects",
+	  "title": "Download IB Effects",
+	  "width": 72
+    },
+    {
+      "type": "Documentation",
+      "path": "
+"
+    }
+  ]
+}

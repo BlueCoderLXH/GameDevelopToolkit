@@ -1,0 +1,480 @@
+{
+	"title": "Samples",
+	"layout": "CardGrid",
+	"showCategoryTitles": true,
+	"categories": 
+	[
+		{
+			"category": "Featured",
+			"cards": [
+				{
+					"title": "Side Scroller Game",
+					"desc": "A side scroller game, built using the Snap Grid Flow builder",
+					"image": "detail/thumb/sample_sgf_sidescroller_t",
+					"link": "pages/samples/sample_sgf_sidescroller.json"
+				},
+				{
+					"title": "Grid Flow Game",
+					"desc": "A demo game using the grid flow builder with key-locks, mini maps and more",
+					"image": "detail/thumb/sample_gridflow_game_t",
+					"link": "pages/samples/sample_gridflow_game.json"
+				},
+				{
+					"title": "Snap Game Demo",
+					"desc": "An FPS game demo with level streaming, shops, NPCs, key locks etc",
+					"image": "detail/thumb/sample_snap_game_t",
+					"link": "pages/samples/sample_snap3.json"
+				},
+				{
+					"title": "Snap Level Demo",
+					"desc": "Stitch together pre-built room levels using a powerful graph grammar system",
+					"image": "detail/thumb/sample_snap_level_t",
+					"link": "pages/samples/sample_snap1.json"
+				},
+				{
+					"title": "Candy",
+					"desc": "A simple clean theme using flat textures",
+					"image": "detail/thumb/sample_candy_t",
+					"link": "pages/samples/sample_candy.json"
+				}
+			]
+		},
+		{
+			"category": "Grid Builder",
+			"cards": [
+				{
+					"title": "Futuristic (Static)",
+					"desc": "A futuristic sample theme",
+					"image": "detail/thumb/sample_future1_t",
+					"link": "pages/samples/sample_future1.json"
+				},
+				{
+					"title": "Futuristic (Runtime)",
+					"desc": "Build dungeons at runtime",
+					"image": "detail/thumb/sample_future2_t",
+					"link": "pages/samples/sample_future2.json"
+				},
+				{
+					"title": "Runtime Level Editor",
+					"desc": "Design your levels at runtime",
+					"image": "detail/thumb/sample_leveled_t",
+					"link": "pages/samples/sample_leveled.json"
+				},
+				{
+					"title": "Candy",
+					"desc": "A simple clean theme using flat textures",
+					"image": "detail/thumb/sample_candy_t",
+					"link": "pages/samples/sample_candy.json"
+				},
+				{
+					"title": "Simple Shapes",
+					"desc": "A basic theme created using simple shapes",
+					"image": "detail/thumb/sample_simple_shapes_t",
+					"link": "pages/samples/sample_simple_shapes.json"
+				},
+				{
+					"title": "Simple Shapes (Night)",
+					"desc": "A basic theme created using simple shapes and lights",
+					"image": "detail/thumb/sample_simple_shapes_night_t",
+					"link": "pages/samples/sample_simple_shapes_night.json"
+				},
+				{
+					"title": "Outdoor Cliff",
+					"desc": "A toon forest theme made using low poly free assets",
+					"image": "detail/thumb/sample_cliff_t",
+					"link": "pages/samples/sample_cliff.json"
+				}
+			]
+		},
+		{
+			"category": "Grid Flow Builder",
+			"cards": [
+				{
+					"title": "Grid Flow Simple",
+					"desc": "A minimalistic theme for the grid flow builder",
+					"image": "detail/thumb/sample_gridflow_cube_t",
+					"link": "pages/samples/sample_gridflow_cube.json"
+				},
+				{
+					"title": "Grid Flow Game",
+					"desc": "A demo game using the grid flow builder with key-locks, mini maps and more",
+					"image": "detail/thumb/sample_gridflow_game_t",
+					"link": "pages/samples/sample_gridflow_game.json"
+				},
+				{
+					"title": "Grid Flow Prehistoric",
+					"desc": "Prehistoric low poly theme for the grid flow builder",
+					"image": "detail/thumb/sample_gridflow_ph_t",
+					"link": "pages/samples/sample_gridflow_ph.json"
+				},
+				{
+					"title": "Static Spawn Room",
+					"desc": "A fixed spawn room blended with existing static art",
+					"image": "detail/thumb/sample_gridflow_spawn_t",
+					"link": "pages/samples/sample_gridflow_spawn.json"
+				},
+				{
+					"title": "Grid Flow Query",
+					"desc": "Use the Gird Flow Query interface to place objects on the dungeon",
+					"image": "detail/thumb/sample_gridflow_me_t",
+					"link": "pages/samples/sample_gridflow_me.json"
+				},
+				{
+					"title": "Wrap Volume",
+					"desc": "Create a Volume around each room using a marker emitter",
+					"image": "detail/thumb/sample_gridflow_wrap_t",
+					"link": "pages/samples/sample_gridflow_wrap.json"
+				}
+			]
+		},
+		{
+			"category": "Snap Map Builder",
+			"cards": [
+				{
+					"title": "Snap Level Demo",
+					"desc": "Stitch together pre-built room levels using a powerful graph grammar system",
+					"image": "detail/thumb/sample_snap_level_t",
+					"link": "pages/samples/sample_snap1.json"
+				},
+				{
+					"title": "Snap Level Demo",
+					"desc": "A simple example with rooms and corridors",
+					"image": "detail/thumb/sample_snap_level_simple_t",
+					"link": "pages/samples/sample_snap2.json"
+				},
+				{
+					"title": "Snap Game Demo",
+					"desc": "An FPS game demo with level streaming, shops, NPCs, key locks etc",
+					"image": "detail/thumb/sample_snap_game_t",
+					"link": "pages/samples/sample_snap3.json"
+				},
+				{
+					"title": "Snap Runtime Demo",
+					"desc": "Simple runtime snap map demo",
+					"image": "detail/thumb/sample_snap_runtime_t",
+					"link": "pages/samples/sample_snap4.json"
+				},
+				{
+					"title": "Snap Multiplayer Demo",
+					"desc": "Multi-player enabled snap map game demo",
+					"image": "detail/thumb/sample_snap_runtime_t",
+					"link": "pages/samples/sample_snap_mp.json"
+				},
+				{
+					"title": "Snap Negation Vol 1",
+					"desc": "Build your Snap Dungeon within the specifed volume bounds",
+					"image": "detail/thumb/sample_snap_negation_1_t",
+					"link": "pages/samples/sample_snap_negation_1.json"
+				},
+				{
+					"title": "Snap Negation Vol 2",
+					"desc": "Avoid building the snap dungeon at certain areas",
+					"image": "detail/thumb/sample_snap_negation_2_t",
+					"link": "pages/samples/sample_snap_negation_2.json"
+				}
+			]
+		},
+		{
+			"category": "Snap Grid Flow Builder",
+			"cards": [
+				{
+					"title": "Side Scroller Game",
+					"desc": "A side scroller game, built using the Snap Grid Flow builder",
+					"image": "detail/thumb/sample_sgf_sidescroller_t",
+					"link": "pages/samples/sample_sgf_sidescroller.json"
+				},
+				{
+					"title": "Snap Grid FPS Demo",
+					"desc": "FPS Game demo built using the Snap Grid Flow Builder",
+					"image": "detail/thumb/sample_sgf_fps_simple_t",
+					"link": "pages/samples/sample_sgf_fps_simple.json"
+				}
+			]
+		},
+		{
+			"category": "Infinity Blade - Hell Forge",
+			"cards": [
+				{
+					"title": "Hell Forge (Design)",
+					"desc": "Hell scene made using Infinity Blade's FireLands free asset",
+					"image": "detail/thumb/sample_firelands_t",
+					"link": "pages/samples/sample_firelands1.json"
+				},
+				{
+					"title": "Hell Forge (Runtime)",
+					"desc": "A new dungeon generated everytime you play",
+					"image": "detail/thumb/sample_firelands_t",
+					"link": "pages/samples/sample_firelands2.json"
+				}
+			]
+		},
+		{
+			"category": "Infinity Blade - Frost Forge",
+			"cards": [
+				{
+					"title": "Frost Forge",
+					"desc": "Icy scene made using Infinity Blade's Ice Lands free content",
+					"image": "detail/thumb/sample_icelands_t",
+					"link": "pages/samples/sample_icelands1.json"
+				},
+				{
+					"title": "Frost Forge (No Grass)",
+					"desc": "Frost Forge scene without grass",
+					"image": "detail/thumb/sample_icelands_t",
+					"link": "pages/samples/sample_icelands2.json"
+				},
+				{
+					"title": "Frost Forge (Mist)",
+					"desc": "Frost Forge scene with misty atmosphere",
+					"image": "detail/thumb/sample_icelands_t",
+					"link": "pages/samples/sample_icelands3.json"
+				}
+			]
+		},
+		{
+			"category": "Infinity Blade - Grass Lands",
+			"cards": [
+				{
+					"title": "Grass Lands 1",
+					"desc": "Castle theme made using Infinity Blade's Grass Lands free content",
+					"image": "detail/thumb/sample_grasslands1_t",
+					"link": "pages/samples/sample_grasslands1.json"
+				},
+				{
+					"title": "Grass Lands 2",
+					"desc": "",
+					"image": "detail/thumb/sample_grasslands2_t",
+					"link": "pages/samples/sample_grasslands2.json"
+				},
+				{
+					"title": "Grass Lands 3",
+					"desc": "",
+					"image": "detail/thumb/sample_grasslands1_t",
+					"link": "pages/samples/sample_grasslands3.json"
+				},
+				{
+					"title": "Grass Lands 4",
+					"desc": "",
+					"image": "detail/thumb/sample_grasslands2_t",
+					"link": "pages/samples/sample_grasslands4.json"
+				}
+			]
+		},
+		{
+			"category": "Infinity Blade - Soul Forge",
+			"cards": [
+				{
+					"title": "Soul Forge",
+					"desc": "A sample theme made using the free Soul Cave assets",
+					"image": "detail/thumb/sample_soulcave_t",
+					"link": "pages/samples/sample_soulcave.json"
+				}
+			]
+		},
+		{
+			"category": "City Builder",
+			"cards": [
+				{
+					"title": "City Demo",
+					"desc": "Build a procedural city with dungeon architect",
+					"image": "detail/thumb/sample_city_t",
+					"link": "pages/samples/sample_city.json"
+				}
+			]
+		},
+		{
+			"category": "Clustered Theming",
+			"cards": [
+				{
+					"title": "Cluster Theme",
+					"desc": "Use multiple themes across different parts of your dungeon",
+					"image": "detail/thumb/sample_cluster_t",
+					"link": "pages/samples/sample_cluster.json"
+				}
+			]
+		},
+		{
+			"category": "Multiplayer Demo",
+			"cards": [
+				{
+					"title": "Multiplayer Demo",
+					"desc": "Setup mulitplayer with random dungeons",
+					"image": "detail/thumb/sample_mp_t",
+					"link": "pages/samples/sample_mp.json"
+				},
+				{
+					"title": "Procedural Deathmatch",
+					"desc": "Generate a random map at runtime with AI bots, powerups, spawn points etc",
+					"image": "detail/thumb/sample_dm_t",
+					"link": "pages/samples/sample_dm.json"
+				}
+			]
+		},
+		{
+			"category": "Destructibles",
+			"cards": [
+				{
+					"title": "Destructible Demo",
+					"desc": "Destroy you dungeon geoemtry using Apex Destruction",
+					"image": "detail/thumb/sample_destruct_t",
+					"link": "pages/samples/sample_destruct.json"
+				}
+			]
+		},
+		{
+			"category": "Landscape Transformer",
+			"cards": [
+				{
+					"title": "Grid Landscape Transformer",
+					"desc": "Transform the landscape around the grid dungeon layout",
+					"image": "detail/thumb/sample_landscape_grid_t",
+					"link": "pages/samples/sample_landscape_grid.json"
+				}
+			]
+		},
+		{
+			"category": "Grid Query System",
+			"cards": [
+				{
+					"title": "Grid: Start End Rooms",
+					"desc": "Use the query system to find the start/end rooms of your dungeon",
+					"image": "detail/thumb/sample_grid_startend_t",
+					"link": "pages/samples/sample_grid_startend.json"
+				},
+				{
+					"title": "Grid: Start End Path (Design)",
+					"desc": "Draw a path along a walkable path (through doors, stairs etc)",
+					"image": "detail/thumb/sample_grid_startend_path_t",
+					"link": "pages/samples/sample_grid_startend_path1.json"
+				},
+				{
+					"title": "Grid: Start End Path (Runtime)",
+					"desc": "Draw a path along a walkable path at runtime",
+					"image": "detail/thumb/sample_grid_startend_path_t",
+					"link": "pages/samples/sample_grid_startend_path2.json"
+				},
+				{
+					"title": "Grid Nearby Marker",
+					"desc": "Get nearby markers on the grid builder",
+					"image": "detail/thumb/sample_grid_nearby_markers_t",
+					"link": "pages/samples/sample_grid_nearby_markers.json"
+				},
+				{
+					"title": "Wall Query Demo",
+					"desc": "Shows how to query nearby walls and decorate them differently",
+					"image": "detail/thumb/sample_grid_wall_query_t",
+					"link": "pages/samples/sample_grid_wall_query.json"
+				}
+			]
+		},
+		{
+			"category": "Isaac Builder",
+			"cards": [
+				{
+					"title": "Isaac Builder Demo (Design)",
+					"desc": "Build levels like in the game Binding of Isaac",
+					"image": "detail/thumb/sample_isaac_t",
+					"link": "pages/samples/sample_isaac1.json"
+				},
+				{
+					"title": "Isaac Builder Demo (Runtime)",
+					"desc": "",
+					"image": "detail/thumb/sample_isaac_t",
+					"link": "pages/samples/sample_isaac2.json"
+				},
+				{
+					"title": "Isaac Builder Demo (Remove Duplicate Walls)",
+					"desc": "",
+					"image": "detail/thumb/sample_isaac_t",
+					"link": "pages/samples/sample_isaac3.json"
+				},
+				{
+					"title": "Isaac: Start End Rooms",
+					"desc": "Find Start - End rooms in the Isaac Builder",
+					"image": "detail/thumb/sample_isaac_startend_t",
+					"link": "pages/samples/sample_isaac_startend.json"
+				},
+				{
+					"title": "Isaac: Large Start End Rooms",
+					"desc": "Force larger rooms for the start - end rooms in the isaac builder",
+					"image": "detail/thumb/sample_isaac_startend_large_t",
+					"link": "pages/samples/sample_isaac_startend_large.json"
+				}
+			]
+		},
+		{
+			"category": "Custom Grid Builder",
+			"cards": [
+				{
+					"title": "Custom Grid Builder Demo",
+					"desc": "Build custom layouts using blueprints",
+					"image": "detail/thumb/sample_custom_builder_t",
+					"link": "pages/samples/sample_custom_builder.json"
+				}
+			]
+		},
+		{
+			"category": "Misc",
+			"cards": [
+				{
+					"title": "Wrap Volume Around Dungeon",
+					"desc": "Dynamically wrap a volume around the dungeon",
+					"image": "detail/thumb/sample_wrap_vol_dungeon_t",
+					"link": "pages/samples/sample_wrap_vol_dungeon.json"
+				},
+				{
+					"title": "Wrap Volume Around Rooms",
+					"desc": "Dynamically wrap volumes around rooms",
+					"image": "detail/thumb/sample_wrap_vol_room_t",
+					"link": "pages/samples/sample_wrap_vol_room.json"
+				},
+				{
+					"title": "Multi Dungeon Blending",
+					"desc": "Blend user designed art with procedural dungeons",
+					"image": "detail/thumb/sample_dungeon_blend_t",
+					"link": "pages/samples/sample_dungeon_blend.json"
+				},
+				{
+					"title": "Advanced: Curve Filter",
+					"desc": "Modify markers at low level",
+					"image": "detail/thumb/sample_grid_curve_t",
+					"link": "pages/samples/sample_grid_curve.json"
+				}
+			]
+		},
+		{
+			"category": "Floor Plan Builder",
+			"cards": [
+				{
+					"title": "Floor Plan Demo",
+					"desc": "Floor plan builder demo has a building with multiple floors, lift and an open garden",
+					"image": "detail/thumb/sample_floorplan_t",
+					"link": "pages/samples/sample_floorplan.json"
+				}
+			]
+		},
+		{
+			"category": "External Assets",
+			"cards": [
+				{
+					"title": "SciFi Theme",
+					"desc": "",
+					"image": "detail/thumb/sample_ext_scifi_t",
+					"link": "pages/samples/sample_ext_scifi.json"
+				},
+				{
+					"title": "Wooden Pier",
+					"desc": "",
+					"image": "detail/thumb/sample_ext_wood_t",
+					"link": "pages/samples/sample_ext_wood.json"
+				},
+				{
+					"title": "SciFi 2",
+					"desc": "",
+					"image": "detail/thumb/sample_ext_scifimk4_t",
+					"link": "pages/samples/sample_ext_scifimk4.json"
+				}
+			]
+		}
+	]
+}

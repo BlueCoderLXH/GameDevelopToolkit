@@ -1,0 +1,21 @@
+{
+  "title": "Simple Shapes (Night)",
+  "layout": "Details",
+  "desc": "A basic theme created using simple shapes and lights (for night mode)",
+  "image": "detail/sample_simple_shapes_night",
+  "actions": [
+    {
+      "type": "CloneSceneAndBuild",
+      "path": "/DungeonArchitect/Samples/DA_TutorialGame/Maps/DemoMap_Night"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=bkIaHRJP4CA"
+    },
+    {
+      "type": "Documentation",
+      "path": "https://docs.dungeonarchitect.dev/ue4
+"
+    }
+  ]
+}

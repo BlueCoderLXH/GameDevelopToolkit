@@ -1,0 +1,17 @@
+{
+  "title": "Wrap Volume Around Dungeon",
+  "layout": "Details",
+  "desc": "Dynamically wrap a volume around the dungeon after it is built",
+  "image": "detail/sample_wrap_vol_dungeon",
+  "actions": [
+    {
+      "type": "CloneScene",
+      "path": "/DungeonArchitect/Samples/DA_Misc_Examples/Maps/WrapVolumeAroundDungeon"
+    },
+    {
+      "type": "Documentation",
+      "path": "
+"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+	"title": "News",
+	"layout": "News",
+	"thumbHeight": 150,
+	"cardHeight": 270,
+	"featured": 
+	{
+		"title": "New GridFlow Builder",
+		"desc": "Design and control the flow of your dungeons which this powerful new feature",
+		"image": "templates_flow/flow_template_grid_default",
+		"url": "https://www.youtube.com/watch?v=aa8KcSligXs"
+	},
+	
+	"cards":
+	[
+		{
+			"title": "Launch Pad",
+			"desc": "Dungeon Architect now has a central place to manage the samples, templates and themes",
+			"image": "news/news_launcher_thumb",
+			"link": ""
+		},
+		{
+			"title": "Improved UI",
+			"desc": "The snap flow editor's graph panels can be resized, improving the usability",
+			"image": "news/news_improved_ui_thumb",
+			"link": ""
+		},
+		{
+			"title": "New Mario Builder",
+			"desc": "A new builder for your platformer games. Check out the sample game",
+			"image": "news/news_mario_builder",
+			"link": "https://www.youtube.com/watch?v=1QAG-pa4MFU"
+		}
+	]
+}

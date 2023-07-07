@@ -1,0 +1,26 @@
+{
+	"title": "Support",
+	"layout": "CardGrid",
+	"showCategoryTitles": false,
+	"categories": 
+	[
+		{
+			"category": "default",
+			"cards":
+			[
+				{
+					"title": "Discord Chat",
+					"desc": "Chat with the developers and a huge community of Dungeon Architect users",
+					"image": "thumbs/thumb_support_discord",
+					"url": "https://discord.gg/N3rHt4h"
+				},
+				{
+					"title": "Email support",
+					"desc": "Email the devs: ali.akbar@coderespawn.com",
+					"image": "thumbs/thumb_support_email",
+					"url": "mailto:ali.akbar@coderespawn.com?subject=Dungeon Architect Support"
+				}
+			]
+		}
+	]
+}

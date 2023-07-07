@@ -1,0 +1,17 @@
+{
+  "title": "Grid Flow Prehistoric",
+  "layout": "Details",
+  "desc": "Prehistoric low poly theme for the grid flow builder (REQUIRES 4.24+)",
+  "image": "detail/sample_gridflow_ph",
+  "actions": [
+    {
+      "type": "CloneSceneAndBuild",
+      "path": "/DungeonArchitect/Samples/DA_GridFlow/Maps/GFMap_Prehistoric"
+    },
+    {
+      "type": "Documentation",
+      "path": "https://docs.dungeonarchitect.dev/ue4/grid-flow
+"
+    }
+  ]
+}

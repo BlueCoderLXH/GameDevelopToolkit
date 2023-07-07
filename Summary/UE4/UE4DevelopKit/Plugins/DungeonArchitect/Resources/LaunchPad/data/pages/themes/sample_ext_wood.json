@@ -1,0 +1,22 @@
+{
+  "title": "Wooden Pier",
+  "layout": "Details",
+  "desc": "",
+  "image": "detail/sample_ext_wood",
+  "actions": [
+    {
+      "type": "CloneTheme",
+      "path": "/DungeonArchitect/Samples/DA_WoodenPier/Dungeons/Wood"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=tGOclVH-10s"
+    },
+	{
+      "type": "LauncherURL",
+	  "path": "https://www.unrealengine.com/marketplace/en-US/product/modular-wooden-prop-pack",
+	  "title": "Wooden Props",
+	  "width": 72
+    }
+  ]
+}

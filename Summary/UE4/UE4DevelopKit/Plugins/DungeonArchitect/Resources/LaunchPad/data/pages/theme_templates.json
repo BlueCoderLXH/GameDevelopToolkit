@@ -1,0 +1,105 @@
+{
+	"title": "Theme Templates",
+	"layout": "CardGrid",
+	"showCategoryTitles": true,
+	"categories": 
+	[
+		{
+			"category": "Grid Builder",
+			"cards": [
+				{
+					"title": "Futuristic",
+					"desc": "A futuristic sample theme",
+					"image": "detail/thumb/sample_future1_t",
+					"link": "pages/themes/sample_future1.json"
+				},
+				{
+					"title": "Candy",
+					"desc": "A simple clean theme using flat textures",
+					"image": "detail/thumb/sample_candy_t",
+					"link": "pages/themes/sample_candy.json"
+				},
+				{
+					"title": "Simple Shapes",
+					"desc": "A basic theme created using simple shapes",
+					"image": "detail/thumb/sample_simple_shapes_t",
+					"link": "pages/themes/sample_simple_shapes.json"
+				},
+				{
+					"title": "Simple Shapes (Night)",
+					"desc": "A basic theme created using simple shapes and lights",
+					"image": "detail/thumb/sample_simple_shapes_night_t",
+					"link": "pages/themes/sample_simple_shapes_night.json"
+				},
+				{
+					"title": "Outdoor Cliff",
+					"desc": "A toon forest theme made using low poly free assets",
+					"image": "detail/thumb/sample_cliff_t",
+					"link": "pages/themes/sample_cliff.json"
+				},
+				{
+					"title": "Soul Forge",
+					"desc": "A sample theme made using the free Soul Cave assets",
+					"image": "detail/thumb/sample_soulcave_t",
+					"link": "pages/themes/sample_soulcave.json"
+				}
+			]
+		},
+		{
+			"category": "Grid Flow Builder",
+			"cards": [
+				{
+					"title": "Grid Flow Simple",
+					"desc": "A minimalistic theme for the grid flow builder",
+					"image": "detail/thumb/sample_gridflow_cube_t",
+					"link": "pages/themes/sample_gridflow_cube.json"
+				},
+				{
+					"title": "Grid Flow Prehistoric",
+					"desc": "Prehistoric low poly theme for the grid flow builder",
+					"image": "detail/thumb/sample_gridflow_ph_t",
+					"link": "pages/themes/sample_gridflow_ph.json"
+				}
+			]
+		},
+		{
+			"category": "City Builder",
+			"cards": [
+				{
+					"title": "City Demo",
+					"desc": "City theme built using low poly assets",
+					"image": "detail/thumb/sample_city_t",
+					"link": "pages/themes/sample_city.json"
+				}
+			]
+		},
+		{
+			"category": "Isaac Builder",
+			"cards": [
+				{
+					"title": "Isaac Basic",
+					"desc": "A basic theme created using simple shapes",
+					"image": "detail/thumb/sample_isaac_t",
+					"link": "pages/themes/sample_isaac1.json"
+				}
+			]
+		},
+		{
+			"category": "External Assets",
+			"cards": [
+				{
+					"title": "Wooden Pier",
+					"desc": "",
+					"image": "detail/thumb/sample_ext_wood_t",
+					"link": "pages/themes/sample_ext_wood.json"
+				},
+				{
+					"title": "SciFi",
+					"desc": "",
+					"image": "detail/thumb/sample_ext_scifimk4_t",
+					"link": "pages/themes/sample_ext_scifimk4.json"
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,20 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{B308E93E-4973-956D-C2D0-12916E4A1044}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "UE4DevelopKit",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "DungeonArchitect",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/1a4ad2a06f174a26af8a29728241ce42"
+		}
+	]
+}

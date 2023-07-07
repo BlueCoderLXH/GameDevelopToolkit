@@ -1,0 +1,21 @@
+{
+  "title": "Snap Level Demo",
+  "layout": "Details",
+  "desc": "Stitch together pre-built room levels using a powerful graph grammar system  (REQUIRES 4.25+)",
+  "image": "detail/sample_snap_level",
+  "actions": [
+    {
+      "type": "CloneSceneAndBuild",
+      "path": "/DungeonArchitect/Samples/DA_SnapMap_Demo3/SnapMapLevelDemo"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=9Crl9tGkHXA"
+    },
+    {
+      "type": "Documentation",
+      "path": "https://docs.dungeonarchitect.dev/ue4/snap-flow
+"
+    }
+  ]
+}

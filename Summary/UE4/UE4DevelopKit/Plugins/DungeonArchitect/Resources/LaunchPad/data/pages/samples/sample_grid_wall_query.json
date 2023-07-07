@@ -1,0 +1,17 @@
+{
+  "title": "Wall Query Demo",
+  "layout": "Details",
+  "desc": "Shows how to query nearby walls and decorate them differently if both are rooms, or remove the walls to merge the rooms together",
+  "image": "detail/sample_grid_wall_query",
+  "actions": [
+    {
+      "type": "CloneScene",
+      "path": "/DungeonArchitect/Samples/DA_Misc_Examples/Maps/WallQueryDemo"
+    },
+    {
+      "type": "Documentation",
+      "path": "https://docs.dungeonarchitect.dev/ue4/advanced-dungeons/query-interface
+"
+    }
+  ]
+}

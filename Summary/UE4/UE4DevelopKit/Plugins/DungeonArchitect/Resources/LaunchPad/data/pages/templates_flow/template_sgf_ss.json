@@ -1,0 +1,12 @@
+{
+  "title": "Side Scroller",
+  "layout": "Details",
+  "desc": "Side Scroller graph with key-locks, treasure rooms, shops and more",
+  "image": "detail/sample_sgf_ss_layout",
+  "actions": [
+    {
+      "type": "CloneSnapGridFlow",
+      "path": "/DungeonArchitect/Samples/DA_SnapGridFlow_SideScroller/FlowGraph/SGF_SideScroller"
+    },
+  ]
+}

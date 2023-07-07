@@ -1,0 +1,21 @@
+{
+  "title": "Multiplayer Demo",
+  "layout": "Details",
+  "desc": "Setup mulitplayer with random dungeons",
+  "image": "detail/sample_mp",
+  "actions": [
+    {
+      "type": "CloneScene",
+      "path": "/DungeonArchitect/Samples/DA_MultiplayerDemo/Maps/TutorialMP"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=RooAWh76Wro"
+    },
+    {
+      "type": "Documentation",
+      "path": "
+"
+    }
+  ]
+}

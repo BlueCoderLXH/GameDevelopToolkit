@@ -1,0 +1,17 @@
+{
+  "title": "Isaac: Start End Rooms",
+  "layout": "Details",
+  "desc": "Find Start - End rooms in the Isaac Builder",
+  "image": "detail/sample_isaac_startend",
+  "actions": [
+    {
+      "type": "CloneSceneAndBuild",
+      "path": "/DungeonArchitect/Samples/DA_Query_Examples/Isaac/FurthestRooms_IsaacQueryExample"
+    },
+    {
+      "type": "Documentation",
+      "path": "
+"
+    }
+  ]
+}

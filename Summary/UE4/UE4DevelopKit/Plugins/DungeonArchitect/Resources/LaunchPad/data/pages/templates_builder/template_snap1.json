@@ -1,0 +1,18 @@
+{
+  "title": "Default",
+  "layout": "Details",
+  "desc": "A flow graph with mini-boss, treasure rooms, shops, teleporters, key-locks and more",
+  "image": "detail/sample_snap",
+  "actions": [
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=woKkR6P_sHY"
+    },
+	{
+      "type": "LauncherURL",
+	  "path": "https://coderespawn.github.io/dungeon-architect-snap-map-user-guide-ue4/#introduction",
+	  "title": "Download Game Demo",
+	  "width": 72
+    }
+  ]
+}

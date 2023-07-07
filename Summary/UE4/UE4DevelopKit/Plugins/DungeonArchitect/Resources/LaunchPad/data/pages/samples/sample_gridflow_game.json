@@ -1,0 +1,21 @@
+{
+  "title": "Grid Flow Game",
+  "layout": "Details",
+  "desc": "A demo game using the grid flow builder. It has key-locks, an inventory system, mini maps and more.",
+  "image": "detail/sample_gridflow_game",
+  "actions": [
+    {
+      "type": "CloneScene",
+      "path": "/DungeonArchitect/Samples/DA_GridFlow_Game/DefaultGridFlowMap"
+    },
+    {
+      "type": "Video",
+      "path": "https://youtu.be/bUopKyowfQg?t=69"
+    },
+    {
+      "type": "Documentation",
+      "path": "https://docs.dungeonarchitect.dev/ue4/grid-flow
+"
+    }
+  ]
+}

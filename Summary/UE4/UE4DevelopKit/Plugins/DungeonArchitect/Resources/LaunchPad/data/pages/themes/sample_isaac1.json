@@ -1,0 +1,16 @@
+{
+  "title": "Isaac Basic",
+  "layout": "Details",
+  "desc": "Build levels like in the game Binding of Isaac",
+  "image": "detail/sample_isaac",
+  "actions": [
+    {
+      "type": "CloneTheme",
+      "path": "/DungeonArchitect/Samples/DA_TutorialGame/Dungeons/D_MyTheme1"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=eRrh-SLcJ0A"
+    }
+  ]
+}

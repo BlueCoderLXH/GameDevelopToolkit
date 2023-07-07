@@ -1,0 +1,17 @@
+{
+  "title": "Isaac: Large Start End Rooms",
+  "layout": "Details",
+  "desc": "Force larger rooms for the start - end rooms in the isaac builder",
+  "image": "detail/sample_isaac_startend_large",
+  "actions": [
+    {
+      "type": "CloneSceneAndBuild",
+      "path": "/DungeonArchitect/Samples/DA_Query_Examples/Isaac/LargeStartEndRooms"
+    },
+    {
+      "type": "Documentation",
+      "path": "
+"
+    }
+  ]
+}

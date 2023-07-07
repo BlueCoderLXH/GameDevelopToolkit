@@ -1,0 +1,17 @@
+{
+  "title": "Grid: Start End Rooms",
+  "layout": "Details",
+  "desc": "Use the query system to find the start / end rooms in your dungeon to use for spawn and exit",
+  "image": "detail/sample_grid_startend",
+  "actions": [
+    {
+      "type": "CloneSceneAndBuild",
+      "path": "/DungeonArchitect/Samples/DA_Query_Examples/Grid/FurthestRooms_GridQueryExample"
+    },
+    {
+      "type": "Documentation",
+      "path": "https://docs.dungeonarchitect.dev/ue4/advanced-dungeons/query-interface
+"
+    }
+  ]
+}

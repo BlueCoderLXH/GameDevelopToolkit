@@ -1,0 +1,21 @@
+{
+  "title": "Grid Landscape Transformer",
+  "layout": "Details",
+  "desc": "Transform the landscape around the dungeon layout with the grid builder",
+  "image": "detail/sample_landscape_grid",
+  "actions": [
+    {
+      "type": "CloneSceneAndBuild",
+      "path": "/DungeonArchitect/Samples/DA_Landscape_Modifier/Grid/DA_LandscapeModifier_Grid01"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=9MI9IzNytuY"
+    },
+    {
+      "type": "Documentation",
+      "path": "
+"
+    }
+  ]
+}

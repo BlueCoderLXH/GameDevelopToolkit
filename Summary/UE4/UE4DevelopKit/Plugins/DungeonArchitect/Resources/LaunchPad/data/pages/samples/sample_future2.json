@@ -1,0 +1,21 @@
+{
+  "title": "Futuristic (Runtime)",
+  "layout": "Details",
+  "desc": "A futuristic starter theme at runtime",
+  "image": "detail/sample_future2",
+  "actions": [
+    {
+      "type": "CloneScene",
+      "path": "/DungeonArchitect/Samples/DA_StarterPack/Maps/DungeonRuntime"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=uowWAVwEiEc"
+    },
+    {
+      "type": "Documentation",
+      "path": "https://docs.dungeonarchitect.dev/ue4
+"
+    }
+  ]
+}

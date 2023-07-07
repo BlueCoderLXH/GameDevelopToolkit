@@ -1,0 +1,16 @@
+{
+  "title": "Futuristic",
+  "layout": "Details",
+  "desc": "A futuristic starter theme",
+  "image": "detail/sample_future1",
+  "actions": [
+    {
+      "type": "CloneTheme",
+      "path": "/DungeonArchitect/Samples/DA_StarterPack/DungeonTheme/D_StarterPackTheme"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=uowWAVwEiEc"
+    }
+  ]
+}

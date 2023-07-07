@@ -1,0 +1,17 @@
+{
+  "title": "Snap Runtime Demo",
+  "layout": "Details",
+  "desc": "A simple example that builds the dungeon at runtime and spawns the player in the spawn room",
+  "image": "detail/sample_snap_runtime",
+  "actions": [
+    {
+      "type": "CloneScene",
+      "path": "/DungeonArchitect/Samples/DA_SnapMap_Demo2/SnapDemoMap"
+    },
+    {
+      "type": "Documentation",
+      "path": "https://docs.dungeonarchitect.dev/ue4/snap-flow
+"
+    }
+  ]
+}

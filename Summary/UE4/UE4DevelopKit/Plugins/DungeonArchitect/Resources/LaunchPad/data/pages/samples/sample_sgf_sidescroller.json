@@ -1,0 +1,17 @@
+{
+  "title": "Side Scroller Game",
+  "layout": "Details",
+  "desc": "A side scroller game demo with Key-Locks, NPCs, Player Controller and much more",
+  "image": "detail/sample_sgf_sidescroller",
+  "actions": [
+    {
+      "type": "CloneScene",
+      "path": "/DungeonArchitect/Samples/DA_SnapGridFlow_SideScroller/Maps/DA_SS_Demo"
+    },
+    {
+      "type": "Documentation",
+      "path": "https://docs.dungeonarchitect.dev/ue4/snap-grid-flow
+"
+    }
+  ]
+}

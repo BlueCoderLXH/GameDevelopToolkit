@@ -1,0 +1,16 @@
+{
+  "title": "Simple City",
+  "layout": "Details",
+  "desc": "Build a simple city with roads, houses, parks, city walls, foliage etc",
+  "image": "detail/sample_city",
+  "actions": [
+    {
+      "type": "CloneScene",
+      "path": "/DungeonArchitect/Samples/DA_CityBuilder_Demo/Maps/CityBuilderDemo_01"
+    },
+	{
+      "type": "Documentation",
+	  "path": ""
+    }
+  ]
+}

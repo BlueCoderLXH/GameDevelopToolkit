@@ -1,0 +1,17 @@
+{
+  "title": "Snap Level Demo",
+  "layout": "Details",
+  "desc": "A simpler snap map example with rooms and corridors",
+  "image": "detail/sample_snap_level_simple",
+  "actions": [
+    {
+      "type": "CloneSceneAndBuild",
+      "path": "/DungeonArchitect/Samples/DA_SnapMap_Demo/SnapDemo"
+    },
+    {
+      "type": "Documentation",
+      "path": "https://docs.dungeonarchitect.dev/ue4/snap-flow
+"
+    }
+  ]
+}

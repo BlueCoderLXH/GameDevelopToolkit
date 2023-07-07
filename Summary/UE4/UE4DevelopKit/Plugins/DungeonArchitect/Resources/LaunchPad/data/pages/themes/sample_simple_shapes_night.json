@@ -1,0 +1,16 @@
+{
+  "title": "Simple Shapes (Night)",
+  "layout": "Details",
+  "desc": "A basic theme created using simple shapes and lights (for night mode)",
+  "image": "detail/sample_simple_shapes_night",
+  "actions": [
+    {
+      "type": "CloneTheme",
+      "path": "/DungeonArchitect/Samples/DA_TutorialGame/Dungeons/D_MyTheme_Night"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=bkIaHRJP4CA"
+    }
+  ]
+}

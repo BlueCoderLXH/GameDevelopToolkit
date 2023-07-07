@@ -1,0 +1,21 @@
+{
+  "title": "Grid Flow Simple",
+  "layout": "Details",
+  "desc": "A minimalistic theme for the grid flow builder.  (REQUIRES 4.24+)",
+  "image": "detail/sample_gridflow_cube",
+  "actions": [
+    {
+      "type": "CloneSceneAndBuild",
+      "path": "/DungeonArchitect/Samples/DA_GridFlow/Maps/GFMap_Blocks"
+    },
+    {
+      "type": "Video",
+      "path": "https://youtu.be/bUopKyowfQg?t=207"
+    },
+    {
+      "type": "Documentation",
+      "path": "https://docs.dungeonarchitect.dev/ue4/grid-flow
+"
+    }
+  ]
+}

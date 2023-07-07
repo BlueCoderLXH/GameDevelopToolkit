@@ -1,0 +1,21 @@
+{
+  "title": "City Demo",
+  "layout": "Details",
+  "desc": "Build a procedural city with dungeon architect",
+  "image": "detail/sample_city",
+  "actions": [
+    {
+      "type": "CloneSceneAndBuild",
+      "path": "/DungeonArchitect/Samples/DA_CityBuilder_Demo/Maps/CityBuilderDemo_01"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=g24ep2_Zvi4"
+    },
+    {
+      "type": "Documentation",
+      "path": "
+"
+    }
+  ]
+}

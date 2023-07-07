@@ -1,0 +1,33 @@
+{
+	"FileVersion": 3,
+	"Version": 123,
+	"VersionName": "2.21.3",
+	"FriendlyName": "Dungeon Architect",
+	"Description": "Build procedural dungeons",
+	"Category": "Procedural",
+	"CreatedBy": "Code Respawn",
+	"CreatedByURL": "http://coderespawn.com",
+	"DocsURL": "",
+	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/1a4ad2a06f174a26af8a29728241ce42",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"Installed": true,
+	"Plugins": [
+		{
+			"Name": "EditorScriptingUtilities",
+			"Enabled": true
+		},
+	],
+	"Modules": [
+		{
+			"Name": "DungeonArchitectRuntime",
+			"Type": "Runtime",
+			"LoadingPhase": "PreDefault"
+		},
+		{
+			"Name": "DungeonArchitectEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
+		}
+	]
+}

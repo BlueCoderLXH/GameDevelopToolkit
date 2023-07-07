@@ -1,0 +1,17 @@
+{
+  "title": "Wrap Volume",
+  "layout": "Details",
+  "desc": "Create a Volume around each room using a marker emitter (4.25+)",
+  "image": "detail/sample_gridflow_wrap",
+  "actions": [
+    {
+      "type": "CloneScene",
+      "path": "/DungeonArchitect/Samples/DA_GridFlow_WrapVolume/GridFlow_WrapVolume"
+    },
+    {
+      "type": "Documentation",
+      "path": "https://docs.dungeonarchitect.dev/ue4/grid-flow
+"
+    }
+  ]
+}

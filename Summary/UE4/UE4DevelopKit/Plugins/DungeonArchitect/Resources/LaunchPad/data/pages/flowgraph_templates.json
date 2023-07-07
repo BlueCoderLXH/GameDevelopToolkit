@@ -1,0 +1,48 @@
+{
+	"title": "Graph Templates",
+	"layout": "CardGrid",
+	"description": "Create a new graph from one of these templates",
+	"showCategoryTitles": true,
+	"categories": 
+	[
+		{
+			"category": "Grid Flow Templates",
+			"cards": [
+				{
+					"title": "Default",
+					"desc": "Branches, Treasure, Enemies and Key-Locks etc",
+					"image": "detail/thumb/builder_gridflow1_t",
+					"link": "pages/templates_flow/template_gridflow1.json"
+				}
+			]
+		},
+		{
+			"category": "Snap Flow Templates",
+			"cards": [
+				{
+					"title": "Default",
+					"desc": "Treasure Rooms, Shops, Teleporters, Key-Locks, Boss, etc",
+					"image": "detail/thumb/sample_snap_level_t",
+					"link": "pages/templates_flow/template_snap1.json"
+				}
+			]
+		},
+		{
+			"category": "Snap Grid Flow Templates",
+			"cards": [
+				{
+					"title": "Default",
+					"desc": "Multi-story graph with key-locks, treasure room, shop etc",
+					"image": "detail/thumb/sample_sgf_layout_t",
+					"link": "pages/templates_flow/template_sgf_fps.json"
+				},
+				{
+					"title": "Side Scroller",
+					"desc": "Side Scroller graph with key-locks, treasure rooms, shops and more",
+					"image": "detail/thumb/sample_sgf_ss_layout_t",
+					"link": "pages/templates_flow/template_sgf_ss.json"
+				}
+			]
+		}
+	]
+}

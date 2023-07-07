@@ -1,0 +1,16 @@
+{
+  "title": "Isaac Builder",
+  "layout": "Details",
+  "desc": "Build levels like in the game Binding of Isaac",
+  "image": "detail/sample_isaac",
+  "actions": [
+    {
+      "type": "CloneScene",
+      "path": "/DungeonArchitect/Samples/DA_Isaac_Demo/Maps/IsaacDemo_DesignTime"
+    },
+	{
+      "type": "Documentation",
+	  "path": ""
+    }
+  ]
+}

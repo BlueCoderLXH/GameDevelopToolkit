@@ -1,0 +1,17 @@
+{
+  "title": "Advanced: Curve Filter",
+  "layout": "Details",
+  "desc": "Modify markers at a low level right before they are sent to the theme engine.  This example modifies the positions of the markers to give a curve effect",
+  "image": "detail/sample_grid_curve",
+  "actions": [
+    {
+      "type": "CloneSceneAndBuild",
+      "path": "/DungeonArchitect/Samples/DA_Misc_Examples/Maps/Advanced_DungeonCurveFilter"
+    },
+    {
+      "type": "Documentation",
+      "path": "https://docs.dungeonarchitect.dev/ue4/advanced-dungeons/marker-emitters
+"
+    }
+  ]
+}

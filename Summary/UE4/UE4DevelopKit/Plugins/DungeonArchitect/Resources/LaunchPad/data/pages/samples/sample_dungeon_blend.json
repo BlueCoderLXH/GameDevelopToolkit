@@ -1,0 +1,21 @@
+{
+  "title": "Multi Dungeon Blending",
+  "layout": "Details",
+  "desc": "Blend user designed art with procedural dungeons",
+  "image": "detail/sample_dungeon_blend",
+  "actions": [
+    {
+      "type": "CloneScene",
+      "path": "/DungeonArchitect/Samples/DA_Misc_Examples/Maps/Multi_Dungeon_Custom_Layout"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=81W6Rhwmhfc"
+    },
+    {
+      "type": "Documentation",
+      "path": "
+"
+    }
+  ]
+}

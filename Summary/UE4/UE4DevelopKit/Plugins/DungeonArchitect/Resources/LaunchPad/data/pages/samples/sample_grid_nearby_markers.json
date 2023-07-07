@@ -1,0 +1,17 @@
+{
+  "title": "Grid Nearby Marker",
+  "layout": "Details",
+  "desc": "Get nearby markers on the grid builder",
+  "image": "detail/sample_grid_nearby_markers",
+  "actions": [
+    {
+      "type": "CloneSceneAndBuild",
+      "path": "/DungeonArchitect/Samples/DA_Query_Examples/Grid/NearbyMarker_GridQuery"
+    },
+    {
+      "type": "Documentation",
+      "path": "https://docs.dungeonarchitect.dev/ue4/advanced-dungeons/query-interface
+"
+    }
+  ]
+}

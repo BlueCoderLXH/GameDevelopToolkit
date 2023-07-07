@@ -1,0 +1,16 @@
+{
+  "title": "Candy",
+  "layout": "Details",
+  "desc": "A simple clean theme using flat textures",
+  "image": "detail/sample_candy",
+  "actions": [
+    {
+      "type": "CloneTheme",
+      "path": "/DungeonArchitect/Samples/DA_Candy/Themes/D_Candy_v2"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=_BZroZfg1ZM"
+    }
+  ]
+}

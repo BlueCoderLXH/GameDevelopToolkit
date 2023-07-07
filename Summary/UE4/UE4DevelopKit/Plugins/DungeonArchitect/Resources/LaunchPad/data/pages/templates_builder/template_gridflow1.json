@@ -1,0 +1,16 @@
+{
+  "title": "Default",
+  "layout": "Details",
+  "desc": "A grid flow theme with various branches, treasure, enemies and key-locks",
+  "image": "detail/builder_gridflow1",
+  "actions": [
+    {
+      "type": "CloneScene",
+      "path": "/DungeonArchitect/Core/Builders/GridFlowContent/FlowGraph/DefaultGridFlow"
+    },
+    {
+      "type": "Video",
+      "path": "https://youtu.be/bUopKyowfQg?t=149"
+    }
+  ]
+}

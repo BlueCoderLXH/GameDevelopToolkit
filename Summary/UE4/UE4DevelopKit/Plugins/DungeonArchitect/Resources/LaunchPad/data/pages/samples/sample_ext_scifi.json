@@ -1,0 +1,27 @@
+{
+  "title": "SciFi Theme",
+  "layout": "Details",
+  "desc": "",
+  "image": "detail/sample_ext_scifi",
+  "actions": [
+    {
+      "type": "CloneScene",
+      "path": "/DungeonArchitect/Samples/DA_SciFi_Props/Maps/ScifiMapDemo"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=kef5xQQbNiQ"
+    },
+	{
+      "type": "LauncherURL",
+	  "path": "https://www.unrealengine.com/marketplace/scifi-props-pack",
+	  "title": "SciFi Props",
+	  "width": 72
+    },
+    {
+      "type": "Documentation",
+      "path": "
+"
+    }
+  ]
+}

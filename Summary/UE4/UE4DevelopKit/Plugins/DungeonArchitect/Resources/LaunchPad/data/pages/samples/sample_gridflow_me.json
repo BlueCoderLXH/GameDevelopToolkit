@@ -1,0 +1,17 @@
+{
+  "title": "Grid Flow Query",
+  "layout": "Details",
+  "desc": "Uses the grid flow query interface in a marker emitter to selectively place custom markers on room centers and in each walkable room tile",
+  "image": "detail/sample_gridflow_me",
+  "actions": [
+    {
+      "type": "CloneScene",
+      "path": "/DungeonArchitect/Samples/DA_GridFlow_MarkerEmitter/GF_MarkerEmitter"
+    },
+    {
+      "type": "Documentation",
+      "path": "https://docs.dungeonarchitect.dev/ue4/grid-flow
+"
+    }
+  ]
+}

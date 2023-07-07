@@ -1,0 +1,16 @@
+{
+  "title": "Simple Shapes",
+  "layout": "Details",
+  "desc": "A basic theme created using simple shapes",
+  "image": "detail/sample_simple_shapes",
+  "actions": [
+    {
+      "type": "CloneTheme",
+      "path": "/DungeonArchitect/Samples/DA_TutorialGame/Dungeons/D_MyTheme1"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=7nj2pttBUTw"
+    }
+  ]
+}

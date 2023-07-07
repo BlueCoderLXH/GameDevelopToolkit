@@ -1,0 +1,21 @@
+{
+  "title": "Destructible Demo",
+  "layout": "Details",
+  "desc": "Destroy you dungeon geoemtry using Apex Destruction.  Enable APEX Destruction plugin from Editor > Plugins",
+  "image": "detail/sample_destruct",
+  "actions": [
+    {
+      "type": "CloneSceneAndBuild",
+      "path": "/DungeonArchitect/Samples/DA_Destructible/Maps/DestructibleDemo"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=HwkAuuCnFYk"
+    },
+    {
+      "type": "Documentation",
+      "path": "
+"
+    }
+  ]
+}

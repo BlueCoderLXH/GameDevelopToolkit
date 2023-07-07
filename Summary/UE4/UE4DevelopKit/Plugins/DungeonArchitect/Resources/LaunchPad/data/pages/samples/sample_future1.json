@@ -1,0 +1,21 @@
+{
+  "title": "Futuristic (Static)",
+  "layout": "Details",
+  "desc": "A futuristic starter theme",
+  "image": "detail/sample_future1",
+  "actions": [
+    {
+      "type": "CloneSceneAndBuild",
+      "path": "/DungeonArchitect/Samples/DA_StarterPack/Maps/DugeonDesignTime"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=uowWAVwEiEc"
+    },
+    {
+      "type": "Documentation",
+      "path": "https://docs.dungeonarchitect.dev/ue4
+"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "title": "Grid Builder",
+  "layout": "Details",
+  "desc": "Build a dungeon on a grid based system with support for stairs",
+  "image": "detail/sample_candy",
+  "actions": [
+    {
+      "type": "CloneScene",
+      "path": "/DungeonArchitect/Samples/DA_Candy/Maps/CandyDemo"
+    },
+	{
+      "type": "Documentation",
+	  "path": ""
+    }
+  ]
+}

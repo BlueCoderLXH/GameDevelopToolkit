@@ -1,0 +1,20 @@
+{
+  "title": "Grid Flow Builder",
+  "layout": "Details",
+  "desc": "Design and control the flow of your dungeons with this powerful new builder",
+  "image": "detail/builder_gridflow1",
+  "actions": [
+    {
+      "type": "CloneScene",
+      "path": "/DungeonArchitect/Samples/DA_GridFlow/Maps/GFMap_Blocks"
+    },
+    {
+      "type": "Video",
+      "path": "https://youtu.be/bUopKyowfQg?t=149"
+    },
+	{
+      "type": "Documentation",
+	  "path": ""
+    }
+  ]
+}

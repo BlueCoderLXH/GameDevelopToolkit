@@ -1,0 +1,17 @@
+{
+  "title": "Snap Grid FPS Demo",
+  "layout": "Details",
+  "desc": "A multi-floor FPS game demo with Key-Locks, One-way doors and more",
+  "image": "detail/sample_sgf_fps_simple",
+  "actions": [
+    {
+      "type": "CloneScene",
+      "path": "/DungeonArchitect/Samples/DA_SnapGridFlow_FPS/Maps/SGF_FPS_Demo"
+    },
+    {
+      "type": "Documentation",
+      "path": "https://docs.dungeonarchitect.dev/ue4/snap-grid-flow
+"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "title": "SciFi 2",
+  "layout": "Details",
+  "desc": "",
+  "image": "detail/sample_ext_scifimk4",
+  "actions": [
+    {
+      "type": "CloneScene",
+      "path": "/DungeonArchitect/Samples/DA_WoodenPier/Maps/PierDesignTime"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=qjLxol2kvqg"
+    },
+	{
+      "type": "LauncherURL",
+	  "path": "https://www.unrealengine.com/marketplace/en-US/product/top-down-sci-fi/questions",
+	  "title": "TopDown SciFi",
+	  "width": 72
+    }
+  ]
+}

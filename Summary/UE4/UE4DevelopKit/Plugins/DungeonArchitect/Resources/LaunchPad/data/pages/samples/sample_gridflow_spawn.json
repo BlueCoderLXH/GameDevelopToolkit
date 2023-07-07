@@ -1,0 +1,21 @@
+{
+  "title": "Static Spawn Room",
+  "layout": "Details",
+  "desc": "Walk into the dungeon's spawn room from outside the dungeon. This demo shows how to specify a static spawn room position and blend it with external static art assets",
+  "image": "detail/sample_gridflow_spawn",
+  "actions": [
+    {
+      "type": "CloneScene",
+      "path": "/DungeonArchitect/Samples/DA_GridFlow/Maps/GFMap_Blocks_StaticGeom"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=uyDGfDHiLHo&t=470s"
+    },
+    {
+      "type": "Documentation",
+      "path": "https://docs.dungeonarchitect.dev/ue4/grid-flow
+"
+    }
+  ]
+}

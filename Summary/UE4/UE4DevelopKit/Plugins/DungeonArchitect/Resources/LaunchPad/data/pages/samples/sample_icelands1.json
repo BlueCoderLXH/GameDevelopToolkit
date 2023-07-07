@@ -1,0 +1,27 @@
+{
+  "title": "Frost Forge",
+  "layout": "Details",
+  "desc": "Icy scene made using Infinity Blade's Ice Lands free content",
+  "image": "detail/sample_icelands",
+  "actions": [
+    {
+      "type": "CloneSceneAndBuild",
+      "path": "/DungeonArchitect/Samples/DA_InfinityBlade_Ice/Maps/1_InfinityBladeIce_Snow"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=IBubKo3hzqU"
+    },
+	{
+      "type": "LauncherURL",
+	  "path": "https://www.unrealengine.com/marketplace/en-US/product/infinity-blade-ice-lands",
+	  "title": "Download Ice Lands",
+	  "width": 72
+    },
+    {
+      "type": "Documentation",
+      "path": "
+"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+	"title": "Documentation",
+	"layout": "CardGrid",
+	"description": "View online documentation",
+	"showCategoryTitles": false,
+	"heightOverride": 210,
+	"categories": 
+	[
+		{
+			"category": "default",
+			"cards":
+			[
+				{
+					"title": "Tutorials",
+					"desc": "Learn how to use Dungeon Architect. Start here if you are new",
+					"image": "thumbs/thumb_docs_book",
+					"url": "https://docs.dungeonarchitect.dev/ue4"
+				},
+				{
+					"title": "User Manual",
+					"desc": "Comprehensive User Manual",
+					"image": "thumbs/thumb_docs_book",
+					"url": "https://coderespawn.github.io/dungeon-architect-user-guide-ue4"
+				},
+				{
+					"title": "Change Log",
+					"desc": "Find what's new in this version of Dungeon Archtiect",
+					"image": "thumbs/thumb_docs_list",
+					"url": "https://gist.github.com/coderespawn/590e8bbb4adc9782cab8e48ae2a64864"
+				}
+			]
+		}
+	]
+}

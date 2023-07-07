@@ -1,0 +1,17 @@
+{
+  "title": "Snap Multiplayer Demo",
+  "layout": "Details",
+  "desc": "Multi-player enabled snap map game demo. Also works with dedicated servers",
+  "image": "detail/sample_snap_runtime",
+  "actions": [
+    {
+      "type": "CloneScene",
+      "path": "/DungeonArchitect/Samples/DA_SnapMap_MP_Demo/Snap_MP_Map"
+    },
+    {
+      "type": "Documentation",
+      "path": "https://docs.dungeonarchitect.dev/ue4/snap-flow
+"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "title": "Snap Negation Vol 2",
+  "layout": "Details",
+  "desc": "Avoid building the snap dungeon at certain areas.  This demo uses Negation Volumes, so the snap modules will not grow any rooms around the volumes. Use this to blend with your existing world geometry",
+  "image": "detail/sample_snap_negation_2",
+  "actions": [
+    {
+      "type": "CloneSceneAndBuild",
+      "path": "/DungeonArchitect/Samples/DA_SnapMap_Negation/SnapMap_Negation2"
+    },
+    {
+      "type": "Documentation",
+      "path": "https://docs.dungeonarchitect.dev/ue4/snap-flow
+"
+    }
+  ]
+}

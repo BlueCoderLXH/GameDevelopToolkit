@@ -1,0 +1,26 @@
+{
+	"title": "Tutorials",
+	"layout": "CardGrid",
+	"showCategoryTitles": false,
+	"categories": 
+	[
+		{
+			"category": "default",
+			"cards":
+			[
+				{
+					"title": "Overview",
+					"desc": "Basic overview of the system",
+					"image": "thumb_videotut_vid1",
+					"link": "pages/video_tuts/overview.json"
+				},
+				{
+					"title": "Theme Editor",
+					"desc": "Explore the powerful themeing engine of Dungeon Architect",
+					"image": "thumb_videotut_theme_editor",
+					"link": "pages/video_tuts/theme_editor.json"
+				}
+			]
+		}
+	]
+}

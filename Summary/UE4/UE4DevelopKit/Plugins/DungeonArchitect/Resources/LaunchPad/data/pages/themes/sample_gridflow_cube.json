@@ -1,0 +1,12 @@
+{
+  "title": "Grid Flow Simple",
+  "layout": "Details",
+  "desc": "A minimalistic theme for the grid flow builder.  (REQUIRES 4.24+)",
+  "image": "detail/sample_gridflow_cube",
+  "actions": [
+    {
+      "type": "CloneTheme",
+      "path": "/DungeonArchitect/Core/Builders/GridFlowContent/Theme/T_DefaultGridFlow"
+    },
+  ]
+}

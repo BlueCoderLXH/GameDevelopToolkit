@@ -1,0 +1,29 @@
+{
+  "title": "Procedural Deathmatch",
+  "layout": "Details",
+  "desc": "Generate a random map at runtime with AI bots, powerups, spawn points etc scattered all over the map using only blueprints",
+  "image": "detail/sample_dm",
+  "actions": [
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=VZIIEQoMp7o"
+    },
+	{
+      "type": "LauncherURL",
+	  "path": "https://github.com/coderespawn/dungeon-architect-ue4-demo-dm",
+	  "title": "Download Project files",
+	  "width": 72
+    },
+	{
+      "type": "LauncherURL",
+	  "path": "https://www.unrealengine.com/marketplace/en-US/product/shooter-game",
+	  "title": "Download Shooter Game",
+	  "width": 72
+    },
+    {
+      "type": "Documentation",
+      "path": "
+"
+    }
+  ]
+}

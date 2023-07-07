@@ -1,0 +1,17 @@
+{
+  "title": "Cluster Theme",
+  "layout": "Details",
+  "desc": "Use multiple themes across different parts of your dungeon",
+  "image": "detail/sample_cluster",
+  "actions": [
+    {
+      "type": "CloneSceneAndBuild",
+      "path": "/DungeonArchitect/Samples/DA_Misc_Examples/Maps/ClusteredTheming"
+    },
+    {
+      "type": "Documentation",
+      "path": "https://docs.dungeonarchitect.dev/ue4/advanced-theming/clustered-theming
+"
+    }
+  ]
+}

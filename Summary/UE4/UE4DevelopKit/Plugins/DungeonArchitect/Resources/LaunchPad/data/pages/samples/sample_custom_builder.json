@@ -1,0 +1,21 @@
+{
+  "title": "Custom Grid Builder Demo",
+  "layout": "Details",
+  "desc": "Build custom layouts using blueprints",
+  "image": "detail/sample_custom_builder",
+  "actions": [
+    {
+      "type": "CloneSceneAndBuild",
+      "path": "/DungeonArchitect/Samples/DA_CustomBuilder/Maps/1_DA_CustomBuilderExample_Straight"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=AzO2gI0NV-Q"
+    },
+    {
+      "type": "Documentation",
+      "path": "
+"
+    }
+  ]
+}

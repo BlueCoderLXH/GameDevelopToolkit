@@ -1,0 +1,21 @@
+{
+  "title": "Candy",
+  "layout": "Details",
+  "desc": "A simple clean theme using flat textures",
+  "image": "detail/sample_candy",
+  "actions": [
+    {
+      "type": "CloneSceneAndBuild",
+      "path": "/DungeonArchitect/Samples/DA_Candy/Maps/CandyDemo"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=_BZroZfg1ZM"
+    },
+    {
+      "type": "Documentation",
+      "path": "https://docs.dungeonarchitect.dev/ue4
+"
+    }
+  ]
+}

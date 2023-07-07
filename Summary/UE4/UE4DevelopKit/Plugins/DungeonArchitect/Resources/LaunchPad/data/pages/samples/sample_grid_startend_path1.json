@@ -1,0 +1,17 @@
+{
+  "title": "Grid: Start End Path (Design)",
+  "layout": "Details",
+  "desc": "Draw a path between two cells.  The path is created along a walkable path (through doors, stairs etc)",
+  "image": "detail/sample_grid_startend_path",
+  "actions": [
+    {
+      "type": "CloneSceneAndBuild",
+      "path": "/DungeonArchitect/Samples/DA_Query_Examples/Grid/Path_DesignTime_GridQueryExample"
+    },
+    {
+      "type": "Documentation",
+      "path": "https://docs.dungeonarchitect.dev/ue4/advanced-dungeons/query-interface
+"
+    }
+  ]
+}

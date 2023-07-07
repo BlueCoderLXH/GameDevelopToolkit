@@ -1,0 +1,21 @@
+{
+  "title": "Runtime Level Editor",
+  "layout": "Details",
+  "desc": "An example of building dungeon layouts at runtime",
+  "image": "detail/sample_leveled",
+  "actions": [
+    {
+      "type": "CloneScene",
+      "path": "/DungeonArchitect/Samples/DA_StarterPack/Maps/RuntimeLevelBuilder"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=Xor9nxeNoO4"
+    },
+    {
+      "type": "Documentation",
+      "path": "https://docs.dungeonarchitect.dev/ue4
+"
+    }
+  ]
+}

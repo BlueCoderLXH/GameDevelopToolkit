@@ -1,0 +1,21 @@
+{
+  "title": "Simple Shapes",
+  "layout": "Details",
+  "desc": "A basic theme created using simple shapes",
+  "image": "detail/sample_simple_shapes",
+  "actions": [
+    {
+      "type": "CloneSceneAndBuild",
+      "path": "/DungeonArchitect/Samples/DA_TutorialGame/Maps/DemoMap1"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=7nj2pttBUTw"
+    },
+    {
+      "type": "Documentation",
+      "path": "https://docs.dungeonarchitect.dev/ue4
+"
+    }
+  ]
+}

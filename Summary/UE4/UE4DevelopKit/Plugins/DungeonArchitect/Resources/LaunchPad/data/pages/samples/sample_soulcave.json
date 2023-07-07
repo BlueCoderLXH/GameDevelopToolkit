@@ -1,0 +1,27 @@
+{
+  "title": "Soul Forge",
+  "layout": "Details",
+  "desc": "A sample theme made using the free Soul Cave assets",
+  "image": "detail/sample_soulcave",
+  "actions": [
+    {
+      "type": "CloneSceneAndBuild",
+      "path": "/DungeonArchitect/Samples/DA_SoulForge/Maps/SoulForgeDemo"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=X8GE72IF7QU"
+    },
+	{
+      "type": "LauncherURL",
+	  "path": "https://www.unrealengine.com/marketplace/en-US/product/soul-cave",
+	  "title": "Download Soul Cave",
+	  "width": 72
+    },
+    {
+      "type": "Documentation",
+      "path": "
+"
+    }
+  ]
+}

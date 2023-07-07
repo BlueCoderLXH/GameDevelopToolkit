@@ -1,0 +1,16 @@
+{
+  "title": "Snap Grid Flow Builder",
+  "layout": "Details",
+  "desc": "Stitch Snap modules using the grid flow framework in a 3D grid",
+  "image": "detail/sample_sgf_layout",
+  "actions": [
+    {
+      "type": "CloneScene",
+      "path": "/DungeonArchitect/Samples/DA_SnapGridFlow_FPS/Maps/SGF_FPS_Demo"
+    },
+	{
+      "type": "Documentation",
+	  "path": ""
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "title": "Grass Lands 2",
+  "layout": "Details",
+  "desc": "Castle theme made using Infinity Blade's Grass Lands free content",
+  "image": "detail/sample_grasslands2",
+  "actions": [
+    {
+      "type": "CloneSceneAndBuild",
+      "path": "/DungeonArchitect/Samples/DA_InfinityBlade_Grass/Maps/DA_InfinityBlade_Grass_1"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=MkYJn2egYys"
+    },
+	{
+      "type": "LauncherURL",
+	  "path": "https://www.unrealengine.com/marketplace/en-US/product/infinity-blade-plain-lands",
+	  "title": "Download Grass Lands",
+	  "width": 72
+    },
+    {
+      "type": "Documentation",
+      "path": "
+"
+    }
+  ]
+}

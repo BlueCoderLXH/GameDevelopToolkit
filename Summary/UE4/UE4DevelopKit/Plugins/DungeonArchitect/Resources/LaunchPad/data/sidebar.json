@@ -1,0 +1,11 @@
+{
+	"items": 
+	[
+		{ "page": "pages/samples.json",				"title": "Samples" },
+		{ "page": "pages/builder_templates.json",	"title": "Builder Templates" },
+		{ "page": "pages/flowgraph_templates.json",	"title": "Flow Graph Templates" },
+		{ "page": "pages/theme_templates.json",		"title": "Theme Templates" },
+		{ "page": "pages/documentation.json",		"title": "Documentation" },
+		{ "page": "pages/support.json",				"title": "Support" }
+	]
+}

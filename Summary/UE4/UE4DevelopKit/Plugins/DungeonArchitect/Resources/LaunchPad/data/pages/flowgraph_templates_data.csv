@@ -1,0 +1,7 @@
+Grid Flow Templates												
+	Default	Branches, Treasure, Enemies and Key-Locks etc	A grid flow theme with various branches, treasure, enemies and key-locks	/DungeonArchitect/Core/Builders/GridFlowContent/FlowGraph/DefaultGridFlow.DefaultGridFlow	builder_gridflow1	template_gridflow1	https://youtu.be/bUopKyowfQg?t=149					
+Snap Flow Templates												
+	Default	Treasure Rooms, Shops, Teleporters, Key-Locks, Boss, etc	A flow graph with mini-boss, treasure rooms, shops, teleporters, key-locks and more	/DungeonArchitect/Samples/DA_SnapMap_GameDemo/MissionGraphs/DF_SimpleKeyLock.DF_SimpleKeyLock	sample_snap_level	template_snap1	https://www.youtube.com/watch?v=woKkR6P_sHY					
+Snap Grid Flow Templates												
+	Default	Multi-story graph with key-locks, treasure room, shop etc	Multi-story graph with key-locks, treasure room, shop etc	/DungeonArchitect/Samples/DA_SnapGridFlow_FPS/Snap/FlowGraphs/SGF_FPS_Demo.SGF_FPS_Demo	sample_sgf_layout	template_sgf_fps						
+	Side Scroller	Side Scroller graph with key-locks, treasure rooms, shops and more	Side Scroller graph with key-locks, treasure rooms, shops and more	/DungeonArchitect/Samples/DA_SnapGridFlow_SideScroller/FlowGraph/SGF_SideScroller.SGF_SideScroller	sample_sgf_ss_layout	template_sgf_ss						

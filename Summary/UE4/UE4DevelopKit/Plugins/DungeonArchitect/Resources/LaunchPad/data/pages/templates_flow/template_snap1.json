@@ -1,0 +1,16 @@
+{
+  "title": "Default",
+  "layout": "Details",
+  "desc": "A flow graph with mini-boss, treasure rooms, shops, teleporters, key-locks and more",
+  "image": "detail/sample_snap_level",
+  "actions": [
+    {
+      "type": "CloneSnapFlow",
+      "path": "/DungeonArchitect/Samples/DA_SnapMap_GameDemo/MissionGraphs/DF_SimpleKeyLock"
+    },
+    {
+      "type": "Video",
+      "path": "https://www.youtube.com/watch?v=woKkR6P_sHY"
+    }
+  ]
+}

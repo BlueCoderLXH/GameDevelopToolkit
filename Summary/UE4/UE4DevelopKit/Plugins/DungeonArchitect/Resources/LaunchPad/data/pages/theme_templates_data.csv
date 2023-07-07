@@ -1,0 +1,17 @@
+Grid Builder												
+	Futuristic	A futuristic sample theme	A futuristic starter theme	/DungeonArchitect/Samples/DA_StarterPack/DungeonTheme/D_StarterPackTheme.D_StarterPackTheme	sample_future1	sample_future1	https://www.youtube.com/watch?v=uowWAVwEiEc	1				
+	Candy	A simple clean theme using flat textures	A simple clean theme using flat textures	/DungeonArchitect/Samples/DA_Candy/Themes/D_Candy_v2.D_Candy_v2	sample_candy	sample_candy	https://www.youtube.com/watch?v=_BZroZfg1ZM	1				
+	Simple Shapes	A basic theme created using simple shapes	A basic theme created using simple shapes	/DungeonArchitect/Samples/DA_TutorialGame/Dungeons/D_MyTheme1.D_MyTheme1	sample_simple_shapes	sample_simple_shapes	https://www.youtube.com/watch?v=7nj2pttBUTw	1				
+	Simple Shapes (Night)	A basic theme created using simple shapes and lights	A basic theme created using simple shapes and lights (for night mode)	/DungeonArchitect/Samples/DA_TutorialGame/Dungeons/D_MyTheme_Night.D_MyTheme_Night	sample_simple_shapes_night	sample_simple_shapes_night	https://www.youtube.com/watch?v=bkIaHRJP4CA	1				
+	Outdoor Cliff	A toon forest theme made using low poly free assets	A toon forest theme made using low poly free assets	/DungeonArchitect/Samples/DA_OutdoorCliff/Themes/D_ToonLand.D_ToonLand	sample_cliff	sample_cliff	https://www.youtube.com/watch?v=_RdZeXH8LGY	1				
+	Soul Forge	A sample theme made using the free Soul Cave assets	A sample theme made using the free Soul Cave assets	/DungeonArchitect/Samples/DA_SoulForge/Themes/D_SoulCave.D_SoulCave	sample_soulcave	sample_soulcave	https://www.youtube.com/watch?v=X8GE72IF7QU	1	https://www.unrealengine.com/marketplace/en-US/product/soul-cave	Download Soul Cave		
+Grid Flow Builder												
+	Grid Flow Simple	A minimalistic theme for the grid flow builder	A minimalistic theme for the grid flow builder.  (REQUIRES 4.24+)	/DungeonArchitect/Core/Builders/GridFlowContent/Theme/T_DefaultGridFlow.T_DefaultGridFlow	sample_gridflow_cube	sample_gridflow_cube		1				
+	Grid Flow Prehistoric	Prehistoric low poly theme for the grid flow builder	Prehistoric low poly theme for the grid flow builder (REQUIRES 4.24+)	/DungeonArchitect/Samples/DA_GridFlow/Themes/T_GridFlow_Prehistoric.T_GridFlow_Prehistoric	sample_gridflow_ph	sample_gridflow_ph		1				
+City Builder												
+	City Demo	City theme built using low poly assets	Build a procedural city with dungeon architect	/DungeonArchitect/Samples/DA_CityBuilder_Demo/Themes/T_ToonCity.T_ToonCity	sample_city	sample_city	https://www.youtube.com/watch?v=g24ep2_Zvi4	1				
+Isaac Builder												
+	Isaac Basic	A basic theme created using simple shapes	Build levels like in the game Binding of Isaac	/DungeonArchitect/Samples/DA_TutorialGame/Dungeons/D_MyTheme1.D_MyTheme1	sample_isaac	sample_isaac1	https://www.youtube.com/watch?v=eRrh-SLcJ0A	1				
+External Assets												
+	Wooden Pier			/DungeonArchitect/Samples/DA_WoodenPier/Dungeons/Wood.Wood	sample_ext_wood	sample_ext_wood	https://www.youtube.com/watch?v=tGOclVH-10s	0	https://www.unrealengine.com/marketplace/en-US/product/modular-wooden-prop-pack	Wooden Props		
+	SciFi			/DungeonArchitect/Samples/DA_SciFi_K4/Dungeon/SciFi_Indoor.SciFi_Indoor	sample_ext_scifimk4	sample_ext_scifimk4	https://www.youtube.com/watch?v=qjLxol2kvqg	0	https://www.unrealengine.com/marketplace/en-US/product/top-down-sci-fi/questions	TopDown SciFi		
