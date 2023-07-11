@@ -5,8 +5,8 @@
 
 /*
 	LZW_USE_CHAR_ARRAY_KEY		FLzwCharType
-	0							FString
-	1							TArray<TCHAR>
+	0                           FString
+	1                           TArray<TCHAR>
 
 	FLzwCharType use FString vs TArray<TCHAR>
 	- FString is faster than TArray<TCHAR>
