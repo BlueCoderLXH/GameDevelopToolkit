@@ -2,7 +2,7 @@
 
 FLzwCodeType FLZWEncoder::InitSymbolTable()
 {
-	SymbolTable.Reserve(LZW_SYMBOL_TABLE_LENGTH);
+	SymbolTable.Empty(LZW_SYMBOL_TABLE_LENGTH);
 	
 	// Init symbol table
 	FLzwCodeType NextCode = 0;
@@ -83,7 +83,7 @@ bool FLZWEncoder::Do(const FNetCompressionDataWrap& InData, FNetCompressionDataW
 
 FLzwCodeType FLzwDecoder::InitSymbolTable()
 {
-	SymbolTable.Reserve(LZW_SYMBOL_TABLE_LENGTH);
+	SymbolTable.Empty(LZW_SYMBOL_TABLE_LENGTH);
 
 	// Init symbol table
 	FLzwCodeType NextCode = 0;

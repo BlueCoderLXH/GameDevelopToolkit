@@ -1,8 +1,8 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 #include "CompressionTest.h"
 
-void FCompressionTestHelper::DoTest(ENetworkCompressionType CompressionType, uint8* DataArray, int32 Size)
-{
+void FCompressionPerformanceTest::DoTest(ENetworkCompressionType CompressionType, uint8* DataArray, int32 Size)
+{	
 	FMemory::Memzero(CompressBuffer, TestBufferLength);
 	FMemory::Memzero(UnCompressBuffer, TestBufferLength);
 	
@@ -12,34 +12,28 @@ void FCompressionTestHelper::DoTest(ENetworkCompressionType CompressionType, uin
 
 	const FString SourceDataStr = InData.ToString();
 
-	const TSharedPtr<FNetCompressionInterface> CompressionHandler = FNetCompressionFactory::New(CompressionType);
-	if (!CompressionHandler) return;
+	const TSharedPtr<FNetCompressionInterface>& CompressionHandler = TestData[(uint8)CompressionType].CompressionHandler;
+	
+	const int64 EncodeStartTime = FPlatformTime::Cycles64();
+	CompressionHandler->Encode(InData, EncodeData);
+	TestData[CompressionType].TotalEncodeTime += (FPlatformTime::Cycles64() - EncodeStartTime) / 1000.0f;
+	
+	const FString EncodeDataStr = EncodeData.ToString();
 
-	FString EncodeDataStr;
-	if (CompressionHandler->Encode(InData, EncodeData))
-	{
-		EncodeDataStr = EncodeData.ToString();
-	}
+	const int64 DecodeStartTime = FPlatformTime::Cycles64();
+	CompressionHandler->Decode(EncodeData, DecodeData);
+	TestData[CompressionType].TotalDecodeTime += (FPlatformTime::Cycles64() - DecodeStartTime) / 1000.0f;
 
-	FString DecodeDataStr;
-	if (CompressionHandler->Decode(EncodeData, DecodeData))
-	{
-		DecodeDataStr = DecodeData.ToString();
-	}
+	const FString DecodeDataStr = DecodeData.ToString();
 
 	const bool bIsResultOk = (SourceDataStr == DecodeDataStr);
 	if (bIsResultOk)
 	{
-		UE_LOG(LogNetCompression, Log, TEXT("%s result:Right ratio:%.2f%%"), *(CompressionHandler->GetName()), CompressionHandler->GetRatio() * 100);
+		TestData[CompressionType].TotalRatio += CompressionHandler->GetRatio() * 100;
+		TestData[CompressionType].TestCount++;
 	}
-	else
-	{
-		UE_LOG(LogNetCompression, Log, TEXT("SourceDataStr: %s"), *SourceDataStr);
-		UE_LOG(LogNetCompression, Log, TEXT("EncodeDataStr: %s"), *EncodeDataStr);
-		UE_LOG(LogNetCompression, Log, TEXT("DecodeDataStr: %s"), *DecodeDataStr);
-		
-		UE_LOG(LogNetCompression, Error, TEXT("%s result:Wrong ratio:%.2f%%"), *(CompressionHandler->GetName()), CompressionHandler->GetRatio() * 100);
-	}
+
+	TestData[CompressionType].bTestResult &= bIsResultOk;
 }
 
 ACompressionTest::ACompressionTest()
@@ -50,38 +44,33 @@ ACompressionTest::ACompressionTest()
 void ACompressionTest::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// uint8 DataArray1[] = {
-	// 	'A', 'B', 'A', 'B', 'A', 'B', 'A'
-	// };
-	// constexpr int32 DataArray1Size = sizeof(DataArray1) / sizeof(uint8);
 	
 	uint8* DataArray1 = new uint8[DataArrayCount];
 	const int32 DataArray1Size = DataArrayCount;
 	FMemory::Memzero(DataArray1, DataArray1Size);
+
+	const int32 RandomSeed = FPlatformTime::Cycles();
+	FMath::RandInit(RandomSeed);
 	
-	FCompressionTestHelper TestHelper;
+	FCompressionPerformanceTest PerformanceTest;
+	PerformanceTest.BeginTest();
 	for (int32 i = 0; i < TestTimes; i++)
 	{
-		UE_LOG(LogNetCompression, Log, TEXT("**************************************** ( %d ) %s ****************************************"), i, *TestRange.ToString());
-		
-		const int32 RandomSeed = FPlatformTime::Cycles();
-		FMath::RandInit(RandomSeed);
-		
+		const uint8 TestMin = FMath::RandRange(TestRange.Min, TestRange.Max / 2);
+		const uint8 TestMax = FMath::RandRange(TestRange.Max / 2 + 1, TestRange.Max);
 		for (int32 j = 0; j < DataArray1Size; j++)
 		{
-			const uint8 RandomData = FMath::RandRange(TestRange.Min, TestRange.Max);
+			const uint8 RandomData = FMath::RandRange(TestMin, TestMax);
 			DataArray1[j] = RandomData;
 		}
 	
-		TestHelper.DoTest(HuffmanCode, DataArray1, DataArray1Size);
-		TestHelper.DoTest(LZW, DataArray1, DataArray1Size);
-		TestHelper.DoTest(LZ4, DataArray1, DataArray1Size);
-		TestHelper.DoTest(Zlib, DataArray1, DataArray1Size);
-		TestHelper.DoTest(Gzip, DataArray1, DataArray1Size);
-		
-		UE_LOG(LogNetCompression, Log, TEXT("**************************************** ( %d ) %s ****************************************"), i, *TestRange.ToString());
+		PerformanceTest.DoTest(HuffmanCode, DataArray1, DataArray1Size);
+		PerformanceTest.DoTest(LZW, DataArray1, DataArray1Size);
+		PerformanceTest.DoTest(LZ4, DataArray1, DataArray1Size);
+		PerformanceTest.DoTest(Zlib, DataArray1, DataArray1Size);
+		PerformanceTest.DoTest(Gzip, DataArray1, DataArray1Size);
 	}
+	PerformanceTest.EndTest();
 	
 	delete[] DataArray1;
 	DataArray1 = nullptr;

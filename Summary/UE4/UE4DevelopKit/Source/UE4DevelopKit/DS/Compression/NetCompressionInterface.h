@@ -38,11 +38,15 @@ struct FNetCompressionDataWrap
  */
 enum ENetworkCompressionType : uint8
 {
-	HuffmanCode,
-	LZW,
-	LZ4,
-	Zlib,
-	Gzip
+	Min				= 0,
+	
+	HuffmanCode		= 0,
+	LZW				= 1,
+	LZ4				= 2,
+	Zlib			= 3,
+	Gzip			= 4,
+
+	Max
 };
 
 /*

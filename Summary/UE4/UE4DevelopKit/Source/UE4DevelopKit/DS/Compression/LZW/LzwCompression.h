@@ -13,7 +13,7 @@ typedef uint32  FLzwCodeType;
 #define LZW_TABLE_INIT_SIZE		256u
 #define LZW_CHAR_LENGTH			8U
 #define LZW_CODE_LENGTH			9u
-#define LZW_SYMBOL_TABLE_LENGTH	8192u
+#define LZW_SYMBOL_TABLE_LENGTH	262144u // 2^18
 
 /*
  * LZW compression encoder
@@ -94,5 +94,5 @@ public:
 	 */
 	virtual float GetRatio() const override;
 
-	virtual FString GetName() const override { return TEXT("LZW Compression"); }	
+	virtual FString GetName() const override { return TEXT("LZW    "); }	
 };

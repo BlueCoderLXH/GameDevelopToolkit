@@ -99,8 +99,8 @@ public:
 	float CompressRatio = 0.f;
 
 private:
-	// const int32 MaxBits = (MAX_PACKET_SIZE + 1 + 8 + 512) * 8;
-	const int32 MaxBits = MAX_PACKET_SIZE * 16;
+	// const int32 MaxBits = MAX_PACKET_SIZE * 16;
+	const int32 MaxBits = 262144; // 2^18
 	FBitWriter BitWriter = FBitWriter(MaxBits);
 	FBitReader BitReader = FBitReader(nullptr, MaxBits);
 
@@ -165,5 +165,5 @@ public:
 		return HuffmanCode.CompressRatio;
 	}
 
-	virtual FString GetName() const override { return TEXT("Huffman Compression"); }
+	virtual FString GetName() const override { return TEXT("Huffman"); }
 };
