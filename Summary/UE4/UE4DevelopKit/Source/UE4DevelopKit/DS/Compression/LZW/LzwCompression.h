@@ -4,7 +4,7 @@
 #define LZW_COMPRESSION_DEBUG	0
 
 /*
-	LZW_USE_CHAR_ARRAY_KEY		FLzwCharType
+	LZW_USE_CHAR_ARRAY_KEY      FLzwCharType
 	0                           FString
 	1                           TArray<TCHAR>
 
