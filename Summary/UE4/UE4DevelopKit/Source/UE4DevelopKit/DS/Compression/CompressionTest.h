@@ -40,7 +40,7 @@ struct FCompressionPerformanceTestData
 	{
 		if (bTestResult)
 		{
-			return FString::Printf(TEXT("%s\t\tRatio:%.2f%%\t\tEncodeTime:%.2fms\t\tDecodeTime:%.2fms"),
+			return FString::Printf(TEXT("%-7s\t\tRatio:%.2f%%\t\tEncodeTime:%.2fms\t\tDecodeTime:%.2fms"),
 				*CompressionHandler->GetName(), TotalRatio / TestCount, TotalEncodeTime / TestCount, TotalDecodeTime / TestCount);
 		}
 		return FString::Printf(TEXT("%s Wrong"), *CompressionHandler->GetName());
