@@ -11,7 +11,7 @@
 - 将蓝图 Blueprint'/Game/Blueprints/BP_CompressionTest.BP_CompressionTest' 放进map中
 ### 2.2 配置测试数据
 - **DataArrayCount**\
-  测试数据量（单位：字节），这里设置1024的原因是UE底层每个Packet的MTU即为1024，尽量贴合UE测试环境
+  测试数据量（单位：字节），这里设置1024的原因是UE底层每个Packet的MTU即为1024，尽量贴合UE测试环境。
 - **TestTimes**\
   测试次数，测试1000次，最后求得性能数据的平均值。
 - **TestRange**\
