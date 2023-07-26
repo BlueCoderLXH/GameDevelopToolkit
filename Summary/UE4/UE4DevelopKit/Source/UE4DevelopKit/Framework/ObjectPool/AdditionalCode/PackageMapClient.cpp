@@ -2,12 +2,14 @@
 // {
 // 	if (!IsValid(InObj))
 // 	{
+// 		UE_LOG(LogNetPackageMap, Error, TEXT("ResetGuidAckStatus: InObj is invalid!"));
 // 		return;
 // 	}
 //
 // 	const FNetworkGUID* ObjNetGuid = GuidCache->NetGUIDLookup.Find(InObj);
 // 	if (!ObjNetGuid)
 // 	{
+// 		UE_LOG(LogNetPackageMap, Error, TEXT("ResetGuidAckStatus: NetGUIDLookup don't contains Obj:%s!"), *(InObj->GetFullName()));
 // 		return;
 // 	}
 //
@@ -18,6 +20,7 @@
 // {
 // 	if (!InNetworkGUID.IsValid())
 // 	{
+// 		UE_LOG(LogNetPackageMap, Error, TEXT("ResetGuidAckStatus: InNetworkGUID:%s is invalid!"), *(InNetworkGUID.ToString()));
 // 		return;
 // 	}
 //

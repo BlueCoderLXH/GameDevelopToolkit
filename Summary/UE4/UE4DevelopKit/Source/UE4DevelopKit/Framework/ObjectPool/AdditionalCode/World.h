@@ -9,6 +9,8 @@
 // 	UObjectPoolSystem* ObjectPoolSystem;
 //
 // 	void InitObjectPool();
+//
+// 	void DestroyObjectPool();
 // 	
 // public:
 // 	UFUNCTION(BlueprintCallable, Category="ObjectPool|World")

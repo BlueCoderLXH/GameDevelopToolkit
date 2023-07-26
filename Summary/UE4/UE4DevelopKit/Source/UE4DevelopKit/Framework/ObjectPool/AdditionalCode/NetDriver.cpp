@@ -61,7 +61,16 @@
 // 		//
 // 		// The object-pooled actor and its replicated components must be removed from 'ObjectLookup' and 'NetGUIDLookup' in GuidCache
 // 		// To ensure the exact object pool flow for actors(SpawnActor and DestroyActor).
-// 		if (CVarEnableObjectPool.GetValueOnGameThread() && GuidCache.IsValid() && IsValid(ThisActor) && ThisActor->Implements<UReusable>())
+// 		bool bShouldHandleForObjectPool = false;
+// 		if (IsValid(ThisActor) && IsValid(ThisActor->GetClass()) && ThisActor->Implements<UReusable>())
+// 		{
+// 			if (const IReusable* DefaultReusableActor = Cast<IReusable>(ThisActor->GetClass()->GetDefaultObject()))
+// 			{
+// 				bShouldHandleForObjectPool = DefaultReusableActor->ShouldUseObjectPool();
+// 			}
+// 		}
+// 		
+// 		if (CVarEnableObjectPool.GetValueOnGameThread() && bShouldHandleForObjectPool && GuidCache.IsValid())
 // 		{
 // 			const FNetworkGUID* ActorNetGuid = GuidCache->NetGUIDLookup.Find(ThisActor);
 // 			if (ActorNetGuid)

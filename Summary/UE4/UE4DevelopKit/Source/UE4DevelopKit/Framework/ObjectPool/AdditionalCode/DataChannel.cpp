@@ -46,22 +46,27 @@
 // 				// When this actor coming to be active, DS won't replicate rep-components' net guid for it has been acked, so that client won't know what object it is.
 // 				// It Will lead to some network problem such as failing to call rpc / replicating properties... 
 // 				// To solve this problem, we have to reset object-pooled actor's rep-components' guid ack status here.
+// 				bool bShouldHandleForObjectPool = false;
+// 				if (IsValid(Actor) && IsValid(Actor->GetClass()) && Actor->Implements<UReusable>())
+// 				{
+// 					if (const IReusable* DefaultReusableActor = Cast<IReusable>(Actor->GetClass()->GetDefaultObject()))
+// 					{
+// 						bShouldHandleForObjectPool = DefaultReusableActor->ShouldUseObjectPool();
+// 					}
+// 				}
+// 				
 // 				const TSharedPtr<FNetGUIDCache>& GuidCache = bIsServer ? Connection->Driver->GuidCache : nullptr;
-// 				if (bIsServer && CVarEnableObjectPool.GetValueOnGameThread() && GuidCache.IsValid() && IsValid(Actor) && Actor->Implements<UReusable>())
+// 				if (bIsServer && CVarEnableObjectPool.GetValueOnGameThread() && bShouldHandleForObjectPool && GuidCache.IsValid())
 // 				{
 // 					const TArray<UActorComponent*>& RepComps = Actor->GetReplicatedComponents();
 // 					for (UActorComponent* RepComp : RepComps)
 // 					{
 // 						if (!IsValid(RepComp)) continue;
-//
-// 						const FNetworkGUID* RepCompNetGuid = GuidCache->NetGUIDLookup.Find(RepComp);
-// 						if (RepCompNetGuid)
+// 						
+// 						const UPackageMapClient* PackageMapClient = Connection ? Cast<UPackageMapClient>( Connection->PackageMap ) : nullptr;
+// 						if (PackageMapClient)
 // 						{
-// 							const UPackageMapClient* PackageMapClient = Connection ? Cast<UPackageMapClient>( Connection->PackageMap ) : nullptr;
-// 							if (PackageMapClient)
-// 							{
-// 								PackageMapClient->ResetGuidAckStatus(*RepCompNetGuid);
-// 							}
+// 							PackageMapClient->ResetGuidAckStatus(RepComp);
 // 						}
 // 					}
 // 				}
@@ -95,11 +100,20 @@
 // 	// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>ObjectPool Start
 // 	if (!bIsServer && CVarEnableObjectPool.GetValueOnGameThread())
 // 	{
+// 		bool bShouldHandleForObjectPool = false;
+// 		if (IsValid(Actor) && IsValid(Actor->GetClass()) && Actor->Implements<UReusable>())
+// 		{
+// 			if (const IReusable* DefaultReusableActor = Cast<IReusable>(Actor->GetClass()->GetDefaultObject()))
+// 			{
+// 				bShouldHandleForObjectPool = DefaultReusableActor->ShouldUseObjectPool();
+// 			}
+// 		}
+// 		
 // 		// Remove object-pooled actor from global cache on client side (by lxh)
 // 		//
 // 		// The object-pooled actor and its replicated components must be removed from 'ObjectLookup' and 'NetGUIDLookup' in GuidCache
 // 		// To ensure the exact object pool flow for actors(SpawnActor and DestroyActor).
-// 		if (Actor && Actor->Implements<UReusable>())
+// 		if (bShouldHandleForObjectPool)
 // 		{
 // 			FNetGUIDCache* GuidCache = Connection->Driver->GuidCache.Get();
 // 			const FNetworkGUID* ObjNetGuid = GuidCache->NetGUIDLookup.Find(Actor);

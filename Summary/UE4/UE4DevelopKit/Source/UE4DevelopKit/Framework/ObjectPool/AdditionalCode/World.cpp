@@ -24,6 +24,15 @@
 // 	}
 // }
 //
+// void UWorld::DestroyObjectPool()
+// {
+// 	if (ObjectPoolSystem)
+// 	{
+// 		ObjectPoolSystem->Clear();
+// 		ObjectPoolSystem = nullptr;
+// 	}	
+// }
+//
 // void UWorld::BeginPlay()
 // {
 // 	...
@@ -40,11 +49,7 @@
 // {
 // 	...
 // 	
-// 	if (ObjectPoolSystem)
-// 	{
-// 		ObjectPoolSystem->Clear();
-// 		ObjectPoolSystem = nullptr;
-// 	}
+// 	DestroyObjectPool();
 //
 // 	...
 // }
