@@ -4,6 +4,8 @@
 //
 // DECLARE_LOG_CATEGORY_EXTERN(LogObjectPool, Log, All);
 //
+// class UObjectPool;
+//
 // /**
 //  * UReusable
 //  * All Object-pooled class should implement this interface so that it can be auto-managed by object pool system
@@ -31,6 +33,24 @@
 // 	 */
 // 	bool IsSpawnedFromPool() const { return bSpawnedFromPool; }
 //
+//
+// protected:
+// 	/**
+// 	 * @brief [BlueprintNativeEvent] Called when object is spawning from Object Pool
+// 	 */
+// 	UFUNCTION(BlueprintNativeEvent)
+// 	void OnSpawn();
+//
+// 	/**
+// 	 * @brief [BlueprintNativeEvent] Called when object is recycling to Object Pool
+// 	 */
+// 	UFUNCTION(BlueprintNativeEvent)
+// 	void OnRecycle();
+//
+// 	// Whether should use object pool, if setting it to 'false', the object of this class will be spawned without pool
+// 	bool bShouldUseObjectPool = true;
+//
+// private:
 // 	/**
 // 	 * @brief Called when object is spawning from Object Pool
 // 	 * @warning Do not call it from outside
@@ -50,24 +70,9 @@
 // 		Execute_OnRecycle(Cast<UObject>(this));
 // 		bSpawnedFromPool = false;
 // 	}
-//
-// protected:
-// 	/**
-// 	 * @brief [BlueprintNativeEvent] Called when object is spawning from Object Pool
-// 	 */
-// 	UFUNCTION(BlueprintNativeEvent)
-// 	void OnSpawn();
-//
-// 	/**
-// 	 * @brief [BlueprintNativeEvent] Called when object is recycling to Object Pool
-// 	 */
-// 	UFUNCTION(BlueprintNativeEvent)
-// 	void OnRecycle();
-//
-// 	// Whether should use object pool, if setting it to 'false', the object of this class will be spawned without pool
-// 	bool bShouldUseObjectPool = true;
-//
-// private:
+// 	
 // 	// Whether this object is spawned from pool
 // 	bool bSpawnedFromPool = false;
+//
+// 	friend UObjectPool;
 // };
