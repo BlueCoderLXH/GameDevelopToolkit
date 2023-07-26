@@ -24,9 +24,11 @@
 // 		return;
 // 	}
 //
-// 	int32* ExpectedNetGUIDAckStatus = OverrideAckState->NetGUIDAckStatus.Find(InNetworkGUID);
-// 	if (ExpectedNetGUIDAckStatus)
+// 	int32* ExpectedNetGUIDAckStatusPtr = OverrideAckState->NetGUIDAckStatus.Find(InNetworkGUID);
+// 	// if acked, reset it to be not acked
+// 	// if pending or not acked, ignore
+// 	if (ExpectedNetGUIDAckStatusPtr && *ExpectedNetGUIDAckStatusPtr == GUID_PACKET_ACKED)
 // 	{
-// 		*(ExpectedNetGUIDAckStatus) = GUID_PACKET_NOT_ACKED;
+// 		*ExpectedNetGUIDAckStatusPtr = GUID_PACKET_NOT_ACKED;
 // 	}
 // }
