@@ -35,7 +35,7 @@
 // 				bKeepReplicators = (GNetDormancyValidate > 0) || (bIsServer && GbNetReuseReplicatorsForDormantObjects);
 // 			}
 // 			// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>ObjectPool Start
-// 			else if (Reason == EChannelCloseReason::Relevancy || Reason == EChannelCloseReason::Destroyed)
+// 			else if (Reason == EChannelCloseReason::Relevancy)
 // 			{
 // 				const bool bIsDriverValid = Connection->Driver != nullptr;
 // 				const bool bIsServer = bIsDriverValid && Connection->Driver->IsServer();
