@@ -1,0 +1,1 @@
+# Synchronous Loading Optimization
