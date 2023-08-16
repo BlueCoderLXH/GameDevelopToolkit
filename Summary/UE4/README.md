@@ -2,11 +2,12 @@
 About unreal engine, based on UE4.26
 
 ## Directory Description
+    |-- EngineExtension             -- [Key] Engine extension
     |-- Notes                       -- [Key] UE4 notes
     |   |-- Modules
     |   |-- Network
     |   |-- UE4ClassStructure.jpg
-    |-- UE4DevelopKit
+    |-- UE4DevelopKit               -- [Key] Proj extension
     |   |-- Config
     |   |-- Content
     |   |-- Plugins                 -- [Key] Useful plugins
