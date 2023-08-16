@@ -415,13 +415,88 @@ namespace NetworkProfiler
 
 			return Nodes[Index];
 		}
+		
+		int AddPerformanceView( NetworkStream NetworkStream, TreeView TreeView, bool bNewFile = false )
+		{
+			int ParentViewIndex = 0;
+			int ChildViewIndex = 0;
+			
+			// Performance
+			TreeNode Parent = AddNode( TreeView.Nodes, ParentViewIndex++, "Performance" );
 
-		public void ToActorSummaryView( NetworkStream NetworkStream, TreeView TreeView )
+			if (!bNewFile && Parent.Nodes.Count > 0)
+			{
+				return ParentViewIndex;
+			}
+
+			// Avg
+			if (Parent.Nodes.Count <= ChildViewIndex)
+			{
+				AddNode( Parent.Nodes, ChildViewIndex, "Avg                :" + ConvertToSizeString( ( UnrealSocketSize + OtherSocketSize + NetworkStream.PacketOverhead * ( UnrealSocketCount + OtherSocketCount ) ) / (EndTime - StartTime), true ) );
+			}
+
+			ChildViewIndex++;
+
+			// Tp95
+			const int framesPerSecond = 15;
+			int[] Tp95FrameDurations =
+			{
+				1, 
+				framesPerSecond,		// 1s
+				framesPerSecond * 5,	// 5s
+				framesPerSecond * 15,	// 15s
+				framesPerSecond * 300	// 5m
+			};
+			
+			string[] Tp95ViewNames =
+			{
+				"TP95/Frame         :",
+				"TP95/1s            :",
+				"TP95/5s            :",
+				"TP95/15s           :",
+				"TP95/5m            :",
+			};
+			
+			for (int Index = 0; Index < Tp95FrameDurations.Length; Index++)
+			{
+				List<float> AvgList = new List<float>();
+				int FrameDuration = Tp95FrameDurations[Index];
+				float AvgSum = 0;
+				float AvgTimeSum = 0;
+				for (int FrameIndex = 0; FrameIndex < NetworkStream.Frames.Count; FrameIndex++)
+				{
+					var CurrentFrame = NetworkStream.Frames[FrameIndex];
+					AvgSum += CurrentFrame.UnrealSocketSize + CurrentFrame.OtherSocketSize + NetworkStream.PacketOverhead * ( CurrentFrame.UnrealSocketCount + CurrentFrame.OtherSocketCount );
+					AvgTimeSum += CurrentFrame.EndTime - CurrentFrame.StartTime;
+					if ((FrameIndex + 1) % FrameDuration == 0 || FrameIndex == NetworkStream.Frames.Count - 1)
+					{
+						AvgList.Add(AvgSum / AvgTimeSum);
+						AvgSum = 0;
+						AvgTimeSum = 0;
+					}
+				}
+				
+				AvgList.Sort();
+
+				int TargetIndex = (int)Math.Min(Math.Round(AvgList.Count * 0.95f), AvgList.Count - 1);
+				
+				AddNode( Parent.Nodes, ChildViewIndex, Tp95ViewNames[Index] + ConvertToSizeString( AvgList[TargetIndex], true ));
+
+				ChildViewIndex++;
+			}
+			
+			return ParentViewIndex;
+		}
+
+		public void ToActorSummaryView( NetworkStream NetworkStream, TreeView TreeView, bool bNewFile = false )
         {
 			bool FirstTree = TreeView.Nodes.Count == 0;
 
-			TreeNode Parent = AddNode( TreeView.Nodes, 0, "Summary" );
-
+			// Performance
+			int ParentViewIndex = AddPerformanceView(NetworkStream, TreeView, bNewFile);
+			
+			// Summary
+			TreeNode Parent = AddNode( TreeView.Nodes, ParentViewIndex++, "Summary" );
 			AddNode( Parent.Nodes, 0, "Frames             :" + ConvertToCountString( NumFrames, false ) );
 			AddNode( Parent.Nodes, 1, "Seconds            :" + ConvertToCountString( EndTime - StartTime, false ) );
 
@@ -432,7 +507,7 @@ namespace NetworkProfiler
 				float OneOverDeltaTime = i == 1 ? 1.0f : 1 / ( EndTime - StartTime );
 
 				// New parent
-				Parent = AddNode( TreeView.Nodes, i + 1, i == 1 ? "Details (TOTAL)" : "Details (PER SECOND)" );
+				Parent = AddNode( TreeView.Nodes, ParentViewIndex++, i == 1 ? "Details (TOTAL)" : "Details (PER SECOND)" );
 
 				TreeNode Child = null;
 

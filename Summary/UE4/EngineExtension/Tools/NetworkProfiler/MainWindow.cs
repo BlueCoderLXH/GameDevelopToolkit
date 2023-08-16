@@ -108,6 +108,21 @@ namespace NetworkProfiler
 			ActorPerfPropsDetailsListView.Columns[0].Width = 170;
 			ActorPerfPropsDetailsListView.Columns[1].Width = 50;
 			ActorPerfPropsDetailsListView.Columns[2].Width = 50;
+
+			AutoLoadFileFromConsole();
+		}
+
+		private void AutoLoadFileFromConsole()
+		{
+			string[] Args = Environment.GetCommandLineArgs();
+
+			foreach (var ArgString in Args)
+			{
+				if (ArgString.EndsWith(".nprof"))
+				{
+					ChangeNetworkStream(ArgString);
+				}
+			}
 		}
 		
 		private void OnFormClosing( object sender, CancelEventArgs e )
@@ -368,6 +383,8 @@ namespace NetworkProfiler
 
 			LoadThread = new Thread( () => ChangeNetworkStreamWorker( Filename ) );
 			LoadThread.Start();
+
+			this.Text = "Network Profiler => " + Filename;
 		}
 
 		public void ClearStreamAndChart()
@@ -510,17 +527,17 @@ namespace NetworkProfiler
 			}
 		}
 
-		public void SetCurrentStreamSelection( NetworkStream NetworkStream, PartialNetworkStream Selection, bool bSingleSelect )
+		public void SetCurrentStreamSelection( NetworkStream NetworkStream, PartialNetworkStream Selection, bool bSingleSelect, bool bNewFile = false )
 		{
 			if ( this.InvokeRequired )
 			{
-				this.Invoke( new Action( () => SetCurrentStreamSelection( NetworkStream, Selection, bSingleSelect ) ) );
+				this.Invoke( new Action( () => SetCurrentStreamSelection( NetworkStream, Selection, bSingleSelect, bNewFile ) ) );
 				return;
 			}
 
 			ActorPerfPropsDetailsListView.Items.Clear();
 
-			Selection.ToActorSummaryView( NetworkStream, ActorSummaryView );
+			Selection.ToActorSummaryView( NetworkStream, ActorSummaryView, bNewFile );
 			Selection.ToActorPerformanceView( NetworkStream, ActorPerfPropsListView, ActorPerfPropsDetailsListView, CurrentFilterValues );
 			
 			// Below is way too slow for range select right now, so we just do this for single frame selection

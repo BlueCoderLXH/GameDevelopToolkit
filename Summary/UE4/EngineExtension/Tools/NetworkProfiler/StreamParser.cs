@@ -299,7 +299,7 @@ namespace NetworkProfiler
 				}
 			}
 
-			InMainWindow.SetCurrentStreamSelection( NetworkStream, AllFrames, false );
+			InMainWindow.SetCurrentStreamSelection( NetworkStream, AllFrames, false, true );
 
 			InMainWindow.ShowProgress( false );
 
