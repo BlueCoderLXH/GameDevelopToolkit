@@ -83,6 +83,22 @@ DECLARE_FLOAT_ACCUMULATOR_STAT(TEXT("Total PostLoadObjects time GT"), STAT_FAsyn
 
 DECLARE_FLOAT_ACCUMULATOR_STAT( TEXT( "Async loading block time" ), STAT_AsyncIO_AsyncLoadingBlockingTime, STATGROUP_AsyncIO );
 DECLARE_FLOAT_ACCUMULATOR_STAT( TEXT( "Async package precache wait time" ), STAT_AsyncIO_AsyncPackagePrecacheWaitTime, STATGROUP_AsyncIO );
+
+bool GEnableSyncloadOptimize = false;
+static FAutoConsoleVariableRef CVarEnableSyncloadOptimize(
+	TEXT("g.EnableSyncloadOptimize"),
+	GEnableSyncloadOptimize,
+	TEXT("Whether to enable synchronous loading, true:enable ; false:disable"),
+	ECVF_Default
+);
+
+FString GSyncloadOptimizeLogFilterName = TEXT("");
+static FAutoConsoleVariableRef CVarSyncloadOptimizeLogFilterName(
+	TEXT("g.SyncloadOptimizeLogFilterName"),
+	GSyncloadOptimizeLogFilterName,
+	TEXT("Set the filter name of synchronous loading optimized log"),
+	ECVF_Default
+);
 	
 /** Helper function for profiling load times */
 static FName StaticGetNativeClassName(UClass* InClass)
@@ -1354,7 +1370,7 @@ void FAsyncLoadingThread::QueueEvent_CreateLinker(FAsyncPackage* Package, int32 
 			}
 	));
 }
-
+	
 void FAsyncPackage::Event_CreateLinker()
 {
 	// Keep track of time when we start loading.
@@ -1384,6 +1400,8 @@ void FAsyncPackage::Event_CreateLinker()
 	{
 		AsyncPackageLoadingState = EAsyncPackageLoadingState::WaitingForSummary;
 		Linker->bLockoutLegacyOperations = true;
+
+		EventDebugLog(TEXT("Event_CreateLinker"));
 	}
 	else
 	{
@@ -1539,6 +1557,9 @@ void FAsyncPackage::Event_FinishLinker()
 		AsyncPackageLoadingState = EAsyncPackageLoadingState::StartImportPackages;
 		AsyncLoadingThread.QueueEvent_StartImportPackages(this, FAsyncLoadEvent::EventSystemPriority_MAX - 1);
 	}
+
+	EventDebugLog(TEXT("Event_FinishLinker"));
+	
 	RemoveNode(EEventLoadNode::Package_LoadSummary);
 	if (bLoadHasFailed)
 	{
@@ -1582,6 +1603,8 @@ void FAsyncPackage::Event_StartImportPackages()
 			return;
 		}
 	}
+
+	EventDebugLog(TEXT("Event_StartImportPackages"));
 
 	check(AsyncPackageLoadingState == EAsyncPackageLoadingState::StartImportPackages);
 	AsyncPackageLoadingState = EAsyncPackageLoadingState::WaitingForImportPackages;
@@ -1804,6 +1827,18 @@ EAsyncPackageState::Type FAsyncPackage::LoadImports_Event()
 		}
 		if (PendingPackage)
 		{
+			// If current task uses the highest priority, let dependent package use the highest priority too 
+			// for making 'PendingPackage' load as soon as possible
+			if (IsHighestPriority())
+			{
+				PendingPackage->Desc.Priority = FAsyncLoadEvent::UserPriority_MAX;
+
+				if (PendingPackage->SerialNumber)
+				{
+					AsyncLoadingThread.ModifyPriority(PendingPackage->SerialNumber, FAsyncLoadEvent::UserPriority_MAX);
+				}
+			}
+			
 			if (int32(PendingPackage->AsyncPackageLoadingState) <= int32(EAsyncPackageLoadingState::WaitingForSummary))
 			{
 				FEventLoadNodePtr PrereqisiteNode;
@@ -1843,6 +1878,7 @@ EAsyncPackageState::Type FAsyncPackage::LoadImports_Event()
 		SetPriority(GetPriority() + 1);
 	}
 #endif
+	
 	return LoadImportIndex == Linker->ImportMap.Num() ? EAsyncPackageState::Complete : EAsyncPackageState::TimeOut;
 }
 
@@ -1880,6 +1916,8 @@ void FAsyncPackage::Event_SetupImports()
 	AsyncPackageLoadingState = EAsyncPackageLoadingState::SetupExports;
 	RemoveNode(EEventLoadNode::Package_SetupImports);
 	AsyncLoadingThread.QueueEvent_SetupExports(this);
+
+	EventDebugLog(TEXT("Event_SetupImports"));
 }
 
 static FPackageIndex FindImportFromExport(FLinkerLoad* ImportLinker, int32 ExportIndex, FLinkerLoad* ExportLinker)
@@ -2272,6 +2310,8 @@ void FAsyncPackage::Event_SetupExports()
 	check(AsyncPackageLoadingState == EAsyncPackageLoadingState::SetupExports);
 	AsyncPackageLoadingState = EAsyncPackageLoadingState::ProcessNewImportsAndExports;
 	ConditionalQueueProcessImportsAndExports();
+
+	EventDebugLog(TEXT("Event_SetupExports"));
 }
 
 void FAsyncLoadingThread::QueueEvent_ProcessImportsAndExports(FAsyncPackage* Package, int32 EventSystemPriority)
@@ -2373,6 +2413,9 @@ void FAsyncPackage::ConditionalQueueProcessImportsAndExports(bool bRequeueForTim
 	{
 		return;
 	}
+
+	bool bFinish = true;
+	
 	if (!bProcessImportsAndExportsInFlight && AnyImportsAndExportWorkOutstanding())
 	{
 		bProcessImportsAndExportsInFlight = true;
@@ -2386,6 +2429,13 @@ void FAsyncPackage::ConditionalQueueProcessImportsAndExports(bool bRequeueForTim
 			Pri = -3;
 		}
 		AsyncLoadingThread.QueueEvent_ProcessImportsAndExports(this , Pri);
+
+		bFinish = false;
+	}
+
+	if (bFinish)
+	{
+		EventDebugLog(TEXT("Event_ProcessImportsAndExports"));
 	}
 }
 
@@ -3588,6 +3638,8 @@ void FAsyncPackage::Event_ExportsDone()
 		}
 	}
 	OtherPackagesWaitingForMeBeforePostload.Empty();
+
+	EventDebugLog(TEXT("Event_ExportsDone"));
 }
 
 
@@ -3703,6 +3755,8 @@ void FAsyncPackage::Event_ProcessPostloadWait()
 		AsyncPackageLoadingState = EAsyncPackageLoadingState::ReadyForPostLoad;
 		AsyncLoadingThread.QueueEvent_StartPostLoad(this);
 		check(bAllExportsSerialized && !OtherPackagesWaitingForMeBeforePostload.Num());
+
+		EventDebugLog(TEXT("Event_ProcessPostloadWait"));
 	}
 }
 
@@ -3734,6 +3788,13 @@ void FAsyncPackage::Event_StartPostload()
 	}
 	check(!AsyncLoadingThread.AsyncPackagesReadyForTick.Contains(this));
 	AsyncLoadingThread.AsyncPackagesReadyForTick.Add(this);
+
+	if (IsHighestPriority())
+	{
+		AsyncLoadingThread.bForceFlushAsyncPackagesForTick = true;
+	}
+
+	EventDebugLog(TEXT("Event_StartPostload"));
 }
 void FAsyncPackage::EventDrivenLoadingComplete()
 {
@@ -4040,36 +4101,45 @@ EAsyncPackageState::Type FAsyncLoadingThread::ProcessAsyncLoading(int32& OutPack
 					return EAsyncPackageState::TimeOut;
 				}
 			}
+			
 			if (bDidSomething)
 			{
 				continue;
 			}
 
+			if (!bForceFlushAsyncPackagesForTick)
 			{
-				FAsyncLoadEventArgs Args;
-				Args.bUseTimeLimit = bUseTimeLimit;
-				Args.TickStartTime = TickStartTime;
-				Args.TimeLimit = TimeLimit;
-
-				Args.OutLastTypeOfWorkPerformed = nullptr;
-				Args.OutLastObjectWorkWasPerformedOn = nullptr;
-				if (EventQueue.PopAndExecute(Args))
 				{
-					OutPackagesProcessed++;
-					if (IsTimeLimitExceeded(Args.TickStartTime, Args.bUseTimeLimit, Args.TimeLimit, Args.OutLastTypeOfWorkPerformed, Args.OutLastObjectWorkWasPerformedOn))
+					FAsyncLoadEventArgs Args;
+					Args.bUseTimeLimit = bUseTimeLimit;
+					Args.TickStartTime = TickStartTime;
+					Args.TimeLimit = TimeLimit;
+
+					Args.OutLastTypeOfWorkPerformed = nullptr;
+					Args.OutLastObjectWorkWasPerformedOn = nullptr;
+					if (EventQueue.PopAndExecute(Args))
 					{
-						return EAsyncPackageState::TimeOut;
+						OutPackagesProcessed++;
+						if (IsTimeLimitExceeded(Args.TickStartTime, Args.bUseTimeLimit, Args.TimeLimit,
+						                        Args.OutLastTypeOfWorkPerformed, Args.OutLastObjectWorkWasPerformedOn))
+						{
+							return EAsyncPackageState::TimeOut;
+						}
+						bDidSomething = true;
 					}
-					bDidSomething = true;
+				}
+
+				if (bDidSomething)
+				{
+					continue;
 				}
 			}
-			if (bDidSomething)
-			{
-				continue;
-			}
+			
 			if (AsyncPackagesReadyForTick.Num())
 			{
 				SCOPE_CYCLE_COUNTER(STAT_FAsyncLoadingThread_ProcessAsyncLoading);
+
+				bForceFlushAsyncPackagesForTick = false;
 
 				OutPackagesProcessed++;
 				bDidSomething = true;
@@ -5229,6 +5299,11 @@ FAsyncPackage::~FAsyncPackage()
 	TRACE_LOADTIME_DESTROY_ASYNC_PACKAGE(this);
 }
 
+
+FORCEINLINE bool FAsyncPackage::IsHighestPriority() const
+{
+	return GEnableSyncloadOptimize ? Desc.Priority == FAsyncLoadEvent::UserPriority_MAX : false;
+}
 
 void FAsyncPackage::AddReferencedObjects(FReferenceCollector& Collector)
 {

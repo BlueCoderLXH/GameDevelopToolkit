@@ -26,7 +26,10 @@ struct FAsyncLoadEvent
 {
 	enum
 	{
-		EventSystemPriority_MAX = MAX_int32
+		EventSystemPriority_MAX = MAX_int32,
+
+		UserPriority0 = 0,
+		UserPriority_MAX = MAX_int32,
 	};
 
 	int32 UserPriority;
@@ -75,9 +78,11 @@ struct FAsyncLoadEventQueue
 	//FCriticalSection AsyncLoadEventQueueCritical; //@todoio maybe this doesn't need to be protected by a critical section. 
 	int32 RunningSerialNumber;
 	TArray<FAsyncLoadEvent> EventQueue;
+	bool bNeedHeapify;
 
 	FAsyncLoadEventQueue()
 		: RunningSerialNumber(0)
+		, bNeedHeapify(false)
 	{
 	}
 
@@ -87,8 +92,16 @@ struct FAsyncLoadEventQueue
 		//@todoio check(FAsyncLoadingThread::IsInAsyncLoadThread());
 		EventQueue.HeapPush(FAsyncLoadEvent(UserPriority, PackageSerialNumber, EventSystemPriority, ++RunningSerialNumber, Forward<TFunction<void(FAsyncLoadEventArgs& Args)>>(Payload)));
 	}
+	
 	bool PopAndExecute(FAsyncLoadEventArgs& Args)
 	{
+		if (bNeedHeapify)
+		{
+			QUICK_SCOPE_CYCLE_COUNTER(STAT_AsyncLoadEventQueue_Heapify);
+			EventQueue.Heapify();
+			bNeedHeapify = false;
+		}
+		
 		FAsyncLoadEvent Event;
 		bool bResult = false;
 		{
@@ -105,6 +118,18 @@ struct FAsyncLoadEventQueue
 			Event.Payload(Args);
 		}
 		return bResult;
+	}
+
+	void ModifyPriority(int32 PackageSerialNumber, int32 NewPriority)
+	{
+		for (FAsyncLoadEvent& AsyncLoadEvent : EventQueue)
+		{
+			if (AsyncLoadEvent.PackageSerialNumber == PackageSerialNumber)
+			{
+				AsyncLoadEvent.UserPriority = NewPriority;
+				bNeedHeapify = true;
+			}
+		}
 	}
 };
 
@@ -202,8 +227,12 @@ class FAsyncLoadingThread final : public FRunnable, public IAsyncPackageLoader
 	TArray<FAsyncPackage*> AsyncPackages;
 	TMap<FName, FAsyncPackage*> AsyncPackageNameLookup;
 public:
+	/** [EDL] Wether force flush async Packages that are ready for tick */
+	bool bForceFlushAsyncPackagesForTick = false;
+	
 	/** [EDL] Async Packages that are ready for tick */
 	TArray<FAsyncPackage*> AsyncPackagesReadyForTick;
+	
 private:
 
 #if THREADSAFE_UOBJECTS
@@ -302,6 +331,15 @@ public:
 			}
 		}
 		return nullptr;
+	}
+
+	// Modify specified package's priority, and rebuild EventQueue's heap later
+	FORCEINLINE void ModifyPriority(int32 PackageSerialNumber, int32 NewPriority)
+	{
+#if THREADSAFE_UOBJECTS
+			FScopeLock QueueLock(&QueueCritical);
+#endif
+			EventQueue.ModifyPriority(PackageSerialNumber, NewPriority);		
 	}
 
 	/** [EDL] Queues CreateLinker event */

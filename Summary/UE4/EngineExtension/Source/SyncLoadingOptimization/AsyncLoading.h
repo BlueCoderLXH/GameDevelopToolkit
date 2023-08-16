@@ -25,6 +25,31 @@ struct FAsyncPackage;
 struct FFlushTree;
 class FAsyncLoadingThread;
 
+extern bool GEnableSyncloadOptimize;
+extern FString GSyncloadOptimizeLogFilterName;
+
+// #if !NO_LOGGING
+// #define EventDebugLog(FuncName) \
+// { \
+// 	static_assert(TIsArrayOrRefOfType<decltype(FuncName), TCHAR>::Value, "'FuncName' string must be a TCHAR array."); \
+// 	if (!GEnableSyncloadOptimize) \
+// 	{ \
+// 		return; \
+// 	} \
+// 	const FString& LogFilterName = GSyncloadOptimizeLogFilterName; \
+// 	if (LogFilterName.IsEmpty()) \
+// 	{ \
+// 		return; \
+// 	} \
+// 	if (!Desc.NameToLoad.ToString().Contains(LogFilterName)) \
+// 	{ \
+// 		return; \
+// 	} \
+// 	UE_LOG(LogStreaming, Log, TEXT("EventDebugLog %s:%s"), FuncName, *Desc.NameToLoad.ToString()); \
+// }
+// #else
+// #define EDL_EVENT_DEBUG_LOG(FuncFlag)
+// #endif
 
 /** [EDL] Async Package Loading State */
 enum class EAsyncPackageLoadingState : uint8
@@ -426,6 +451,9 @@ struct FAsyncPackage : public FGCObject
 		return bLoadHasFinished;
 	}
 
+	/** Returns whether package's priority is the highest. */
+	FORCEINLINE bool IsHighestPriority() const;
+
 	/** Returns package loading priority. */
 	FORCEINLINE TAsyncLoadPriority GetPriority() const
 	{
@@ -680,6 +708,26 @@ public:
 	bool bProcessPostloadWaitInFlight;
 	bool bAllExportsSerialized;
 
+	FORCEINLINE void EventDebugLog(const FString& FuncName) const
+	{
+#if !NO_LOGGING	
+		//if (!GEnableSyncloadOptimize)
+		//{
+		//	return;
+		//}
+		const FString& LogFilterName = GSyncloadOptimizeLogFilterName;
+		if (LogFilterName.IsEmpty())
+		{
+			return;
+		}
+		if (!Desc.NameToLoad.ToString().Contains(LogFilterName))
+		{
+			return;
+		}
+		UE_LOG(LogStreaming, Log, TEXT("EventDebugLog %s:%s"), *FuncName, *Desc.NameToLoad.ToString());
+#endif
+	}
+	
 	void Event_CreateLinker();
 	void Event_FinishLinker();
 	void Event_StartImportPackages();

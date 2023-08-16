@@ -57,6 +57,7 @@
 #include "Misc/CoreDelegates.h"
 #include "ProfilingDebugging/CsvProfiler.h"
 #include "ProfilingDebugging/LoadTimeTracker.h"
+#include "Serialization/AsyncLoadingThread.h"
 
 DEFINE_LOG_CATEGORY(LogUObjectGlobals);
 
@@ -74,6 +75,9 @@ static FAutoConsoleVariableRef CVarAllowUnversionedContentInEditor(
 	TEXT("If true, allows unversioned content to be loaded by the editor."),
 	ECVF_Default
 );
+
+extern bool GEnableSyncloadOptimize;
+extern FString GSyncloadOptimizeLogFilterName;
 
 /** Object annotation used by the engine to keep track of which objects are selected */
 FUObjectAnnotationSparseBool GSelectedObjectAnnotation;
@@ -1129,11 +1133,21 @@ UPackage* LoadPackageInternal(UPackage* InOuter, const TCHAR* InLongPackageNameO
 				FCoreDelegates::OnSyncLoadPackage.Broadcast(InName);
 			}
 
-			int32 RequestID = LoadPackageAsync(InName, nullptr, *InPackageName);
+			TAsyncLoadPriority LoadPriority = GEnableSyncloadOptimize ?
+				FAsyncLoadEvent::UserPriority_MAX : FAsyncLoadEvent::UserPriority0;
 
+			// if 'GEnableSyncloadOptimize' is set true
+			// Let syncload task use the max priority to only wait for syncload but asyncload
+			int32 RequestID = LoadPackageAsync(InName, nullptr, *InPackageName, FLoadPackageAsyncDelegate(), PKG_None, INDEX_NONE, LoadPriority);
 			if (RequestID != INDEX_NONE)
 			{
 				FlushAsyncLoading(RequestID);
+
+				const FString& SyncloadOptimizeLogFilterName = GSyncloadOptimizeLogFilterName;
+				if (!SyncloadOptimizeLogFilterName.IsEmpty() && InName.Contains(SyncloadOptimizeLogFilterName))
+				{
+					UE_LOG(LogUObjectGlobals, Log, TEXT("FlushAsyncLoading Finish Name:%s RequestID:%d"), *InName, RequestID);
+				}
 			}
 		}
 
