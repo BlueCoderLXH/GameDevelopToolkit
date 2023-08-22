@@ -4107,6 +4107,7 @@ EAsyncPackageState::Type FAsyncLoadingThread::ProcessAsyncLoading(int32& OutPack
 				continue;
 			}
 
+			// We wanna force flush 'AsyncPackagesReadyForTick', don't wait
 			if (!bForceFlushAsyncPackagesForTick)
 			{
 				{
@@ -4138,8 +4139,6 @@ EAsyncPackageState::Type FAsyncLoadingThread::ProcessAsyncLoading(int32& OutPack
 			if (AsyncPackagesReadyForTick.Num())
 			{
 				SCOPE_CYCLE_COUNTER(STAT_FAsyncLoadingThread_ProcessAsyncLoading);
-
-				bForceFlushAsyncPackagesForTick = false;
 
 				OutPackagesProcessed++;
 				bDidSomething = true;
@@ -4186,6 +4185,12 @@ EAsyncPackageState::Type FAsyncLoadingThread::ProcessAsyncLoading(int32& OutPack
 					return EAsyncPackageState::TimeOut;
 				}
 			}
+			else
+			{
+				// 'AsyncPackagesReadyForTick' has been all flushed, go on loading other asynchronous packages
+				bForceFlushAsyncPackagesForTick = false;
+			}
+			
 			if (bDidSomething)
 			{
 				continue;
