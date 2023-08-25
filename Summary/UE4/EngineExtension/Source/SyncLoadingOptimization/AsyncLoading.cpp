@@ -3787,11 +3787,16 @@ void FAsyncPackage::Event_StartPostload()
 		}
 	}
 	check(!AsyncLoadingThread.AsyncPackagesReadyForTick.Contains(this));
-	AsyncLoadingThread.AsyncPackagesReadyForTick.Add(this);
 
+	// Insert the hightest package to the head to ensure it will be handle as soon as possible 
 	if (IsHighestPriority())
 	{
+		AsyncLoadingThread.AsyncPackagesReadyForTick.Insert(this, 0);
 		AsyncLoadingThread.bForceFlushAsyncPackagesForTick = true;
+	}
+	else
+	{
+		AsyncLoadingThread.AsyncPackagesReadyForTick.Add(this);
 	}
 
 	EventDebugLog(TEXT("Event_StartPostload"));
@@ -4167,6 +4172,8 @@ EAsyncPackageState::Type FAsyncLoadingThread::ProcessAsyncLoading(int32& OutPack
 				}
 				if (LocalLoadingState == EAsyncPackageState::Complete)
 				{
+					bForceFlushAsyncPackagesForTick = false;
+					
 					{
 #if THREADSAFE_UOBJECTS
 						FScopeLock LockAsyncPackages(&AsyncPackagesCritical);
@@ -4184,11 +4191,6 @@ EAsyncPackageState::Type FAsyncLoadingThread::ProcessAsyncLoading(int32& OutPack
 				{
 					return EAsyncPackageState::TimeOut;
 				}
-			}
-			else
-			{
-				// 'AsyncPackagesReadyForTick' has been all flushed, go on loading other asynchronous packages
-				bForceFlushAsyncPackagesForTick = false;
 			}
 			
 			if (bDidSomething)
