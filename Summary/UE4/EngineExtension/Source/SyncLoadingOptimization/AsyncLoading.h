@@ -452,7 +452,7 @@ struct FAsyncPackage : public FGCObject
 	}
 
 	/** Returns whether package's priority is the highest. */
-	FORCEINLINE bool IsHighestPriority() const;
+	FORCEINLINE bool IsSyncLoadHighPriority() const;
 
 	/** Returns package loading priority. */
 	FORCEINLINE TAsyncLoadPriority GetPriority() const
@@ -711,10 +711,10 @@ public:
 	FORCEINLINE void EventDebugLog(const FString& FuncName) const
 	{
 #if !NO_LOGGING	
-		//if (!GEnableSyncloadOptimize)
-		//{
-		//	return;
-		//}
+		// if (!GEnableSyncloadOptimize)
+		// {
+		// 	return;
+		// }
 		const FString& LogFilterName = GSyncloadOptimizeLogFilterName;
 		if (LogFilterName.IsEmpty())
 		{
@@ -737,6 +737,8 @@ public:
 	void Event_ExportsDone();
 	void Event_ProcessPostloadWait();
 	void Event_StartPostload();
+
+	static void ModifyImportPackagePriority(const FAsyncPackage* Package);
 
 	void MarkNewObjectForLoadIfItIsAnExport(UObject *Object);
 	bool AnyImportsAndExportWorkOutstanding();

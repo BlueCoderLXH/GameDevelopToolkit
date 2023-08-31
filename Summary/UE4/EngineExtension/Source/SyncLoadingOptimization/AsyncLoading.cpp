@@ -84,7 +84,7 @@ DECLARE_FLOAT_ACCUMULATOR_STAT(TEXT("Total PostLoadObjects time GT"), STAT_FAsyn
 DECLARE_FLOAT_ACCUMULATOR_STAT( TEXT( "Async loading block time" ), STAT_AsyncIO_AsyncLoadingBlockingTime, STATGROUP_AsyncIO );
 DECLARE_FLOAT_ACCUMULATOR_STAT( TEXT( "Async package precache wait time" ), STAT_AsyncIO_AsyncPackagePrecacheWaitTime, STATGROUP_AsyncIO );
 
-bool GEnableSyncloadOptimize = false;
+bool GEnableSyncloadOptimize = true;
 static FAutoConsoleVariableRef CVarEnableSyncloadOptimize(
 	TEXT("g.EnableSyncloadOptimize"),
 	GEnableSyncloadOptimize,
@@ -1827,15 +1827,15 @@ EAsyncPackageState::Type FAsyncPackage::LoadImports_Event()
 		}
 		if (PendingPackage)
 		{
-			// If current task uses the highest priority, let dependent package use the highest priority too 
-			// for making 'PendingPackage' load as soon as possible
-			if (IsHighestPriority())
+			// If current task is synchronous load with high priority, let dependent package use higher priority 
+			// to make 'PendingPackage' load as soon as possible
+			if (IsSyncLoadHighPriority())
 			{
-				PendingPackage->Desc.Priority = FAsyncLoadEvent::UserPriority_MAX;
+				PendingPackage->Desc.Priority = FAsyncLoadEvent::UserPriority_SyncLoad_Dependent;
 
 				if (PendingPackage->SerialNumber)
 				{
-					AsyncLoadingThread.ModifyPriority(PendingPackage->SerialNumber, FAsyncLoadEvent::UserPriority_MAX);
+					AsyncLoadingThread.ModifyPriority(PendingPackage->SerialNumber, FAsyncLoadEvent::UserPriority_SyncLoad_Dependent);
 				}
 			}
 			
@@ -3787,20 +3787,60 @@ void FAsyncPackage::Event_StartPostload()
 		}
 	}
 	check(!AsyncLoadingThread.AsyncPackagesReadyForTick.Contains(this));
+	AsyncLoadingThread.AsyncPackagesReadyForTick.Add(this);
 
-	// Insert the hightest package to the head to ensure it will be handle as soon as possible 
-	if (IsHighestPriority())
+	// Handle sync load with high priority
+	if (IsSyncLoadHighPriority())
 	{
-		AsyncLoadingThread.AsyncPackagesReadyForTick.Insert(this, 0);
-		AsyncLoadingThread.bForceFlushAsyncPackagesForTick = true;
-	}
-	else
-	{
-		AsyncLoadingThread.AsyncPackagesReadyForTick.Add(this);
+		{
+			QUICK_SCOPE_CYCLE_COUNTER(STAT_MakeHighestPriorityForImportPackage);
+			// Modify import packages' priority for sync load package, for stable sort
+			ModifyImportPackagePriority(this);
+		}
+
+		// Split packages with the high-priority first and the low-priority behind 
+		AsyncLoadingThread.AsyncPackagesReadyForTick.StableSort([](const FAsyncPackage& A, const FAsyncPackage& B)
+		{
+			return A.Desc.Priority > B.Desc.Priority;
+		});
+
+		// Count how many high-priority packages need to be done
+		for (const FAsyncPackage* PackageForTick : AsyncLoadingThread.AsyncPackagesReadyForTick)
+		{
+			if (PackageForTick->IsSyncLoadHighPriority())
+			{
+				AsyncLoadingThread.ForceFlushAsyncPackagesForTickCount++;
+			}
+			else
+			{
+				break;
+			}
+		}
 	}
 
 	EventDebugLog(TEXT("Event_StartPostload"));
 }
+
+void FAsyncPackage::ModifyImportPackagePriority(const FAsyncPackage* Package)
+{
+	FLinkerLoad* Linker = Package->Linker;
+	FAsyncLoadingThread& AsyncLoadingThread = Package->AsyncLoadingThread;
+	
+	for (int32 ImportIndex = 0; ImportIndex< Linker->ImportMap.Num(); ImportIndex++)
+	{
+		const FObjectImport* Import = &Linker->ImportMap[ImportIndex];
+
+		const FName ImportPackageToLoad = !Import->HasPackageName() ? Import->ObjectName : Import->GetPackageName();
+		const FName ImportPackageFName = Linker->GetInstancingContext().Remap(ImportPackageToLoad);
+		FAsyncPackage* DependentPackage = AsyncLoadingThread.FindAsyncPackage(ImportPackageFName);
+		if (DependentPackage && !DependentPackage->IsSyncLoadHighPriority())
+		{
+			DependentPackage->Desc.Priority = Package->Desc.Priority;
+			ModifyImportPackagePriority(DependentPackage);
+		}
+	}
+}
+
 void FAsyncPackage::EventDrivenLoadingComplete()
 {
 	check(!AnyImportsAndExportWorkOutstanding());
@@ -4112,8 +4152,8 @@ EAsyncPackageState::Type FAsyncLoadingThread::ProcessAsyncLoading(int32& OutPack
 				continue;
 			}
 
-			// We wanna force flush 'AsyncPackagesReadyForTick', don't wait
-			if (!bForceFlushAsyncPackagesForTick)
+			// If we wanna force flush 'AsyncPackagesReadyForTick', don't wait
+			if (ForceFlushAsyncPackagesForTickCount <= 0)
 			{
 				{
 					FAsyncLoadEventArgs Args;
@@ -4170,9 +4210,14 @@ EAsyncPackageState::Type FAsyncLoadingThread::ProcessAsyncLoading(int32& OutPack
 				{
 					check(0); // if it has finished loading, it should not be in AsyncPackagesReadyForTick
 				}
+				
 				if (LocalLoadingState == EAsyncPackageState::Complete)
 				{
-					bForceFlushAsyncPackagesForTick = false;
+					// Complete handle one package, 'ForceFlushAsyncPackagesForTickCount' plus one  
+					if (ForceFlushAsyncPackagesForTickCount > 0)
+					{
+						ForceFlushAsyncPackagesForTickCount--;
+					}
 					
 					{
 #if THREADSAFE_UOBJECTS
@@ -5307,9 +5352,9 @@ FAsyncPackage::~FAsyncPackage()
 }
 
 
-FORCEINLINE bool FAsyncPackage::IsHighestPriority() const
+FORCEINLINE bool FAsyncPackage::IsSyncLoadHighPriority() const
 {
-	return GEnableSyncloadOptimize ? Desc.Priority == FAsyncLoadEvent::UserPriority_MAX : false;
+	return GEnableSyncloadOptimize ? Desc.Priority == FAsyncLoadEvent::UserPriority_SyncLoad : false;
 }
 
 void FAsyncPackage::AddReferencedObjects(FReferenceCollector& Collector)

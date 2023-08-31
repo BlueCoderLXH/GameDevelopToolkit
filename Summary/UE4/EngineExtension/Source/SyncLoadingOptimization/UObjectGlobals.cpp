@@ -1134,7 +1134,7 @@ UPackage* LoadPackageInternal(UPackage* InOuter, const TCHAR* InLongPackageNameO
 			}
 
 			TAsyncLoadPriority LoadPriority = GEnableSyncloadOptimize ?
-				FAsyncLoadEvent::UserPriority_MAX : FAsyncLoadEvent::UserPriority0;
+				FAsyncLoadEvent::UserPriority_SyncLoad : FAsyncLoadEvent::UserPriority0;
 
 			// if 'GEnableSyncloadOptimize' is set true
 			// Let syncload task use the max priority to only wait for syncload but asyncload
