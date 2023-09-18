@@ -67,10 +67,15 @@ struct FObjectPoolItemWrapper
 		RemoveTimer = Other.RemoveTimer;
 	}
 
-	bool ShouldAutoRemove() const { return RemoveTimer <= 0.f; }
+	bool ShouldAutoRemove() const { return TotalTimeToBeRemove > 0.f; }
 
 	bool Tick(const float DeltaSeconds)
 	{
+		if (!ShouldAutoRemove())
+		{
+			return false;
+		}
+		
 		RemoveTimer += DeltaSeconds;
 		return RemoveTimer >= TotalTimeToBeRemove;
 	}
@@ -176,4 +181,6 @@ private:
 	int32 C_MinGrowSize = 2;
 	UPROPERTY(Config)
 	float C_MinAutoReduceTime = 10.f;
+	UPROPERTY(Config)
+	bool C_ForceGCAfterReduce = false;
 };

@@ -236,6 +236,12 @@ void UObjectPool::Tick(const float DeltaSeconds)
 			*(Config.ClassType->GetName()), PendingRemoveObjects.Num(), UnusedObjects.Num(), Capacity);
 
 		bPendingRemove = false;
+		
+		// Force GC to save memory immediately if C_ForceGCAfterReduce set true, otherwise use system auto GC
+		if (C_ForceGCAfterReduce)
+		{
+			GEngine->ForceGarbageCollection();
+		}		
 	}
 
 	PendingRemoveObjects.Empty(C_MinCapacity);	
