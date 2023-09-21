@@ -147,6 +147,11 @@ private:
 	 * Expand the buffer
 	 */
 	bool Expand(const int32 ExpandSize);
+
+	/**
+	 * Check whether the buffer is valid or needed to expand
+	 */
+	bool CheckBufferOnSpawn();
 	
 	static void RemovePoolItems(TArray<FObjectPoolItemWrapper>& PendingRemoveArray);
 

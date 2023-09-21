@@ -43,16 +43,15 @@ bool UObjectPool::InitDefault(const TSoftClassPtr<UObject> ClassType)
 
 bool UObjectPool::Expand(const int32 ExpandSize)
 {
-	if (ExpandSize <= 0)
+	const int32 RealExpandSize = FMath::Max(ExpandSize, C_MinGrowSize);
+	if (RealExpandSize <= 0)
 	{
 		return false;
 	}
-
+	
 	QUICK_SCOPE_CYCLE_COUNTER(STAT_UOBJECTPOOL_EXPAND);
 	
-	const int32 RealExpandSize = FMath::Max(ExpandSize, C_MinGrowSize);
 	Capacity += RealExpandSize;
-
 	UnusedObjects.Reserve(Capacity);
 
 	for (int32 i = Capacity; i > (Capacity - RealExpandSize); --i)
@@ -79,6 +78,43 @@ bool UObjectPool::Expand(const int32 ExpandSize)
 	return true;
 }
 
+bool UObjectPool::CheckBufferOnSpawn()
+{
+	for (int32 Index = UnusedObjects.Num() - 1; Index >= 0; Index--)
+	{
+		// It maybe gc outside, just remove invalid items here
+		if (!IsValid(UnusedObjects[Index].Obj))
+		{
+			UnusedObjects.RemoveAtSwap(Index);
+		}
+		// Find one is valid
+		else
+		{
+			break;
+		}
+	}
+
+	// Expand if buffer is empty
+	if (Empty())
+	{
+		int32 RealCapacity = Capacity;
+		if (RealCapacity <= 0)
+		{
+			RealCapacity = C_MinCapacity > 0 ? C_MinCapacity : 4.0f;
+		}
+		
+		const int32 ExpandCount = RealCapacity * (Config.GrowFactor - 1);
+
+		if (!Expand(ExpandCount))
+		{
+			UE_LOG(LogObjectPool, Error, TEXT("UObjectPool::Spawn Failed to expand pool for Type:%s !"), *(Config.ClassType.ToString()));
+			return false;
+		}
+	}	
+
+	return true;
+}
+
 UObject* UObjectPool::Spawn(UObject* InOuter, const FOnSpawnObjectFromPoolDelegate OnSpawnObjectFromPool/* = FOnSpawnObjectFromPoolDelegate()*/)
 {
 	QUICK_SCOPE_CYCLE_COUNTER(STAT_UOBJECTPOOL_SPAWN);
@@ -94,27 +130,16 @@ UObject* UObjectPool::Spawn(UObject* InOuter, const FOnSpawnObjectFromPoolDelega
 		return nullptr;
 	}
 	
-	if (Empty())
+	if (!CheckBufferOnSpawn())
 	{
-		int32 RealCapacity = Capacity;
-		if (RealCapacity <= 0)
-		{
-			RealCapacity = C_MinCapacity > 0 ? C_MinCapacity : 4.0f;
-		}
-		
-		const int32 ExpandCount = RealCapacity * (Config.GrowFactor - 1);
-
-		if (!Expand(ExpandCount))
-		{
-			UE_LOG(LogObjectPool, Fatal, TEXT("UObjectPool::Spawn Failed to expand pool for Type:%s !"), *(Config.ClassType.ToString()));
-			return nullptr;
-		}
+		UE_LOG(LogObjectPool, Error, TEXT("UObjectPool::Spawn CheckBufferOnSpawn failed for Type:%s !"), *(Config.ClassType.ToString()));
+		return nullptr;
 	}
 	
 	UObject* SpawnObject = UnusedObjects.Pop().Obj;
 	if (!IsValid(SpawnObject))
 	{
-		UE_LOG(LogObjectPool, Fatal, TEXT("UObjectPool::Spawn Failed to spawn a object(Type:%s) from object pool!"), *(Config.ClassType.ToString()));
+		UE_LOG(LogObjectPool, Error, TEXT("UObjectPool::Spawn Failed to spawn a object(Type:%s) from object pool!"), *(Config.ClassType.ToString()));
 		return nullptr;
 	}
 
@@ -167,8 +192,10 @@ bool UObjectPool::Recycle(UObject* RecycleObject)
 		return false;
 	}
 
-	const FString RecycleName = RecycleObject->GetName().Replace(TEXT("Spawned"), TEXT("Recycled"));	
-	RecycleObject->Rename(*RecycleName, nullptr, REN_ForceNoResetLoaders);
+	const FString RecycleName = RecycleObject->GetName().Replace(TEXT("Spawned"), TEXT("Recycled"));
+	// - Set Persistent Level as current's outer avoiding gc (Outer may be set outside, such as streaming level etc.)
+	// - Set flag 'REN_ForceNoResetLoaders' avoiding 'FlushAsyncLoading'
+	RecycleObject->Rename(*RecycleName, GetOuter(), REN_ForceNoResetLoaders);
 	
 	new (UnusedObjects) FObjectPoolItemWrapper(RecycleObject, Config.AutoReduceTime);
 
