@@ -1,105 +1,105 @@
-// #include "Reusable.h"
-//
-// extern OBJECTPOOL_API TAutoConsoleVariable<bool> CVarEnableObjectPool;
-//
-// void UNetDriver::NotifyActorDestroyed( AActor* ThisActor, bool IsSeamlessTravel )
-// {
-// 	// Remove the actor from the property tracker map
-// 	RepChangedPropertyTrackerMap.Remove(ThisActor);
-//
-// 	const bool bIsServer = IsServer();
-// 	
-// 	if (bIsServer)
-// 	{
-// 		FActorDestructionInfo* DestructionInfo = nullptr;
-//
-// 		const bool bIsActorStatic = !GuidCache->IsDynamicObject( ThisActor );
-// 		const bool bActorHasRole = ThisActor->GetRemoteRole() != ROLE_None;
-// 		const bool bShouldCreateDestructionInfo = bIsServer && bIsActorStatic && bActorHasRole && !IsSeamlessTravel;
-//
-// 		if (bShouldCreateDestructionInfo)
-// 		{
-// 			UE_LOG(LogNet, VeryVerbose, TEXT("NotifyActorDestroyed %s - StartupActor"), *ThisActor->GetPathName() );
-// 			DestructionInfo = CreateDestructionInfo( this, ThisActor, DestructionInfo);
-// 		}
-//
-// 		const FNetworkObjectInfo* NetworkObjectInfo = GetNetworkObjectList().Find( ThisActor ).Get();
-//
-// 		for( int32 i=ClientConnections.Num()-1; i>=0; i-- )
-// 		{
-// 			UNetConnection* Connection = ClientConnections[i];
-// 			if( ThisActor->bNetTemporary )
-// 				Connection->SentTemporaries.Remove( ThisActor );
-// 			UActorChannel* Channel = Connection->FindActorChannelRef(ThisActor);
-// 			if( Channel )
-// 			{
-// 				check(Channel->OpenedLocally);
-// 				Channel->bClearRecentActorRefs = false;
-// 				Channel->Close(EChannelCloseReason::Destroyed);
-// 			}
-// 			else
-// 			{
-// 				const bool bDormantOrRecentlyDormant = NetworkObjectInfo && (NetworkObjectInfo->DormantConnections.Contains(Connection) || NetworkObjectInfo->RecentlyDormantConnections.Contains(Connection));
-//
-// 				if (bShouldCreateDestructionInfo || bDormantOrRecentlyDormant)
-// 				{
-// 					// Make a new destruction info if necessary. It is necessary if the actor is dormant or recently dormant because
-// 					// even though the client knew about the actor at some point, it doesn't have a channel to handle destruction.
-// 					DestructionInfo = CreateDestructionInfo(this, ThisActor, DestructionInfo);
-// 					if (DestructionInfo)
-// 					{
-// 						Connection->AddDestructionInfo(DestructionInfo);
-// 					}
-// 				}
-// 			}
-//
-// 			Connection->NotifyActorDestroyed(ThisActor);
-// 		}
-// 		
-// 		// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>ObjectPool Start
-// 		// Remove object-pooled actor from global cache on server side (by lxh)
-// 		//
-// 		// The object-pooled actor and its replicated components must be removed from 'ObjectLookup' and 'NetGUIDLookup' in GuidCache
-// 		// To ensure the exact object pool flow for actors(SpawnActor and DestroyActor).
-// 		bool bShouldHandleForObjectPool = false;
-// 		if (IsValid(ThisActor) && IsValid(ThisActor->GetClass()) && ThisActor->Implements<UReusable>())
-// 		{
-// 			if (const IReusable* DefaultReusableActor = Cast<IReusable>(ThisActor->GetClass()->GetDefaultObject()))
-// 			{
-// 				bShouldHandleForObjectPool = DefaultReusableActor->ShouldUseObjectPool();
-// 			}
-// 		}
-// 		
-// 		if (CVarEnableObjectPool.GetValueOnGameThread() && bShouldHandleForObjectPool && GuidCache.IsValid())
-// 		{
-// 			const FNetworkGUID* ActorNetGuid = GuidCache->NetGUIDLookup.Find(ThisActor);
-// 			if (ActorNetGuid)
-// 			{
-// 				GuidCache->ObjectLookup.Remove(*ActorNetGuid);
-// 				GuidCache->NetGUIDLookup.Remove(ThisActor);
-// 			}
-//
-// 			const TArray<UActorComponent*>& RepComps = ThisActor->GetReplicatedComponents();
-// 			for (UActorComponent* RepComp : RepComps)
-// 			{
-// 				if (!IsValid(RepComp)) continue;
-//
-// 				const FNetworkGUID* RepCompNetGuid = GuidCache->NetGUIDLookup.Find(RepComp);
-// 				if (RepCompNetGuid)
-// 				{
-// 					GuidCache->ObjectLookup.Remove(*RepCompNetGuid);
-// 					GuidCache->NetGUIDLookup.Remove(RepComp);
-// 				}
-// 			}
-// 		}
-// 		// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>ObjectPool End
-// 	}
-//
-// 	if (ServerConnection)
-// 	{
-// 		ServerConnection->NotifyActorDestroyed(ThisActor);
-// 	}
-//
-// 	// Remove this actor from the network object list
-// 	RemoveNetworkActor( ThisActor );
-// }
+#INCLUDE "REUSABLE.H"
+
+EXTERN OBJECTPOOL_API TAUTOCONSOLEVARIABLE<BOOL> CVARENABLEOBJECTPOOL;
+
+VOID UNETDRIVER::NOTIFYACTORDESTROYED( AACTOR* THISACTOR, BOOL ISSEAMLESSTRAVEL )
+{
+	// REMOVE THE ACTOR FROM THE PROPERTY TRACKER MAP
+	REPCHANGEDPROPERTYTRACKERMAP.REMOVE(THISACTOR);
+
+	CONST BOOL BISSERVER = ISSERVER();
+	
+	IF (BISSERVER)
+	{
+		FACTORDESTRUCTIONINFO* DESTRUCTIONINFO = NULLPTR;
+
+		CONST BOOL BISACTORSTATIC = !GUIDCACHE->ISDYNAMICOBJECT( THISACTOR );
+		CONST BOOL BACTORHASROLE = THISACTOR->GETREMOTEROLE() != ROLE_NONE;
+		CONST BOOL BSHOULDCREATEDESTRUCTIONINFO = BISSERVER && BISACTORSTATIC && BACTORHASROLE && !ISSEAMLESSTRAVEL;
+
+		IF (BSHOULDCREATEDESTRUCTIONINFO)
+		{
+			UE_LOG(LOGNET, VERYVERBOSE, TEXT("NOTIFYACTORDESTROYED %S - STARTUPACTOR"), *THISACTOR->GETPATHNAME() );
+			DESTRUCTIONINFO = CREATEDESTRUCTIONINFO( THIS, THISACTOR, DESTRUCTIONINFO);
+		}
+
+		CONST FNETWORKOBJECTINFO* NETWORKOBJECTINFO = GETNETWORKOBJECTLIST().FIND( THISACTOR ).GET();
+
+		FOR( INT32 I=CLIENTCONNECTIONS.NUM()-1; I>=0; I-- )
+		{
+			UNETCONNECTION* CONNECTION = CLIENTCONNECTIONS[I];
+			IF( THISACTOR->BNETTEMPORARY )
+				CONNECTION->SENTTEMPORARIES.REMOVE( THISACTOR );
+			UACTORCHANNEL* CHANNEL = CONNECTION->FINDACTORCHANNELREF(THISACTOR);
+			IF( CHANNEL )
+			{
+				CHECK(CHANNEL->OPENEDLOCALLY);
+				CHANNEL->BCLEARRECENTACTORREFS = FALSE;
+				CHANNEL->CLOSE(ECHANNELCLOSEREASON::DESTROYED);
+			}
+			ELSE
+			{
+				CONST BOOL BDORMANTORRECENTLYDORMANT = NETWORKOBJECTINFO && (NETWORKOBJECTINFO->DORMANTCONNECTIONS.CONTAINS(CONNECTION) || NETWORKOBJECTINFO->RECENTLYDORMANTCONNECTIONS.CONTAINS(CONNECTION));
+
+				IF (BSHOULDCREATEDESTRUCTIONINFO || BDORMANTORRECENTLYDORMANT)
+				{
+					// MAKE A NEW DESTRUCTION INFO IF NECESSARY. IT IS NECESSARY IF THE ACTOR IS DORMANT OR RECENTLY DORMANT BECAUSE
+					// EVEN THOUGH THE CLIENT KNEW ABOUT THE ACTOR AT SOME POINT, IT DOESN'T HAVE A CHANNEL TO HANDLE DESTRUCTION.
+					DESTRUCTIONINFO = CREATEDESTRUCTIONINFO(THIS, THISACTOR, DESTRUCTIONINFO);
+					IF (DESTRUCTIONINFO)
+					{
+						CONNECTION->ADDDESTRUCTIONINFO(DESTRUCTIONINFO);
+					}
+				}
+			}
+
+			CONNECTION->NOTIFYACTORDESTROYED(THISACTOR);
+		}
+		
+		// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>OBJECTPOOL START
+		// REMOVE OBJECT-POOLED ACTOR FROM GLOBAL CACHE ON SERVER SIDE (BY LXH)
+		//
+		// THE OBJECT-POOLED ACTOR AND ITS REPLICATED COMPONENTS MUST BE REMOVED FROM 'OBJECTLOOKUP' AND 'NETGUIDLOOKUP' IN GUIDCACHE
+		// TO ENSURE THE EXACT OBJECT POOL FLOW FOR ACTORS(SPAWNACTOR AND DESTROYACTOR).
+		BOOL BSHOULDHANDLEFOROBJECTPOOL = FALSE;
+		IF (ISVALID(THISACTOR) && ISVALID(THISACTOR->GETCLASS()) && THISACTOR->IMPLEMENTS<UREUSABLE>())
+		{
+			IF (CONST IREUSABLE* DEFAULTREUSABLEACTOR = CAST<IREUSABLE>(THISACTOR->GETCLASS()->GETDEFAULTOBJECT()))
+			{
+				BSHOULDHANDLEFOROBJECTPOOL = DEFAULTREUSABLEACTOR->SHOULDUSEOBJECTPOOL();
+			}
+		}
+		
+		IF (CVARENABLEOBJECTPOOL.GETVALUEONGAMETHREAD() && BSHOULDHANDLEFOROBJECTPOOL && GUIDCACHE.ISVALID())
+		{
+			CONST FNETWORKGUID* ACTORNETGUID = GUIDCACHE->NETGUIDLOOKUP.FIND(THISACTOR);
+			IF (ACTORNETGUID)
+			{
+				GUIDCACHE->OBJECTLOOKUP.REMOVE(*ACTORNETGUID);
+				GUIDCACHE->NETGUIDLOOKUP.REMOVE(THISACTOR);
+			}
+
+			CONST TARRAY<UACTORCOMPONENT*>& REPCOMPS = THISACTOR->GETREPLICATEDCOMPONENTS();
+			FOR (UACTORCOMPONENT* REPCOMP : REPCOMPS)
+			{
+				IF (!ISVALID(REPCOMP)) CONTINUE;
+
+				CONST FNETWORKGUID* REPCOMPNETGUID = GUIDCACHE->NETGUIDLOOKUP.FIND(REPCOMP);
+				IF (REPCOMPNETGUID)
+				{
+					GUIDCACHE->OBJECTLOOKUP.REMOVE(*REPCOMPNETGUID);
+					GUIDCACHE->NETGUIDLOOKUP.REMOVE(REPCOMP);
+				}
+			}
+		}
+		// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>OBJECTPOOL END
+	}
+
+	IF (SERVERCONNECTION)
+	{
+		SERVERCONNECTION->NOTIFYACTORDESTROYED(THISACTOR);
+	}
+
+	// REMOVE THIS ACTOR FROM THE NETWORK OBJECT LIST
+	REMOVENETWORKACTOR( THISACTOR );
+}
