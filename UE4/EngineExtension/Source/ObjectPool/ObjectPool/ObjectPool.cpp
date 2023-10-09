@@ -196,16 +196,8 @@ bool UObjectPool::Recycle(UObject* RecycleObject)
 	{
 		return false;
 	}
-
-	const FString RecycleName = RecycleObject->GetName().Replace(TEXT("Spawned"), TEXT("Recycled"));
-	// - Set 'ObjectPoolRoot' as current's outer avoiding gc (Outer may be set outside, such as streaming level etc.)
-	// - Set flag 'REN_ForceNoResetLoaders' avoiding 'FlushAsyncLoading'
-	RecycleObject->Rename(*RecycleName, ObjectPoolRoot, REN_ForceNoResetLoaders);
 	
 	new (UnusedObjects) FObjectPoolItemWrapper(RecycleObject, Config.AutoReduceTime);
-
-	UE_LOG(LogObjectPool, VeryVerbose, TEXT("UObjectPool::Recycle Recycle '%s' Success For Type:%s PoolSize:%d Capacity:%d"),
-		*RecycleName, *(Config.ClassType->GetName()), UnusedObjects.Num(), Capacity);
 
 	IReusable* ReusableObject = Cast<IReusable>(RecycleObject);
 	if (ReusableObject)
@@ -213,6 +205,15 @@ bool UObjectPool::Recycle(UObject* RecycleObject)
 		ReusableObject->RecycleToPool();
 	}
 
+	const FString RecycleName = RecycleObject->GetName().Replace(TEXT("Spawned"), TEXT("Recycled"));
+	// - Set 'ObjectPoolRoot' as current's outer avoiding gc (Outer may be set outside, such as streaming level etc.)
+	// - Set flag 'REN_ForceNoResetLoaders' to avoid 'FlushAsyncLoading'
+	// - Set outer after 'ProcessEvent' to avoid failing to call 'RecycleToPool'
+	RecycleObject->Rename(*RecycleName, ObjectPoolRoot, REN_ForceNoResetLoaders);
+
+	UE_LOG(LogObjectPool, VeryVerbose, TEXT("UObjectPool::Recycle Recycle '%s' Success For Type:%s PoolSize:%d Capacity:%d"),
+		*RecycleName, *(Config.ClassType->GetName()), UnusedObjects.Num(), Capacity);
+	
 	return true;
 }
 
