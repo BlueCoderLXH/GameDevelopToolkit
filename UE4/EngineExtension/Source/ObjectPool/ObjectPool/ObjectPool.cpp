@@ -3,11 +3,16 @@
 
 DEFINE_LOG_CATEGORY(LogObjectPool);
 
-bool UObjectPool::Init(FObjectPoolConfig& InConfig)
+bool UObjectPool::Init(FObjectPoolConfig& InConfig, UObject* InObjectPoolRoot)
 {
 	QUICK_SCOPE_CYCLE_COUNTER(STAT_UOBJECTPOOL_INIT);
+
+	if (InObjectPoolRoot)
+	{
+		ObjectPoolRoot = InObjectPoolRoot;
+	}
 	
-	auto ObjectType = InConfig.ClassType;
+	const auto ObjectType = InConfig.ClassType;
 	const auto ObjectTypePtr = ObjectType.LoadSynchronous();
 	
 	checkf(IsValid(ObjectTypePtr), TEXT("UObjectPool::Init ObjectType:%s is invalid!"), *(ObjectType.ToString()));
@@ -30,7 +35,7 @@ bool UObjectPool::Init(FObjectPoolConfig& InConfig)
 	return bInit;
 }
 
-bool UObjectPool::InitDefault(const TSoftClassPtr<UObject> ClassType)
+bool UObjectPool::InitDefault(const TSoftClassPtr<UObject>& ClassType, UObject* InObjectPoolRoot)
 {
 	FObjectPoolConfig DefaultConfig;
 	DefaultConfig.ClassType = ClassType;
@@ -38,7 +43,7 @@ bool UObjectPool::InitDefault(const TSoftClassPtr<UObject> ClassType)
 	DefaultConfig.GrowFactor = C_MinGrowFactor;
 	DefaultConfig.AutoReduceTime = 0.f;
 
-	return Init(DefaultConfig);
+	return Init(DefaultConfig, InObjectPoolRoot);
 }
 
 bool UObjectPool::Expand(const int32 ExpandSize)
@@ -63,7 +68,7 @@ bool UObjectPool::Expand(const int32 ExpandSize)
 		}
 
 		const FString RecycleName = FString::Printf(TEXT("%s_Recycled_%d"), *(ClassType->GetName()), i);
-		UObject* NewSpawnObject = NewObject<UObject>(GetOuter(), ClassType, FName(RecycleName));
+		UObject* NewSpawnObject = NewObject<UObject>(ObjectPoolRoot, ClassType, FName(RecycleName));
 		if (!NewSpawnObject)
 		{
 			return false;
@@ -193,9 +198,9 @@ bool UObjectPool::Recycle(UObject* RecycleObject)
 	}
 
 	const FString RecycleName = RecycleObject->GetName().Replace(TEXT("Spawned"), TEXT("Recycled"));
-	// - Set Persistent Level as current's outer avoiding gc (Outer may be set outside, such as streaming level etc.)
+	// - Set 'ObjectPoolRoot' as current's outer avoiding gc (Outer may be set outside, such as streaming level etc.)
 	// - Set flag 'REN_ForceNoResetLoaders' avoiding 'FlushAsyncLoading'
-	RecycleObject->Rename(*RecycleName, GetOuter(), REN_ForceNoResetLoaders);
+	RecycleObject->Rename(*RecycleName, ObjectPoolRoot, REN_ForceNoResetLoaders);
 	
 	new (UnusedObjects) FObjectPoolItemWrapper(RecycleObject, Config.AutoReduceTime);
 
@@ -247,7 +252,7 @@ void UObjectPool::Tick(const float DeltaSeconds)
 		if (PoolItem.Tick(DeltaSeconds))
 		{
 			new (PendingRemoveObjects) FObjectPoolItemWrapper(PoolItem);
-			UnusedObjects.RemoveAt(Index);
+			UnusedObjects.RemoveAtSwap(Index);
 
 			bPendingRemove = true;
 		}
@@ -263,12 +268,12 @@ void UObjectPool::Tick(const float DeltaSeconds)
 			*(Config.ClassType->GetName()), PendingRemoveObjects.Num(), UnusedObjects.Num(), Capacity);
 
 		bPendingRemove = false;
-		
+
 		// Force GC to save memory immediately if C_ForceGCAfterReduce set true, otherwise use system auto GC
 		if (C_ForceGCAfterReduce)
 		{
 			GEngine->ForceGarbageCollection();
-		}		
+		}
 	}
 
 	PendingRemoveObjects.Empty(C_MinCapacity);	

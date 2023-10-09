@@ -5,6 +5,12 @@
 
 extern ENGINE_API TAutoConsoleVariable<bool> CVarEnableObjectPool;
 
+UCLASS()
+class ENGINE_API UObjectPoolRoot final : public UObject
+{
+	GENERATED_BODY()
+};
+
 /**
  * UObjectPoolSystem
  *
@@ -110,4 +116,8 @@ private:
 
 	/** Whether init or not */
 	bool bInit = false;
+
+	/** Root outer of unused objects */
+	UPROPERTY()
+	UObjectPoolRoot* ObjectPoolRoot;
 };

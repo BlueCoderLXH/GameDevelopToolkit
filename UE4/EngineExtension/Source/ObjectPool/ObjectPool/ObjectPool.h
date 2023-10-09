@@ -105,9 +105,9 @@ class ENGINE_API UObjectPool : public UObject
 public:
 	UObjectPool() {}
 	
-	bool Init(FObjectPoolConfig& InConfig);
+	bool Init(FObjectPoolConfig& InConfig, UObject* InObjectPoolRoot);
 	
-	bool InitDefault(const TSoftClassPtr<UObject> ClassType);	
+	bool InitDefault(const TSoftClassPtr<UObject>& ClassType, UObject* InObjectPoolRoot);	
 
 	/**
 	 * Spawn a object from pool
@@ -176,6 +176,10 @@ private:
 	/** Is pending-removed */
 	bool bPendingRemove;
 
+	UPROPERTY()
+	UObject* ObjectPoolRoot;
+
+	
 	UPROPERTY(Config)
 	int32 C_DefaultCapacity = 4;
 	UPROPERTY(Config)
