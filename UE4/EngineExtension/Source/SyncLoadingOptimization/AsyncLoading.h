@@ -453,6 +453,8 @@ struct FAsyncPackage : public FGCObject
 
 	/** Returns whether package's priority is the highest. */
 	FORCEINLINE bool IsSyncLoadHighPriority() const;
+	
+	FORCEINLINE bool IsSyncLoadHighPriorityImport() const;
 
 	/** Returns package loading priority. */
 	FORCEINLINE TAsyncLoadPriority GetPriority() const
@@ -738,7 +740,7 @@ public:
 	void Event_ProcessPostloadWait();
 	void Event_StartPostload();
 
-	static void ModifyImportPackagePriority(const FAsyncPackage* Package);
+	static void ModifyImportPackagePriority(FAsyncPackage* Package, const TAsyncLoadPriority NewPriority);
 
 	void MarkNewObjectForLoadIfItIsAnExport(UObject *Object);
 	bool AnyImportsAndExportWorkOutstanding();

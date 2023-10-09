@@ -30,7 +30,7 @@ struct FAsyncLoadEvent
 
 		UserPriority0 = 0,
 		UserPriority_SyncLoad = MAX_int32 - 1,
-		UserPriority_SyncLoad_Dependent = MAX_int32,
+		UserPriority_SyncLoad_Import = MAX_int32,
 	};
 
 	int32 UserPriority;
