@@ -29,8 +29,14 @@ void UObjectPoolSystem::Init()
 		ObjectPoolRoot->AddToRoot();
 	}
 
-	const FString& OuterName =  GetOuter()->GetName();
+	const UWorld* CurrentWorld = GetWorld();
+	if (!IsValid(CurrentWorld))
+	{
+		return;
+	}
 
+	const FString& OuterName = CurrentWorld->GetName();
+	
 	for (FObjectPoolConfig& PoolCfgItem : ConfigArray)
 	{
 		if (CanLevelUseObjectPool(OuterName, PoolCfgItem.ExcludeLevelNames))
@@ -39,7 +45,7 @@ void UObjectPoolSystem::Init()
 		}
 	}
 
-	UE_LOG(LogObjectPool, Verbose, TEXT("UObjectPoolSystem::Init ObjectPools:%d In World:%s!"), PoolMap.Num(), *(GetOuter()->GetName()));
+	UE_LOG(LogObjectPool, Log, TEXT("UObjectPoolSystem::Init World:%s Configs:%d ObjectPools:%d!"), *OuterName, ConfigArray.Num(), PoolMap.Num());
 }
 
 bool UObjectPoolSystem::CanLevelUseObjectPool(const FString& LevelName, const FString& ExcludeLevelNames)
