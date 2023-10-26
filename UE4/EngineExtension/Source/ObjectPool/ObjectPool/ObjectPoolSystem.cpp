@@ -23,10 +23,9 @@ void UObjectPoolSystem::Init()
 	
 	bInit = true;
 	
-	if (!ObjectPoolRoot)
+	if (ConfigArray.Num() <= 0)
 	{
-		ObjectPoolRoot = NewObject<UObjectPoolRoot>();
-		ObjectPoolRoot->AddToRoot();
+		return;
 	}
 
 	const UWorld* CurrentWorld = GetWorld();
@@ -133,11 +132,11 @@ void UObjectPoolSystem::AddInner(FObjectPoolConfig& PoolConfig, const bool bMake
 
 	if (bMakeDefault)
 	{
-		ObjectPool->InitDefault(PoolConfig.ClassType, ObjectPoolRoot);
+		ObjectPool->InitDefault(PoolConfig.ClassType);
 	}
 	else
 	{
-		ObjectPool->Init(PoolConfig, ObjectPoolRoot);
+		ObjectPool->Init(PoolConfig);
 	}
 
 	PoolMap.Add(ClassType, ObjectPool);
@@ -239,16 +238,10 @@ bool UObjectPoolSystem::Recycle(UObject* RecycleObject)
 
 void UObjectPoolSystem::Clear()
 {
-	for (const auto& Item : PoolMap)
+	for (auto Item : PoolMap)
 	{
 		Item.Value->Clear();
 	}
 	
 	PoolMap.Empty();
-
-	if (ObjectPoolRoot)
-	{
-		ObjectPoolRoot->RemoveFromRoot();
-		ObjectPoolRoot = nullptr;
-	}
 }
