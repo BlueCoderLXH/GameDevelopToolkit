@@ -57,8 +57,8 @@ private:
 	 */
 	void SpawnFromPool()
 	{
-		Execute_OnSpawn(Cast<UObject>(this));
 		bSpawnedFromPool = true;
+		Execute_OnSpawn(Cast<UObject>(this));
 	}
 
 	/**
@@ -67,12 +67,13 @@ private:
 	 */
 	void RecycleToPool()
 	{
-		Execute_OnRecycle(Cast<UObject>(this));
 		bSpawnedFromPool = false;
+		Execute_OnRecycle(Cast<UObject>(this));
 	}
 	
 	// Whether this object is spawned from pool
 	bool bSpawnedFromPool = false;
 
 	friend UObjectPool;
+	friend AActor;
 };

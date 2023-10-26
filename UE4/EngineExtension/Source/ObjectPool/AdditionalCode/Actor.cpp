@@ -44,6 +44,7 @@
 #include "Net/Core/PushModel/PushModel.h"
 #include "Engine/AutoDestroySubsystem.h"
 #include "LevelUtils.h"
+#include "Reusable.h"
 #include "GameFramework/InputSettings.h"
 
 DEFINE_LOG_CATEGORY(LogActor);
@@ -3245,6 +3246,16 @@ void AActor::FinishSpawning(const FTransform& UserTransform, bool bIsDefaultTran
 			SCOPE_CYCLE_COUNTER(STAT_PostActorConstruction);
 			PostActorConstruction();
 		}
+
+		// Make sure that actor is initialized before calling 'OnSpawn' in the first time of this pooled actor
+		if (Implements<UReusable>())
+		{
+			IReusable* ReusableObject = Cast<IReusable>(this);
+			if (ReusableObject)
+			{
+				ReusableObject->SpawnFromPool();
+			}
+		}
 	}
 }
 
@@ -3507,6 +3518,16 @@ void AActor::DispatchBeginPlay(bool bFromLevelStreaming)
 
 	if (World)
 	{
+		// Pooled Actor shouldn't call 'BeginPlay'
+		if (Implements<UReusable>())
+		{
+			const IReusable* ReusableActor =  Cast<IReusable>(this);
+			if (ReusableActor && !ReusableActor->IsSpawnedFromPool())
+			{
+				return;
+			}
+		}
+		
 		ensureMsgf(ActorHasBegunPlay == EActorBeginPlayState::HasNotBegunPlay, TEXT("BeginPlay was called on actor %s which was in state %d"), *GetPathName(), (int32)ActorHasBegunPlay);
 		const uint32 CurrentCallDepth = BeginPlayCallDepth++;
 

@@ -151,10 +151,20 @@ UObject* UObjectPool::Spawn(UObject* InOuter, const FOnSpawnObjectFromPoolDelega
 
 	OnSpawnObjectFromPool.ExecuteIfBound(SpawnObject);
 
-	IReusable* ReusableObject = Cast<IReusable>(SpawnObject);
-	if (ReusableObject)
+	// Should call 'OnSpawn' here or when at 'FinishSpawnActor' for the pooled actor
+	bool bShouldCallOnSpawn = true;
+	if (SpawnObject->IsA(AActor::StaticClass()))
 	{
-		ReusableObject->SpawnFromPool();
+		const AActor* ReusableActor = Cast<AActor>(SpawnObject);
+		if (!ReusableActor->IsActorInitialized())
+		{
+			bShouldCallOnSpawn = false;
+		}
+	}
+	
+	if (bShouldCallOnSpawn)
+	{
+		Cast<IReusable>(SpawnObject)->SpawnFromPool();
 	}
 
 	return SpawnObject;
@@ -206,6 +216,18 @@ bool UObjectPool::Recycle(UObject* RecycleObject)
 	if (ReusableObject)
 	{
 		ReusableObject->RecycleToPool();
+	}
+
+	// Automatically unregister all actor tick function for recycled actor
+	if (RecycleObject->IsA(AActor::StaticClass()))
+	{
+		AActor* RecycleActor = Cast<AActor>(RecycleObject);
+		if (RecycleActor)
+		{
+			constexpr bool bRegisterTickFunctions = false;
+			constexpr bool bIncludeComponents = true;
+			RecycleActor->RegisterAllActorTickFunctions(bRegisterTickFunctions, bIncludeComponents);
+		}
 	}
 
 	return true;
