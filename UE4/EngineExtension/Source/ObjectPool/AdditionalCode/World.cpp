@@ -43,31 +43,14 @@ void UWorld::DestroyObjectPool()
 
 void UWorld::BeginPlay()
 {
-	AGameModeBase* const GameMode = GetAuthGameMode();
-	if (GameMode)
-	{
-		GameMode->StartPlay();
-		if (GetAISystem())
-		{
-			GetAISystem()->StartPlay();
-		}
-	}
-
-	OnWorldBeginPlay.Broadcast();
-
-#if WITH_CHAOS
-	if(PhysicsScene)
-	{
-		PhysicsScene->OnWorldBeginPlay();
-	}
-#endif
-
-	// Init ObjectPool on the end of World::BeginPlay for avoiding call the 'BeginPlay' of new-pooled actors
-	// See AWorldSettings::NotifyBeginPlay & FActorIteratorState::FActorIteratorState() for more
+	...
+	
 	if (bUseObjectPool)
 	{
 		InitObjectPool();
 	}
+
+	...
 }
 
 void UWorld::BeginDestroy()

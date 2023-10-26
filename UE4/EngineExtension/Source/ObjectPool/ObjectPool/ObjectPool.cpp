@@ -213,17 +213,6 @@ bool UObjectPool::Recycle(UObject* RecycleObject)
 
 	UE_LOG(LogObjectPool, VeryVerbose, TEXT("UObjectPool::Recycle Recycle '%s' Success For Type:%s PoolSize:%d Capacity:%d"),
 		*RecycleName, *(Config.ClassType->GetName()), UnusedObjects.Num(), Capacity);
-
-	if (RecycleObject->Implements<AActor>())
-	{
-		AActor* RecycleActor = Cast<AActor>(RecycleObject);
-		if (RecycleActor)
-		{
-			constexpr bool bRegisterTickFunctions = false;
-			constexpr bool bIncludeComponents = true;
-			RecycleActor->RegisterAllActorTickFunctions(bRegisterTickFunctions, bIncludeComponents);
-		}
-	}
 	
 	return true;
 }
