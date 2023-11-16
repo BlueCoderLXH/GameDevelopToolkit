@@ -652,6 +652,9 @@ bool IsAsyncLoadingSuspendedInternal()
 
 int32 LoadPackageAsync(const FString& InName, const FGuid* InGuid /*= nullptr*/, const TCHAR* InPackageToLoadFrom /*= nullptr*/, FLoadPackageAsyncDelegate InCompletionDelegate /*= FLoadPackageAsyncDelegate()*/, EPackageFlags InPackageFlags /*= PKG_None*/, int32 InPIEInstanceID /*= INDEX_NONE*/, int32 InPackagePriority /*= 0*/, const FLinkerInstancingContext* InstancingContext /*=nullptr*/)
 {
+	// FAsyncLoadEvent::UserPriority_SyncLoad should be used only for sync load optimization
+	check(InPackagePriority < FAsyncLoadEvent::UserPriority_SyncLoad || GEnableSyncLoadOptimize);
+	
 	LLM_SCOPE(ELLMTag::AsyncLoading);
 	return GetAsyncPackageLoader().LoadPackage(InName, InGuid, InPackageToLoadFrom, InCompletionDelegate, InPackageFlags, InPIEInstanceID, InPackagePriority, InstancingContext);
 }

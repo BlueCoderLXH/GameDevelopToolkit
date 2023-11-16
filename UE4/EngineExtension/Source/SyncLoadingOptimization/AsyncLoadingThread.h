@@ -29,8 +29,10 @@ struct FAsyncLoadEvent
 		EventSystemPriority_MAX = MAX_int32,
 
 		UserPriority0 = 0,
-		UserPriority_SyncLoad = MAX_int32 - 1,
-		UserPriority_SyncLoad_Import = MAX_int32,
+
+		// MAX_int32 >> 1, for sync load package itself
+		// [MAX_int32 >> 1 + 1, MAX_int32] for sync load import packages
+		UserPriority_SyncLoad = (MAX_int32 >> 1),
 	};
 
 	int32 UserPriority;
@@ -228,7 +230,7 @@ class FAsyncLoadingThread final : public FRunnable, public IAsyncPackageLoader
 	TArray<FAsyncPackage*> AsyncPackages;
 	TMap<FName, FAsyncPackage*> AsyncPackageNameLookup;
 public:
-	/** [EDL] Wether force flush async Packages that are ready for tick */
+	/** [EDL] Whether force flush async Packages that are ready for tick */
 	int32 ForceFlushAsyncPackagesForTickCount = 0;
 	
 	/** [EDL] Async Packages that are ready for tick */

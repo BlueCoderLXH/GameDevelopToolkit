@@ -84,10 +84,10 @@ DECLARE_FLOAT_ACCUMULATOR_STAT(TEXT("Total PostLoadObjects time GT"), STAT_FAsyn
 DECLARE_FLOAT_ACCUMULATOR_STAT( TEXT( "Async loading block time" ), STAT_AsyncIO_AsyncLoadingBlockingTime, STATGROUP_AsyncIO );
 DECLARE_FLOAT_ACCUMULATOR_STAT( TEXT( "Async package precache wait time" ), STAT_AsyncIO_AsyncPackagePrecacheWaitTime, STATGROUP_AsyncIO );
 
-bool GEnableSyncloadOptimize = false;
-static FAutoConsoleVariableRef CVarEnableSyncloadOptimize(
+bool GEnableSyncLoadOptimize = false;
+static FAutoConsoleVariableRef CVarEnableSyncLoadOptimize(
 	TEXT("g.EnableSyncloadOptimize"),
-	GEnableSyncloadOptimize,
+	GEnableSyncLoadOptimize,
 	TEXT("Whether to enable synchronous loading, true:enable ; false:disable"),
 	FConsoleVariableDelegate::CreateLambda([](IConsoleVariable* InVariable)
 	{
@@ -99,10 +99,10 @@ static FAutoConsoleVariableRef CVarEnableSyncloadOptimize(
 	ECVF_Default
 );
 
-FString GSyncloadOptimizeLogFilterName = TEXT("");
-static FAutoConsoleVariableRef CVarSyncloadOptimizeLogFilterName(
+FString GSyncLoadOptimizeLogFilterName = TEXT("");
+static FAutoConsoleVariableRef CVarSyncLoadOptimizeLogFilterName(
 	TEXT("g.SyncloadOptimizeLogFilterName"),
-	GSyncloadOptimizeLogFilterName,
+	GSyncLoadOptimizeLogFilterName,
 	TEXT("Set the filter name of synchronous loading optimized log"),
 	ECVF_Default
 );
@@ -442,12 +442,19 @@ void FAsyncLoadingThread::UpdateExistingPackagePriorities(FAsyncPackage* InPacka
 	check(!IsInGameThread() || !IsMultithreaded());
 	if (GEventDrivenLoaderEnabled)
 	{
-		// This situation:
-		// Sync load package has already in async queue, we shouldn't update priority here, for
-		// avoiding load import order error
-		if (InNewPriority != FAsyncLoadEvent::UserPriority_SyncLoad)
+		// This situation is for existing package: Only update priority for non-sync-load packages
+		if (!InPackage->IsSyncLoadHighPriority() || !InPackage->IsSyncLoadHighPriorityImport())
 		{
-			InPackage->SetPriority(InNewPriority);
+			// For sync load, we should update it and it's imports' priority recursively
+			if (InNewPriority >= FAsyncLoadEvent::UserPriority_SyncLoad)
+			{
+				FAsyncPackage::ModifyPriorityRecursively(InPackage, InNewPriority);
+			}
+			// Otherwise, update priority directly
+			else
+			{
+				InPackage->SetPriority(InNewPriority);
+			}
 		}
 		return;
 	}
@@ -1813,9 +1820,11 @@ EAsyncPackageState::Type FAsyncPackage::LoadImports_Event()
 				const FAsyncPackageDesc Info(INDEX_NONE, ImportPackageFName, ImportPackageToLoad);
 				PendingPackage = new FAsyncPackage(AsyncLoadingThread, Info, EDLBootNotificationManager);
 
+				// - Only update priority for non-sync-load packages' imports
+				// - For sync-load packages' imports, update priority later
 				if (!IsSyncLoadHighPriority() && !IsSyncLoadHighPriorityImport())
 				{
-					PendingPackage->Desc.Priority = Desc.Priority;
+					PendingPackage->SetPriority(GetPriority());
 				}
 
 				PendingPackage->Desc.SetInstancingContext(Linker->GetInstancingContext());
@@ -1847,10 +1856,9 @@ EAsyncPackageState::Type FAsyncPackage::LoadImports_Event()
 		{
 			// If current task is synchronous load with high priority, let dependent package use higher priority 
 			// to make 'PendingPackage' load as soon as possible
-			if (!PendingPackage->IsSyncLoadHighPriority() &&
-				(IsSyncLoadHighPriority() || IsSyncLoadHighPriorityImport()))
+			if (IsSyncLoadHighPriority() || IsSyncLoadHighPriorityImport())
 			{
-				ModifyImportPackagePriority(PendingPackage, FAsyncLoadEvent::UserPriority_SyncLoad_Import);
+				ModifyPriorityRecursively(PendingPackage, Desc.Priority + 1);
 			}
 			
 			if (int32(PendingPackage->AsyncPackageLoadingState) <= int32(EAsyncPackageLoadingState::WaitingForSummary))
@@ -2988,6 +2996,9 @@ void FAsyncPackage::EventDrivenCreateExport(int32 LocalExportIndex)
 							{
 								Export.Object->SetFlags(RF_NeedLoad | RF_NeedPostLoad | RF_NeedPostLoadSubobjects | RF_WasLoaded);
 							}
+
+							UE_LOG(LogStreaming, VeryVerbose, TEXT("EventDrivenCreateExport Object:%s RF_NeedLoad | RF_NeedPostLoad | RF_WasLoaded"), *Export.Object->GetFullName());
+							
 							Export.Object->ClearFlags(RF_WillBeLoaded);
 						}
 					}
@@ -3230,6 +3241,7 @@ void FAsyncPackage::EventDrivenSerializeExport(int32 LocalExportIndex)
 		AsyncLoader->Seek(Export.SerialOffset);
 
 		Object->ClearFlags(RF_NeedLoad);
+		UE_LOG(LogStreaming, VeryVerbose, TEXT("EventDrivenSerializeExport Object:%s ClearFlags(RF_NeedLoad)"), *Object->GetFullName());
 
 		TRACE_LOADTIME_SERIALIZE_EXPORT_SCOPE(Object, Export.SerialSize);
 
@@ -3829,22 +3841,26 @@ void FAsyncPackage::Event_StartPostload()
 	EventDebugLog(TEXT("Event_StartPostload"));
 }
 
-void FAsyncPackage::ModifyImportPackagePriority(FAsyncPackage* Package, const TAsyncLoadPriority NewPriority)
+void FAsyncPackage::ModifyPriorityRecursively(FAsyncPackage* Package, const TAsyncLoadPriority NewPriority)
 {
+	// Avoid dead recursion
 	if (!Package || Package->IsSyncLoadHighPriority() || Package->IsSyncLoadHighPriorityImport())
 	{
 		return;
 	}
 
+	QUICK_SCOPE_CYCLE_COUNTER(STAT_FAsyncPackage_ModifyImportPackagePriority);
+
 	FAsyncLoadingThread& AsyncLoadingThread = Package->AsyncLoadingThread;
 
 	// Modify current package's priority
-	Package->Desc.Priority = NewPriority;
+	Package->SetPriority(NewPriority);
 	if (Package->SerialNumber)
 	{
 		AsyncLoadingThread.ModifyPriority(Package->SerialNumber, NewPriority);
 	}
 
+	// This package haven't created linker yet, wait to modify priority when it goes to through 'Event_StartImportPackages'
 	FLinkerLoad* Linker = Package->Linker;
 	if (!Package->Linker)
 	{
@@ -3883,7 +3899,7 @@ void FAsyncPackage::ModifyImportPackagePriority(FAsyncPackage* Package, const TA
 		}
 
 		// Modify priority recursively
-		ModifyImportPackagePriority(ImportPackage, NewPriority);
+		ModifyPriorityRecursively(ImportPackage, NewPriority + 1);
 	}
 }
 
@@ -5400,12 +5416,12 @@ FAsyncPackage::~FAsyncPackage()
 
 FORCEINLINE bool FAsyncPackage::IsSyncLoadHighPriority() const
 {
-	return GEnableSyncloadOptimize ? Desc.Priority == FAsyncLoadEvent::UserPriority_SyncLoad : false;
+	return GEnableSyncLoadOptimize ? Desc.Priority == FAsyncLoadEvent::UserPriority_SyncLoad : false;
 }
 
 FORCEINLINE bool FAsyncPackage::IsSyncLoadHighPriorityImport() const
 {
-	return GEnableSyncloadOptimize ? Desc.Priority == FAsyncLoadEvent::UserPriority_SyncLoad_Import : false;
+	return GEnableSyncLoadOptimize ? Desc.Priority > FAsyncLoadEvent::UserPriority_SyncLoad : false;
 }
 
 void FAsyncPackage::AddReferencedObjects(FReferenceCollector& Collector)
@@ -6645,6 +6661,7 @@ EAsyncPackageState::Type FAsyncPackage::PostLoadDeferredObjects(double InTickSta
 		{
 			TRACE_LOADTIME_POSTLOAD_EXPORT_SCOPE(Object);
 			Object->ConditionalPostLoad();
+			UE_LOG(LogStreaming, VeryVerbose, TEXT("PostLoadDeferredObjects Object:%s ClearFlags(RF_NeedPostLoad)"), *Object->GetFullName());
 		}
 		PackageScope.ThreadContext.CurrentlyPostLoadedObjectByALT = nullptr;
 

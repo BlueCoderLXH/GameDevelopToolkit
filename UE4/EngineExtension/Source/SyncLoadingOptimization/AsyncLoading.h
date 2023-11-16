@@ -25,8 +25,8 @@ struct FAsyncPackage;
 struct FFlushTree;
 class FAsyncLoadingThread;
 
-extern bool GEnableSyncloadOptimize;
-extern FString GSyncloadOptimizeLogFilterName;
+extern bool GEnableSyncLoadOptimize;
+extern FString GSyncLoadOptimizeLogFilterName;
 
 // #if !NO_LOGGING
 // #define EventDebugLog(FuncName) \
@@ -717,7 +717,7 @@ public:
 		// {
 		// 	return;
 		// }
-		const FString& LogFilterName = GSyncloadOptimizeLogFilterName;
+		const FString& LogFilterName = GSyncLoadOptimizeLogFilterName;
 		if (LogFilterName.IsEmpty())
 		{
 			return;
@@ -740,7 +740,7 @@ public:
 	void Event_ProcessPostloadWait();
 	void Event_StartPostload();
 
-	static void ModifyImportPackagePriority(FAsyncPackage* Package, const TAsyncLoadPriority NewPriority);
+	static void ModifyPriorityRecursively(FAsyncPackage* Package, const TAsyncLoadPriority NewPriority);
 
 	void MarkNewObjectForLoadIfItIsAnExport(UObject *Object);
 	bool AnyImportsAndExportWorkOutstanding();
