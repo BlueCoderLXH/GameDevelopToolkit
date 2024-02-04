@@ -79,8 +79,9 @@ void UNetDriver::NotifyActorDestroyed( AActor* ThisActor, bool IsSeamlessTravel 
 				GuidCache->NetGUIDLookup.Remove(ThisActor);
 			}
 
-			const TArray<UActorComponent*>& RepComps = ThisActor->GetReplicatedComponents();
-			for (UActorComponent* RepComp : RepComps)
+			TArray<UObject*> RepComps;
+			ThisActor->GetDefaultSubobjects(RepComps);
+			for (UObject* RepComp : RepComps)
 			{
 				if (!IsValid(RepComp)) continue;
 

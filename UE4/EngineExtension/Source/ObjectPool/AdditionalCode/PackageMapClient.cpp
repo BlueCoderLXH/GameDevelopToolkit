@@ -9,7 +9,7 @@ void UPackageMapClient::ResetGuidAckStatus(UObject* InObj) const
 	const FNetworkGUID* ObjNetGuid = GuidCache->NetGUIDLookup.Find(InObj);
 	if (!ObjNetGuid)
 	{
-		UE_LOG(LogNetPackageMap, Error, TEXT("ResetGuidAckStatus: NetGUIDLookup don't contains Obj:%s!"), *(InObj->GetFullName()));
+		UE_LOG(LogNetPackageMap, Verbose, TEXT("ResetGuidAckStatus: NetGUIDLookup don't contains Obj:%s!"), *(InObj->GetFullName()));
 		return;
 	}
 

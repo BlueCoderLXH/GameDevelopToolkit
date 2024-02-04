@@ -58,8 +58,9 @@ int64 UActorChannel::Close(EChannelCloseReason Reason)
 				const TSharedPtr<FNetGUIDCache>& GuidCache = bIsServer ? Connection->Driver->GuidCache : nullptr;
 				if (bIsServer && CVarEnableObjectPool.GetValueOnGameThread() && bShouldHandleForObjectPool && GuidCache.IsValid())
 				{
-					const TArray<UActorComponent*>& RepComps = Actor->GetReplicatedComponents();
-					for (UActorComponent* RepComp : RepComps)
+					TArray<UObject*> RepComps;
+					Actor->GetDefaultSubobjects(RepComps);
+					for (UObject* RepComp : RepComps)
 					{
 						if (!IsValid(RepComp)) continue;
 						
@@ -123,8 +124,9 @@ bool UActorChannel::CleanUp(const bool bForDestroy, EChannelCloseReason CloseRea
 				GuidCache->ObjectLookup.Remove(*ObjNetGuid);
 			}
 
-			const TArray<UActorComponent*>& RepComps = Actor->GetReplicatedComponents();
-			for (UActorComponent* RepComp : RepComps)
+			TArray<UObject*> RepComps;
+			Actor->GetDefaultSubobjects(RepComps);
+			for (UObject* RepComp : RepComps)
 			{
 				const FNetworkGUID* RepCompNetGuid = GuidCache->NetGUIDLookup.Find(RepComp);
 				if (RepCompNetGuid)
