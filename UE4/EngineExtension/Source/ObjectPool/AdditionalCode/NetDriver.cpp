@@ -1,105 +1,105 @@
-#INCLUDE "REUSABLE.H"
+#include "Reusable.h"
 
-EXTERN OBJECTPOOL_API TAUTOCONSOLEVARIABLE<BOOL> CVARENABLEOBJECTPOOL;
+extern ENGINE_API TAutoConsoleVariable<bool> CVarEnableObjectPool;
 
-VOID UNETDRIVER::NOTIFYACTORDESTROYED( AACTOR* THISACTOR, BOOL ISSEAMLESSTRAVEL )
+void UNetDriver::NotifyActorDestroyed( AActor* ThisActor, bool IsSeamlessTravel )
 {
-	// REMOVE THE ACTOR FROM THE PROPERTY TRACKER MAP
-	REPCHANGEDPROPERTYTRACKERMAP.REMOVE(THISACTOR);
+	// Remove the actor from the property tracker map
+	RepChangedPropertyTrackerMap.Remove(ThisActor);
 
-	CONST BOOL BISSERVER = ISSERVER();
+	const bool bIsServer = IsServer();
 	
-	IF (BISSERVER)
+	if (bIsServer)
 	{
-		FACTORDESTRUCTIONINFO* DESTRUCTIONINFO = NULLPTR;
+		FActorDestructionInfo* DestructionInfo = nullptr;
 
-		CONST BOOL BISACTORSTATIC = !GUIDCACHE->ISDYNAMICOBJECT( THISACTOR );
-		CONST BOOL BACTORHASROLE = THISACTOR->GETREMOTEROLE() != ROLE_NONE;
-		CONST BOOL BSHOULDCREATEDESTRUCTIONINFO = BISSERVER && BISACTORSTATIC && BACTORHASROLE && !ISSEAMLESSTRAVEL;
+		const bool bIsActorStatic = !GuidCache->IsDynamicObject( ThisActor );
+		const bool bActorHasRole = ThisActor->GetRemoteRole() != ROLE_None;
+		const bool bShouldCreateDestructionInfo = bIsServer && bIsActorStatic && bActorHasRole && !IsSeamlessTravel;
 
-		IF (BSHOULDCREATEDESTRUCTIONINFO)
+		if (bShouldCreateDestructionInfo)
 		{
-			UE_LOG(LOGNET, VERYVERBOSE, TEXT("NOTIFYACTORDESTROYED %S - STARTUPACTOR"), *THISACTOR->GETPATHNAME() );
-			DESTRUCTIONINFO = CREATEDESTRUCTIONINFO( THIS, THISACTOR, DESTRUCTIONINFO);
+			UE_LOG(LogNet, VeryVerbose, TEXT("NotifyActorDestroyed %s - StartupActor"), *ThisActor->GetPathName() );
+			DestructionInfo = CreateDestructionInfo( this, ThisActor, DestructionInfo);
 		}
 
-		CONST FNETWORKOBJECTINFO* NETWORKOBJECTINFO = GETNETWORKOBJECTLIST().FIND( THISACTOR ).GET();
+		const FNetworkObjectInfo* NetworkObjectInfo = GetNetworkObjectList().Find( ThisActor ).Get();
 
-		FOR( INT32 I=CLIENTCONNECTIONS.NUM()-1; I>=0; I-- )
+		for( int32 i=ClientConnections.Num()-1; i>=0; i-- )
 		{
-			UNETCONNECTION* CONNECTION = CLIENTCONNECTIONS[I];
-			IF( THISACTOR->BNETTEMPORARY )
-				CONNECTION->SENTTEMPORARIES.REMOVE( THISACTOR );
-			UACTORCHANNEL* CHANNEL = CONNECTION->FINDACTORCHANNELREF(THISACTOR);
-			IF( CHANNEL )
+			UNetConnection* Connection = ClientConnections[i];
+			if( ThisActor->bNetTemporary )
+				Connection->SentTemporaries.Remove( ThisActor );
+			UActorChannel* Channel = Connection->FindActorChannelRef(ThisActor);
+			if( Channel )
 			{
-				CHECK(CHANNEL->OPENEDLOCALLY);
-				CHANNEL->BCLEARRECENTACTORREFS = FALSE;
-				CHANNEL->CLOSE(ECHANNELCLOSEREASON::DESTROYED);
+				check(Channel->OpenedLocally);
+				Channel->bClearRecentActorRefs = false;
+				Channel->Close(EChannelCloseReason::Destroyed);
 			}
-			ELSE
+			else
 			{
-				CONST BOOL BDORMANTORRECENTLYDORMANT = NETWORKOBJECTINFO && (NETWORKOBJECTINFO->DORMANTCONNECTIONS.CONTAINS(CONNECTION) || NETWORKOBJECTINFO->RECENTLYDORMANTCONNECTIONS.CONTAINS(CONNECTION));
+				const bool bDormantOrRecentlyDormant = NetworkObjectInfo && (NetworkObjectInfo->DormantConnections.Contains(Connection) || NetworkObjectInfo->RecentlyDormantConnections.Contains(Connection));
 
-				IF (BSHOULDCREATEDESTRUCTIONINFO || BDORMANTORRECENTLYDORMANT)
+				if (bShouldCreateDestructionInfo || bDormantOrRecentlyDormant)
 				{
-					// MAKE A NEW DESTRUCTION INFO IF NECESSARY. IT IS NECESSARY IF THE ACTOR IS DORMANT OR RECENTLY DORMANT BECAUSE
-					// EVEN THOUGH THE CLIENT KNEW ABOUT THE ACTOR AT SOME POINT, IT DOESN'T HAVE A CHANNEL TO HANDLE DESTRUCTION.
-					DESTRUCTIONINFO = CREATEDESTRUCTIONINFO(THIS, THISACTOR, DESTRUCTIONINFO);
-					IF (DESTRUCTIONINFO)
+					// Make a new destruction info if necessary. It is necessary if the actor is dormant or recently dormant because
+					// even though the client knew about the actor at some point, it doesn't have a channel to handle destruction.
+					DestructionInfo = CreateDestructionInfo(this, ThisActor, DestructionInfo);
+					if (DestructionInfo)
 					{
-						CONNECTION->ADDDESTRUCTIONINFO(DESTRUCTIONINFO);
+						Connection->AddDestructionInfo(DestructionInfo);
 					}
 				}
 			}
 
-			CONNECTION->NOTIFYACTORDESTROYED(THISACTOR);
+			Connection->NotifyActorDestroyed(ThisActor);
 		}
-		
+
 		// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>OBJECTPOOL START
-		// REMOVE OBJECT-POOLED ACTOR FROM GLOBAL CACHE ON SERVER SIDE (BY LXH)
+		// Remove object-pooled actor from global cache on server side (by lxh)
 		//
-		// THE OBJECT-POOLED ACTOR AND ITS REPLICATED COMPONENTS MUST BE REMOVED FROM 'OBJECTLOOKUP' AND 'NETGUIDLOOKUP' IN GUIDCACHE
-		// TO ENSURE THE EXACT OBJECT POOL FLOW FOR ACTORS(SPAWNACTOR AND DESTROYACTOR).
-		BOOL BSHOULDHANDLEFOROBJECTPOOL = FALSE;
-		IF (ISVALID(THISACTOR) && ISVALID(THISACTOR->GETCLASS()) && THISACTOR->IMPLEMENTS<UREUSABLE>())
+		// The object-pooled actor and its replicated components must be removed from 'ObjectLookup' and 'NetGUIDLookup' in GuidCache
+		// To ensure the exact object pool flow for actors(SpawnActor and DestroyActor).
+		bool bShouldHandleForObjectPool = false;
+		if (IsValid(ThisActor) && IsValid(ThisActor->GetClass()) && ThisActor->Implements<UReusable>())
 		{
-			IF (CONST IREUSABLE* DEFAULTREUSABLEACTOR = CAST<IREUSABLE>(THISACTOR->GETCLASS()->GETDEFAULTOBJECT()))
+			if (const IReusable* DefaultReusableActor = Cast<IReusable>(ThisActor->GetClass()->GetDefaultObject()))
 			{
-				BSHOULDHANDLEFOROBJECTPOOL = DEFAULTREUSABLEACTOR->SHOULDUSEOBJECTPOOL();
+				bShouldHandleForObjectPool = DefaultReusableActor->ShouldUseObjectPool();
 			}
 		}
 		
-		IF (CVARENABLEOBJECTPOOL.GETVALUEONGAMETHREAD() && BSHOULDHANDLEFOROBJECTPOOL && GUIDCACHE.ISVALID())
+		if (CVarEnableObjectPool.GetValueOnGameThread() && bShouldHandleForObjectPool && GuidCache.IsValid())
 		{
-			CONST FNETWORKGUID* ACTORNETGUID = GUIDCACHE->NETGUIDLOOKUP.FIND(THISACTOR);
-			IF (ACTORNETGUID)
+			const FNetworkGUID* ActorNetGuid = GuidCache->NetGUIDLookup.Find(ThisActor);
+			if (ActorNetGuid)
 			{
-				GUIDCACHE->OBJECTLOOKUP.REMOVE(*ACTORNETGUID);
-				GUIDCACHE->NETGUIDLOOKUP.REMOVE(THISACTOR);
+				GuidCache->ObjectLookup.Remove(*ActorNetGuid);
+				GuidCache->NetGUIDLookup.Remove(ThisActor);
 			}
 
-			CONST TARRAY<UACTORCOMPONENT*>& REPCOMPS = THISACTOR->GETREPLICATEDCOMPONENTS();
-			FOR (UACTORCOMPONENT* REPCOMP : REPCOMPS)
+			const TArray<UActorComponent*>& RepComps = ThisActor->GetReplicatedComponents();
+			for (UActorComponent* RepComp : RepComps)
 			{
-				IF (!ISVALID(REPCOMP)) CONTINUE;
+				if (!IsValid(RepComp)) continue;
 
-				CONST FNETWORKGUID* REPCOMPNETGUID = GUIDCACHE->NETGUIDLOOKUP.FIND(REPCOMP);
-				IF (REPCOMPNETGUID)
+				const FNetworkGUID* RepCompNetGuid = GuidCache->NetGUIDLookup.Find(RepComp);
+				if (RepCompNetGuid)
 				{
-					GUIDCACHE->OBJECTLOOKUP.REMOVE(*REPCOMPNETGUID);
-					GUIDCACHE->NETGUIDLOOKUP.REMOVE(REPCOMP);
+					GuidCache->ObjectLookup.Remove(*RepCompNetGuid);
+					GuidCache->NetGUIDLookup.Remove(RepComp);
 				}
 			}
 		}
 		// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>OBJECTPOOL END
 	}
 
-	IF (SERVERCONNECTION)
+	if (ServerConnection)
 	{
-		SERVERCONNECTION->NOTIFYACTORDESTROYED(THISACTOR);
+		ServerConnection->NotifyActorDestroyed(ThisActor);
 	}
 
-	// REMOVE THIS ACTOR FROM THE NETWORK OBJECT LIST
-	REMOVENETWORKACTOR( THISACTOR );
+	// Remove this actor from the network object list
+	RemoveNetworkActor( ThisActor );
 }
