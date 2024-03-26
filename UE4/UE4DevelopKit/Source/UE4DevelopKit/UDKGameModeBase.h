@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "UE4DevelopKitGameModeBase.generated.h"
+#include "UDKGameModeBase.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UE4DEVELOPKIT_API AUE4DevelopKitGameModeBase : public AGameModeBase
+class UE4DEVELOPKIT_API AUDKGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	

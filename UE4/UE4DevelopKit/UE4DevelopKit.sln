@@ -255,59 +255,59 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UE4", "Intermediate\Project
 		{FD7C5E1A-CFE4-4FD5-A525-1EB1599A39AC} = {FD7C5E1A-CFE4-4FD5-A525-1EB1599A39AC}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnrealBuildTool", "G:\Engine\Engine\Source\Programs\UnrealBuildTool\UnrealBuildTool.csproj", "{FD7C5E1A-CFE4-4FD5-A525-1EB1599A39AC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnrealBuildTool", "G:\Engine\dev\Engine\Source\Programs\UnrealBuildTool\UnrealBuildTool.csproj", "{FD7C5E1A-CFE4-4FD5-A525-1EB1599A39AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutomationTool", "G:\Engine\Engine\Source\Programs\AutomationTool\AutomationTool.csproj", "{A35B0261-D868-475E-A098-EB14CE6DC89F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutomationTool", "G:\Engine\dev\Engine\Source\Programs\AutomationTool\AutomationTool.csproj", "{A35B0261-D868-475E-A098-EB14CE6DC89F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllDesktop.Automation", "G:\Engine\Engine\Source\Programs\AutomationTool\AllDesktop\AllDesktop.Automation.csproj", "{A9CD1A06-764A-4C53-86CE-2F34B94F0283}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllDesktop.Automation", "G:\Engine\dev\Engine\Source\Programs\AutomationTool\AllDesktop\AllDesktop.Automation.csproj", "{A9CD1A06-764A-4C53-86CE-2F34B94F0283}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Android.Automation", "G:\Engine\Engine\Source\Programs\AutomationTool\Android\Android.Automation.csproj", "{32E3A47E-359A-4F78-AE6C-703B87DE0B97}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Android.Automation", "G:\Engine\dev\Engine\Source\Programs\AutomationTool\Android\Android.Automation.csproj", "{32E3A47E-359A-4F78-AE6C-703B87DE0B97}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutomationUtils.Automation", "G:\Engine\Engine\Source\Programs\AutomationTool\AutomationUtils\AutomationUtils.Automation.csproj", "{2C96A7F2-B1A3-4258-8E0A-E588FF41A53E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutomationUtils.Automation", "G:\Engine\dev\Engine\Source\Programs\AutomationTool\AutomationUtils\AutomationUtils.Automation.csproj", "{2C96A7F2-B1A3-4258-8E0A-E588FF41A53E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildGraph.Automation", "G:\Engine\Engine\Source\Programs\AutomationTool\BuildGraph\BuildGraph.Automation.csproj", "{A002361E-37F9-4124-AF82-CF0D393CB928}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildGraph.Automation", "G:\Engine\dev\Engine\Source\Programs\AutomationTool\BuildGraph\BuildGraph.Automation.csproj", "{A002361E-37F9-4124-AF82-CF0D393CB928}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gauntlet.Automation", "G:\Engine\Engine\Source\Programs\AutomationTool\Gauntlet\Gauntlet.Automation.csproj", "{767B4F85-AB56-4B00-A033-04C7600ACC3D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gauntlet.Automation", "G:\Engine\dev\Engine\Source\Programs\AutomationTool\Gauntlet\Gauntlet.Automation.csproj", "{767B4F85-AB56-4B00-A033-04C7600ACC3D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HoloLens.Automation", "G:\Engine\Engine\Source\Programs\AutomationTool\HoloLens\HoloLens.Automation.csproj", "{A9FB8BC6-A93D-4FC3-AC02-91333930505E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HoloLens.Automation", "G:\Engine\dev\Engine\Source\Programs\AutomationTool\HoloLens\HoloLens.Automation.csproj", "{A9FB8BC6-A93D-4FC3-AC02-91333930505E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IOS.Automation", "G:\Engine\Engine\Source\Programs\AutomationTool\IOS\IOS.Automation.csproj", "{E1F1261F-DA95-41BD-80C1-60FBE0D37D22}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IOS.Automation", "G:\Engine\dev\Engine\Source\Programs\AutomationTool\IOS\IOS.Automation.csproj", "{E1F1261F-DA95-41BD-80C1-60FBE0D37D22}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Linux.Automation", "G:\Engine\Engine\Source\Programs\AutomationTool\Linux\Linux.Automation.csproj", "{EC395254-405B-4030-92CE-E346CC50848D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Linux.Automation", "G:\Engine\dev\Engine\Source\Programs\AutomationTool\Linux\Linux.Automation.csproj", "{EC395254-405B-4030-92CE-E346CC50848D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Localization.Automation", "G:\Engine\Engine\Source\Programs\AutomationTool\Localization\Localization.Automation.csproj", "{C2F959B1-1727-4598-9C32-3D9ACCE72750}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Localization.Automation", "G:\Engine\dev\Engine\Source\Programs\AutomationTool\Localization\Localization.Automation.csproj", "{C2F959B1-1727-4598-9C32-3D9ACCE72750}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lumin.Automation", "G:\Engine\Engine\Source\Programs\AutomationTool\Lumin\Lumin.Automation.csproj", "{17779110-5CAB-43A0-9DFB-4DF67DF29B42}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lumin.Automation", "G:\Engine\dev\Engine\Source\Programs\AutomationTool\Lumin\Lumin.Automation.csproj", "{17779110-5CAB-43A0-9DFB-4DF67DF29B42}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mac.Automation", "G:\Engine\Engine\Source\Programs\AutomationTool\Mac\Mac.Automation.csproj", "{16778681-DAB8-46A4-89F6-927796467995}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mac.Automation", "G:\Engine\dev\Engine\Source\Programs\AutomationTool\Mac\Mac.Automation.csproj", "{16778681-DAB8-46A4-89F6-927796467995}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OneSkyLocalization.Automation", "G:\Engine\Engine\Source\Programs\AutomationTool\OneSkyLocalization\OneSkyLocalization.Automation.csproj", "{39369368-5603-46DA-BAAE-766BB3CB2B51}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OneSkyLocalization.Automation", "G:\Engine\dev\Engine\Source\Programs\AutomationTool\OneSkyLocalization\OneSkyLocalization.Automation.csproj", "{39369368-5603-46DA-BAAE-766BB3CB2B51}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutomationScripts.Automation", "G:\Engine\Engine\Source\Programs\AutomationTool\Scripts\AutomationScripts.Automation.csproj", "{8AA00D65-0954-4A27-AC0D-FB8B1106120F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutomationScripts.Automation", "G:\Engine\dev\Engine\Source\Programs\AutomationTool\Scripts\AutomationScripts.Automation.csproj", "{8AA00D65-0954-4A27-AC0D-FB8B1106120F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TVOS.Automation", "G:\Engine\Engine\Source\Programs\AutomationTool\TVOS\TVOS.Automation.csproj", "{E1F1261F-DA95-41BD-81C1-61FBE1D37D22}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TVOS.Automation", "G:\Engine\dev\Engine\Source\Programs\AutomationTool\TVOS\TVOS.Automation.csproj", "{E1F1261F-DA95-41BD-81C1-61FBE1D37D22}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Win.Automation", "G:\Engine\Engine\Source\Programs\AutomationTool\Win\Win.Automation.csproj", "{6F6F8E5B-53CA-4C9F-A696-96AA9B8FB128}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Win.Automation", "G:\Engine\dev\Engine\Source\Programs\AutomationTool\Win\Win.Automation.csproj", "{6F6F8E5B-53CA-4C9F-A696-96AA9B8FB128}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XLocLocalization.Automation", "G:\Engine\Engine\Source\Programs\AutomationTool\XLocLocalization\XLocLocalization.Automation.csproj", "{7E2D6784-C9B7-40C6-A89B-0A8AFDDCE60D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XLocLocalization.Automation", "G:\Engine\dev\Engine\Source\Programs\AutomationTool\XLocLocalization\XLocLocalization.Automation.csproj", "{7E2D6784-C9B7-40C6-A89B-0A8AFDDCE60D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutomationToolLauncher", "G:\Engine\Engine\Source\Programs\AutomationToolLauncher\AutomationToolLauncher.csproj", "{1D67A316-7EEC-4C07-83E3-BBD9C67AD129}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutomationToolLauncher", "G:\Engine\dev\Engine\Source\Programs\AutomationToolLauncher\AutomationToolLauncher.csproj", "{1D67A316-7EEC-4C07-83E3-BBD9C67AD129}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildAgent", "G:\Engine\Engine\Source\Programs\BuildAgent\BuildAgent.csproj", "{AC5CD7A5-0EA8-41C7-B6FA-79E650E96C29}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildAgent", "G:\Engine\dev\Engine\Source\Programs\BuildAgent\BuildAgent.csproj", "{AC5CD7A5-0EA8-41C7-B6FA-79E650E96C29}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNETUtilities", "G:\Engine\Engine\Source\Programs\DotNETCommon\DotNETUtilities\DotNETUtilities.csproj", "{5D7D66E8-8C76-4AF9-B3EC-2EF03421D730}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNETUtilities", "G:\Engine\dev\Engine\Source\Programs\DotNETCommon\DotNETUtilities\DotNETUtilities.csproj", "{5D7D66E8-8C76-4AF9-B3EC-2EF03421D730}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitDependencies", "G:\Engine\Engine\Source\Programs\GitDependencies\GitDependencies.csproj", "{9B740143-841C-4AF7-905E-D8883F1735DE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitDependencies", "G:\Engine\dev\Engine\Source\Programs\GitDependencies\GitDependencies.csproj", "{9B740143-841C-4AF7-905E-D8883F1735DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemoryProfiler2", "G:\Engine\Engine\Source\Programs\MemoryProfiler2\MemoryProfiler2.csproj", "{75240A67-CF47-4DDC-83B2-AD5D371F31BD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemoryProfiler2", "G:\Engine\dev\Engine\Source\Programs\MemoryProfiler2\MemoryProfiler2.csproj", "{75240A67-CF47-4DDC-83B2-AD5D371F31BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nDisplayLauncher", "G:\Engine\Engine\Source\Programs\nDisplayLauncher\nDisplayLauncher.csproj", "{0CD16871-AE33-44AC-9E84-40DBFAEB51C4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nDisplayLauncher", "G:\Engine\dev\Engine\Source\Programs\nDisplayLauncher\nDisplayLauncher.csproj", "{0CD16871-AE33-44AC-9E84-40DBFAEB51C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nDisplayListener", "G:\Engine\Engine\Source\Programs\nDisplayListener\nDisplayListener.csproj", "{89224712-325D-4500-A4A5-B102A3A8EE2F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nDisplayListener", "G:\Engine\dev\Engine\Source\Programs\nDisplayListener\nDisplayListener.csproj", "{89224712-325D-4500-A4A5-B102A3A8EE2F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Visualizers", "Visualizers", "{1CCEC849-CC72-4C59-8C36-2F7C38706D4C}"
 	ProjectSection(SolutionItems) = preProject
-		G:\Engine\Engine\Extras\VisualStudioDebugging\UE4.natvis = G:\Engine\Engine\Extras\VisualStudioDebugging\UE4.natvis
+		G:\Engine\dev\Engine\Extras\VisualStudioDebugging\UE4.natvis = G:\Engine\dev\Engine\Extras\VisualStudioDebugging\UE4.natvis
 	EndProjectSection
 EndProject
 Global
