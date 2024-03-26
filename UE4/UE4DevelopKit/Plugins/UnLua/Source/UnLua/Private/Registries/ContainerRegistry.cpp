@@ -57,83 +57,40 @@ namespace UnLua
 
     void FContainerRegistry::FindOrAdd(lua_State* L, FScriptArray* ContainerPtr, TSharedPtr<ITypeInterface> ElementType)
     {
-        void* UserData = NewUserdataWithContainerTag(L, FScriptContainerDesc::Array.GetSize());
-        luaL_setmetatable(L,  FScriptContainerDesc::Array.GetName());
-        new(UserData) FLuaArray(ContainerPtr, ElementType, FLuaArray::OwnedByOther);
-#if 0
-        void* Userdata = CacheScriptContainer(L, ContainerPtr, FScriptContainerDesc::Array);
+        void* Userdata = CacheScriptContainer(L, ContainerPtr, FScriptContainerDesc::Array, [&](void* Cached)
+        {
+            const auto Array = (FLuaArray*)Cached;
+            return Array->Inner == ElementType;
+        });
+
         if (Userdata)
-        {
             new(Userdata) FLuaArray(ContainerPtr, ElementType, FLuaArray::OwnedByOther);
-        }else
-        {
-            //Check LuaFunc InnerProperty Valid On Each LuaCall
-            bool TwoLevelPtr;
-            FLuaArray* Exists = (FLuaArray*)GetUserdataFast(L, -1, &TwoLevelPtr);
-            if(Exists && Exists->Inner != ElementType)
-            {
-                if(Exists->ScriptArray != ContainerPtr)
-                {
-                    Exists->ScriptArray = ContainerPtr;
-                }
-                /*if(Exists->ElementSize != ElementType->GetSize())
-                {
-                    FMemory::Realloc(Exists->ElementCache,Exists->ElementSize,ElementType->GetAlignment());
-                    Exists->ElementSize = ElementType->GetSize();
-                    Exists->ElementCache = FMemory::Malloc(Exists->ElementSize, ElementType->GetAlignment());
-                    UNLUA_STAT_MEMORY_ALLOC(Exists->ElementCache, ContainerElementCache);
-                }*/
-                Exists->Inner = ElementType;
-            }
-        }
-#endif
     }
 
     void FContainerRegistry::FindOrAdd(lua_State* L, FScriptSet* ContainerPtr, TSharedPtr<ITypeInterface> ElementType)
     {
-        void* UserData = NewUserdataWithContainerTag(L, FScriptContainerDesc::Set.GetSize());
-        luaL_setmetatable(L,  FScriptContainerDesc::Set.GetName());
-        new(UserData) FLuaSet(ContainerPtr, ElementType, FLuaSet::OwnedByOther);
-#if 0
-        void* Userdata = CacheScriptContainer(L, ContainerPtr, FScriptContainerDesc::Set);
+        void* Userdata = CacheScriptContainer(L, ContainerPtr, FScriptContainerDesc::Set, [&](void* Cached)
+        {
+            const auto Set = (FLuaSet*)Cached;
+            return Set->ElementInterface == ElementType;
+        });
+
         if (Userdata)
-        {
             new(Userdata) FLuaSet(ContainerPtr, ElementType, FLuaSet::OwnedByOther);
-        }else
-        {
-            bool TwoLevelPtr;
-            FLuaSet* Exists = (FLuaSet*)GetUserdataFast(L, -1, &TwoLevelPtr);
-            if(Exists && Exists->ElementInterface != ElementType)
-            {
-                Exists->ElementInterface = ElementType;
-            }
-        }
-#endif
     }
 
     void FContainerRegistry::FindOrAdd(lua_State* L, FScriptMap* ContainerPtr, TSharedPtr<ITypeInterface> KeyType, TSharedPtr<ITypeInterface> ValueType)
     {
-        void* UserData = NewUserdataWithContainerTag(L, FScriptContainerDesc::Map.GetSize());
-        luaL_setmetatable(L,  FScriptContainerDesc::Map.GetName());
-        new(UserData) FLuaMap(ContainerPtr, KeyType, ValueType, FLuaMap::OwnedByOther);
-#if 0
-        void* Userdata = CacheScriptContainer(L, ContainerPtr, FScriptContainerDesc::Map);
+        void* Userdata = CacheScriptContainer(L, ContainerPtr, FScriptContainerDesc::Map, [&](void* Cached)
+        {
+            const auto Map = (FLuaMap*)Cached;
+            return Map->KeyInterface == KeyType && Map->ValueInterface == ValueType;
+        });
+
         if (Userdata)
-        {
             new(Userdata) FLuaMap(ContainerPtr, KeyType, ValueType, FLuaMap::OwnedByOther);
-        }else
-        {
-            bool TwoLevelPtr;
-            FLuaMap* Exists = (FLuaMap*)GetUserdataFast(L, -1, &TwoLevelPtr);
-            if(Exists && (Exists->KeyInterface != KeyType || Exists->ValueInterface != ValueType))
-            {
-                Exists->KeyInterface = KeyType;
-                Exists->ValueInterface = ValueType;
-            }
-        }
-#endif
     }
-    
+
     void FContainerRegistry::Remove(const FLuaArray* Container)
     {
         const auto L = Env->GetMainState();

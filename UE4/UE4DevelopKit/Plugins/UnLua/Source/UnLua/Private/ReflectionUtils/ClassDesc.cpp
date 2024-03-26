@@ -12,6 +12,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
 // See the License for the specific language governing permissions and limitations under the License.
 
+#include "UnLuaCompatibility.h"
 #include "ClassDesc.h"
 #include "FieldDesc.h"
 #include "PropertyDesc.h"
@@ -19,13 +20,14 @@
 #include "LuaCore.h"
 #include "DefaultParamCollection.h"
 #include "LowLevel.h"
+#include "LuaOverridesClass.h"
 #include "UnLuaModule.h"
 
 /**
  * Class descriptor constructor
  */
-FClassDesc::FClassDesc(UStruct* InStruct, const FString& InName)
-    : Struct(InStruct), ClassName(InName), UserdataPadding(0), Size(0), FunctionCollection(nullptr)
+FClassDesc::FClassDesc(UnLua::FLuaEnv* Env, UStruct* InStruct, const FString& InName)
+    : Struct(InStruct), ClassName(InName), UserdataPadding(0), Size(0), Env(Env), FunctionCollection(nullptr)
 {
     RawStructPtr = InStruct;
     bIsScriptStruct = InStruct->IsA(UScriptStruct::StaticClass());
@@ -35,16 +37,7 @@ FClassDesc::FClassDesc(UStruct* InStruct, const FString& InName)
 
     if (bIsClass)
     {
-        UClass* Class = AsClass();
         Size = Struct->GetStructureSize();
-
-        // register implemented interfaces
-        for (FImplementedInterface& Interface : Class->Interfaces)
-        {
-            if (Interface.Class)
-                UnLua::FClassRegistry::RegisterReflectedType(Interface.Class);
-        }
-
         FunctionCollection = GDefaultParamCollection.Find(*ClassName);
     }
     else if (bIsScriptStruct)
@@ -54,15 +47,6 @@ FClassDesc::FClassDesc(UStruct* InStruct, const FString& InName)
         int32 Alignment = CppStructOps ? CppStructOps->GetAlignment() : ScriptStruct->GetMinAlignment();
         Size = CppStructOps ? CppStructOps->GetSize() : ScriptStruct->GetStructureSize();
         UserdataPadding = CalcUserdataPadding(Alignment); // calculate padding size for userdata
-    }
-
-    UStruct* SuperStruct = Struct->GetInheritanceSuper();
-    while (SuperStruct)
-    {
-        FString SuperName = UnLua::LowLevel::GetMetatableName(InStruct);
-        FClassDesc* ClassDesc = UnLua::FClassRegistry::RegisterReflectedType(SuperStruct);
-        SuperClasses.Add(ClassDesc);
-        SuperStruct = SuperStruct->GetInheritanceSuper();
     }
 }
 
@@ -78,75 +62,83 @@ TSharedPtr<FFieldDesc> FClassDesc::RegisterField(FName FieldName, FClassDesc* Qu
     if (FieldDescPtr)
     {
         FieldDesc = *FieldDescPtr;
+        return FieldDesc;
+    }
+
+    // a property or a function ?
+    FProperty* Property = Struct->FindPropertyByName(FieldName);
+    UFunction* Function = (!Property && bIsClass) ? AsClass()->FindFunctionByName(FieldName) : nullptr;
+    bool bValid = Property || Function;
+    if (!bValid && bIsScriptStruct && !Struct->IsNative())
+    {
+        FString FieldNameStr = FieldName.ToString();
+        const int32 GuidStrLen = 32;
+        const int32 MinimalPostfixlen = GuidStrLen + 3;
+        for (TFieldIterator<FProperty> PropertyIt(Struct.Get(), EFieldIteratorFlags::ExcludeSuper, EFieldIteratorFlags::ExcludeDeprecated); PropertyIt; ++PropertyIt)
+        {
+            FString DisplayName = (*PropertyIt)->GetName();
+            if (DisplayName.Len() > MinimalPostfixlen)
+            {
+                DisplayName = DisplayName.LeftChop(GuidStrLen + 1);
+                int32 FirstCharToRemove = INDEX_NONE;
+                if (DisplayName.FindLastChar(TCHAR('_'), FirstCharToRemove))
+                {
+                    DisplayName = DisplayName.Mid(0, FirstCharToRemove);
+                }
+            }
+
+            if (DisplayName == FieldNameStr)
+            {
+                Property = *PropertyIt;
+                break;
+            }
+        }
+
+        bValid = Property != nullptr;
+    }
+    if (!bValid)
+        return nullptr;
+
+    UStruct* OuterStruct;
+    if (Property)
+    {
+        OuterStruct = Cast<UStruct>(GetPropertyOuter(Property));
     }
     else
     {
-        // a property or a function ?
-        FProperty* Property = Struct->FindPropertyByName(FieldName);
-        UFunction* Function = (!Property && bIsClass) ? AsClass()->FindFunctionByName(FieldName) : nullptr;
-        bool bValid = Property || Function;
-        if (!bValid && bIsScriptStruct && !Struct->IsNative())
-        {
-            FString FieldNameStr = FieldName.ToString();
-            const int32 GuidStrLen = 32;
-            const int32 MinimalPostfixlen = GuidStrLen + 3;
-            for (TFieldIterator<FProperty> PropertyIt(Struct.Get(), EFieldIteratorFlags::ExcludeSuper, EFieldIteratorFlags::ExcludeDeprecated); PropertyIt; ++PropertyIt)
-            {
-                FString DisplayName = (*PropertyIt)->GetName();
-                if (DisplayName.Len() > MinimalPostfixlen)
-                {
-                    DisplayName = DisplayName.LeftChop(GuidStrLen + 1);
-                    int32 FirstCharToRemove = INDEX_NONE;
-                    if (DisplayName.FindLastChar(TCHAR('_'), FirstCharToRemove))
-                    {
-                        DisplayName = DisplayName.Mid(0, FirstCharToRemove);
-                    }
-                }
+        OuterStruct = Cast<UStruct>(Function->GetOuter());
+        if (const auto OverridesClass = Cast<ULuaOverridesClass>(OuterStruct))
+            OuterStruct = OverridesClass->GetOwner();
+    }
 
-                if (DisplayName == FieldNameStr)
-                {
-                    Property = *PropertyIt;
-                    break;
-                }
-            }
+    if (!OuterStruct)
+        return nullptr;
 
-            bValid = Property != nullptr;
-        }
-        if (!bValid)
-        {
-            return nullptr;
-        }
+    if (OuterStruct != Struct)
+    {
+        FClassDesc* OuterClass = Env->GetClassRegistry()->RegisterReflectedType(OuterStruct);
+        check(OuterClass);
+        return OuterClass->RegisterField(FieldName, QueryClass);
+    }
 
-        UStruct* OuterStruct = Property ? Cast<UStruct>(GetPropertyOuter(Property)) : Cast<UStruct>(Function->GetOuter());
-        if (OuterStruct)
-        {
-            if (OuterStruct != Struct)
-            {
-                FClassDesc* OuterClass = UnLua::FClassRegistry::RegisterReflectedType(OuterStruct);
-                check(OuterClass);
-                return OuterClass->RegisterField(FieldName, QueryClass);
-            }
-
-            // create new Field descriptor
-            FieldDesc = MakeShared<FFieldDesc>();
-            FieldDesc->QueryClass = QueryClass;
-            FieldDesc->OuterClass = this;
-            Fields.Add(FieldName, FieldDesc);
-            if (Property)
-            {
-                TSharedPtr<FPropertyDesc> Ptr(FPropertyDesc::Create(Property));
-                FieldDesc->FieldIndex = Properties.Add(Ptr); // index of property descriptor
-                ++FieldDesc->FieldIndex;
-            }
-            else
-            {
-                check(Function);
-                FParameterCollection* DefaultParams = FunctionCollection ? FunctionCollection->Functions.Find(FieldName) : nullptr;
-                FieldDesc->FieldIndex = Functions.Add(MakeShared<FFunctionDesc>(Function, DefaultParams)); // index of function descriptor
-                ++FieldDesc->FieldIndex;
-                FieldDesc->FieldIndex = -FieldDesc->FieldIndex;
-            }
-        }
+    // create new Field descriptor
+    FieldDesc = MakeShared<FFieldDesc>();
+    FieldDesc->QueryClass = QueryClass;
+    FieldDesc->OuterClass = this;
+    Fields.Add(FieldName, FieldDesc);
+    if (Property)
+    {
+        TSharedPtr<FPropertyDesc> Ptr(FPropertyDesc::Create(Property));
+        FieldDesc->FieldIndex = Properties.Add(Ptr); // index of property descriptor
+        ++FieldDesc->FieldIndex;
+    }
+    else
+    {
+        check(Function);
+        FParameterCollection* DefaultParams = FunctionCollection ? FunctionCollection->Functions.Find(FieldName) : nullptr;
+        FieldDesc->FieldIndex = Functions.Add(MakeShared<FFunctionDesc>(Function, DefaultParams)); // index of function descriptor
+        ++FieldDesc->FieldIndex;
+        FieldDesc->FieldIndex = -FieldDesc->FieldIndex;
     }
     return FieldDesc;
 }
@@ -172,7 +164,7 @@ void FClassDesc::Load()
     UnLoad();
 
     FString Name = (ClassName[0] == 'U' || ClassName[0] == 'A' || ClassName[0] == 'F') ? ClassName.RightChop(1) : ClassName;
-    UStruct* Found = FindObject<UStruct>(ANY_PACKAGE, *Name);
+    UStruct* Found = FindFirstObject<UStruct>(*Name);
     if (!Found)
         Found = LoadObject<UStruct>(nullptr, *Name);
 

@@ -14,14 +14,13 @@
 
 #pragma once
 
+#include "Containers/StaticBitArray.h"
 #include "lua.hpp"
 #include "ParamBufferAllocator.h"
 #include "Registries/FunctionRegistry.h"
-#include "Containers/StaticBitArray.h"
+#include "ReflectionUtils/PropertyDesc.h"
 
-struct lua_State;
 struct FParameterCollection;
-class FPropertyDesc;
 
 /**
  * Function descriptor
@@ -113,6 +112,8 @@ private:
     int32 PostCall(lua_State* L, int32 NumParams, int32 FirstParamIndex, void* Params, const FFlagArray& CleanupFlags);
 
     bool CallLuaInternal(lua_State *L, void *InParams, FOutParmRec *OutParams, void *RetValueAddress) const;
+
+    FORCEINLINE bool CheckObject(UObject* Object, FString& Error) const;
 
     TWeakObjectPtr<UFunction> Function;
     FString FuncName;

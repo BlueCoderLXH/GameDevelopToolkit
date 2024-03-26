@@ -92,15 +92,10 @@ namespace UnLua
                     return true;
 
                 auto Names = (TSet<FName>*)Userdata;
-#if SUPPORTS_RPC_CALL
                 FString FuncName(lua_tostring(L, -2));
                 if (FuncName.EndsWith(TEXT("_RPC")))
                     FuncName = FuncName.Left(FuncName.Len() - 4);
                 Names->Add(FName(*FuncName));
-#else
-                Names->Add(FName(lua_tostring(L, -2)));
-#endif
-
                 return true;
             };
 
@@ -210,6 +205,17 @@ namespace UnLua
                 *OutClassMetatable = bClassMetatable;
 
             return Userdata;
+        }
+
+        uint8 CalculateUserdataPadding(UStruct* Struct)
+        {
+            const auto ScriptStruct = Cast<UScriptStruct>(Struct);
+            if (!ScriptStruct)
+                return 0;
+
+            const auto CppStructOps = ScriptStruct->GetCppStructOps();
+            const auto Alignment = CppStructOps ? CppStructOps->GetAlignment() : ScriptStruct->GetMinAlignment();
+            return CalcUserdataPadding(Alignment);
         }
     }
 }

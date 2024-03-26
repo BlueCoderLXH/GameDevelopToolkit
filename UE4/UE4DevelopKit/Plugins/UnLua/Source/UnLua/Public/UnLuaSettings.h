@@ -20,7 +20,7 @@
 #include "UnLuaSettings.generated.h"
 
 
-UCLASS(Config=UnLua, DefaultConfig, Meta=(DisplayName="UnLua"))
+UCLASS(Config=UnLuaSettings, DefaultConfig, Meta=(DisplayName="UnLua"))
 class UNLUA_API UUnLuaSettings : public UObject
 {
     GENERATED_BODY()
@@ -54,18 +54,4 @@ public:
     /** List of classes to bind on startup. */
     UPROPERTY(config, EditAnywhere, Category=Runtime, meta = (MetaClass="Object", AllowAbstract="True", DisplayName = "List of classes to bind on startup"))
     TArray<FSoftClassPath> PreBindClasses;
-        
-    UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category="Runtime")
-    static void EnablePrintLogCallUFuntion(bool bInEnable = true);
-
-    UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category="Runtime")
-    static void EnablePrintLogCallArrayGet(bool bInEnable = true);
-
-    UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category="Runtime")
-    static bool IsPrintLogCallUFuntion();
-
-    UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category="Runtime")
-    static bool IsPrintLogCallArrayGet();
-
-    static int32 DebugTag;
 };

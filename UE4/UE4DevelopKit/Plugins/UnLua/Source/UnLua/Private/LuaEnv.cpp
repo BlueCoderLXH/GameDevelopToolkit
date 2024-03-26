@@ -1,4 +1,4 @@
-// Tencent is pleased to support the open source community by making UnLua available.
+﻿// Tencent is pleased to support the open source community by making UnLua available.
 // 
 // Copyright (C) 2019 THL A29 Limited, a Tencent company. All rights reserved.
 //
@@ -31,15 +31,13 @@
 #include "UnLuaSettings.h"
 #include "lstate.h"
 
-#include "GameFramework/WorldSettings.h"
-
 namespace UnLua
 {
     constexpr EInternalObjectFlags AsyncObjectFlags = EInternalObjectFlags::AsyncLoading | EInternalObjectFlags::Async;
 
     TMap<lua_State*, FLuaEnv*> FLuaEnv::AllEnvs;
     FLuaEnv::FOnCreated FLuaEnv::OnCreated;
-    FLuaEnv::FOnCreated FLuaEnv::OnDestroyed;
+    FLuaEnv::FOnDestroyed FLuaEnv::OnDestroyed;
 
 #if ENABLE_UNREAL_INSIGHTS && CPUPROFILERTRACE_ENABLED
     void Hook(lua_State* L, lua_Debug* ar)
@@ -105,14 +103,15 @@ namespace UnLua
 
         ObjectRegistry = new FObjectRegistry(this);
         ClassRegistry = new FClassRegistry(this);
-        ClassRegistry->Register("UObject");
-        ClassRegistry->Register("UClass");
+        ClassRegistry->Initialize();
 
         FunctionRegistry = new FFunctionRegistry(this);
         DelegateRegistry = new FDelegateRegistry(this);
         ContainerRegistry = new FContainerRegistry(this);
         PropertyRegistry = new FPropertyRegistry(this);
         EnumRegistry = new FEnumRegistry(this);
+        EnumRegistry->Initialize();
+
         DanglingCheck = new FDanglingCheck(this);
         DeadLoopCheck = new FDeadLoopCheck(this);
 
@@ -174,11 +173,6 @@ namespace UnLua
 
     FLuaEnv::~FLuaEnv()
     {
-// #if !WITH_EDITOR
-//         if (IsEngineExitRequested())
-//             return;
-// #endif
-        
         OnDestroyed.Broadcast(*this);
         lua_close(L);
         AllEnvs.Remove(L);
@@ -193,7 +187,7 @@ namespace UnLua
         delete DanglingCheck;
         delete DeadLoopCheck;
 
-        if (!IsEngineExitRequested() && IsValid(Manager))
+        if (!IsEngineExitRequested() && Manager)
         {
             Manager->Cleanup();
             Manager->RemoveFromRoot();
@@ -276,6 +270,8 @@ namespace UnLua
         if (Manager)
             Manager->NotifyUObjectDeleted(Object);
         ObjectRegistry->NotifyUObjectDeleted(Object);
+        ClassRegistry->NotifyUObjectDeleted(Object);
+        EnumRegistry->NotifyUObjectDeleted(Object);
 
         if (CandidateInputComponents.Num() <= 0)
             return;
@@ -313,8 +309,6 @@ namespace UnLua
 
     void FLuaEnv::OnWorldTickStart(UWorld* World, ELevelTick TickType, float DeltaTime)
     {
-        QUICK_SCOPE_CYCLE_COUNTER(Lua_OnWorldTickStart);
-
         if (!Manager)
             return;
 
@@ -611,9 +605,10 @@ namespace UnLua
 
         auto LoadIt = [&]
         {
-            if (Env.LoadString(L, Data, TCHAR_TO_UTF8(*FullPath)))
+            if (Env.LoadString(L, Data, FullPath))
                 return 1;
-            return luaL_error(L, "file loading from file system error");
+            const auto Msg = FString::Printf(TEXT("file loading from file system error.\nfull path:%s"), *FullPath);
+            return luaL_error(L, TCHAR_TO_UTF8(*Msg));
         };
 
         const auto PackagePath = UnLuaLib::GetPackagePath(L);

@@ -39,9 +39,7 @@ namespace UnLua
           TimeoutCounter(0),
           TimeoutGuard(nullptr)
     {
-#if !(UE_BUILD_TEST || UE_BUILD_SHIPPING)
         Thread = FRunnableThread::Create(this, TEXT("LuaDeadLoopCheck"), 0, TPri_BelowNormal);
-#endif
     }
 
     uint32 FDeadLoopCheck::FRunner::Run()

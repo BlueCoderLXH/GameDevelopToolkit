@@ -16,7 +16,6 @@
 #include "UnLuaEx.h"
 #include "LuaCore.h"
 #include "Containers/LuaArray.h"
-#include "UnLuaSettings.h"
 
 static FORCEINLINE void TArray_Guard(lua_State* L, FLuaArray* Array)
 {
@@ -36,7 +35,7 @@ static int32 TArray_New(lua_State* L)
     auto& Env = UnLua::FLuaEnv::FindEnvChecked(L);
     auto ElementType = Env.GetPropertyRegistry()->CreateTypeInterface(L, 2);
     if (!ElementType)
-        return luaL_error(L, "failed to create TArray");
+        return luaL_error(L, "invalid element type");
 
     auto Registry = UnLua::FLuaEnv::FindEnvChecked(L).GetContainerRegistry();
     Registry->NewArray(L, ElementType, FLuaArray::OwnedBySelf);
@@ -317,14 +316,6 @@ static int32 TArray_Get(lua_State* L)
 
     int32 Index = lua_tointeger(L, 2);
     --Index;
-
-#if !UE_BUILD_SHIPPING
-    if (UUnLuaSettings::IsPrintLogCallArrayGet())
-    {
-        UNLUA_LOGWARNING(L, LogUnLua, Warning, TEXT("Lua_TArray_Get: Num=%d idx=%d"), Array->Num(), Index);
-    }
-#endif
-    
     if (!Array->IsValidIndex(Index))
     {
         UNLUA_LOGERROR(L, LogUnLua, Log, TEXT("%s: TArray Invalid Index!"), ANSI_TO_TCHAR(__FUNCTION__));

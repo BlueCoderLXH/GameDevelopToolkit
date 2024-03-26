@@ -686,30 +686,44 @@ public:
         }
         else
         {
+#if UNLUA_ENABLE_FTEXT
+            const auto Text = TextProperty->GetPropertyValue(ValuePtr);
+            const auto Userdata = NewTypedUserdata(L, FText);
+            const auto NewTextPtr = new(Userdata) FText;
+            *NewTextPtr = Text;
+#else
             lua_pushstring(L, TCHAR_TO_UTF8(*TextProperty->GetPropertyValue(ValuePtr).ToString()));
+#endif
         }
     }
 
     virtual bool SetValueInternal(lua_State* L, void* ValuePtr, int32 IndexInStack, bool bCopyValue) const override
     {
+#if UNLUA_ENABLE_FTEXT
+        TextProperty->SetPropertyValue(ValuePtr, *(FText*)GetCppInstanceFast(L, IndexInStack));
+#else
         TextProperty->SetPropertyValue(ValuePtr, FText::FromString(UTF8_TO_TCHAR(lua_tostring(L, IndexInStack))));
+#endif
         return true;
     }
 
 #if ENABLE_TYPE_CHECK == 1
     virtual bool CheckPropertyType(lua_State* L, int32 IndexInStack, FString& ErrorMsg, void* UserData)
     {
-        int32 Type = lua_type(L, IndexInStack);
-        if (Type != LUA_TNIL)
+        const auto Type = lua_type(L, IndexInStack);
+#if UNLUA_ENABLE_FTEXT
+        if (Type != LUA_TUSERDATA)
         {
-            if (Type != LUA_TSTRING && Type != LUA_TNUMBER)
-            {
-                ErrorMsg = FString::Printf(TEXT("string needed but got %s"), UTF8_TO_TCHAR(lua_typename(L, Type)));
-                return false;
-            }
+            ErrorMsg = FString::Printf(TEXT("userdata is needed but got %s"), UTF8_TO_TCHAR(lua_typename(L, Type)));
+            return false;
         }
-
-        return true;
+        return true;        
+#else
+        if (Type == LUA_TNIL || (Type == LUA_TSTRING || Type == LUA_TNUMBER))
+            return true;
+        ErrorMsg = FString::Printf(TEXT("string needed but got %s"), UTF8_TO_TCHAR(lua_typename(L, Type)));
+        return false;
+#endif
     };
 #endif
 };
@@ -1169,20 +1183,15 @@ public:
     explicit FScriptStructPropertyDesc(FProperty *InProperty)
         : FStructPropertyDesc(InProperty), StructName(*UnLua::LowLevel::GetMetatableName(StructProperty->Struct))
     {
-        FClassDesc *ClassDesc = UnLua::FClassRegistry::RegisterReflectedType(StructProperty->Struct);
-        StructSize = ClassDesc->GetSize();
-        UserdataPadding = ClassDesc->GetUserdataPadding();                          // padding size for userdata
-
-        //ClassDesc->AddRef();
+        const auto ScriptStruct = CastChecked<UScriptStruct>(StructProperty->Struct);
+        const auto CppStructOps = ScriptStruct->GetCppStructOps();
+        StructSize = CppStructOps ? CppStructOps->GetSize() : ScriptStruct->GetStructureSize();
+        UserdataPadding = UnLua::LowLevel::CalculateUserdataPadding(StructProperty->Struct);
     }
 
-    FScriptStructPropertyDesc(FProperty *InProperty, bool bDynamicallyCreated)
-        : FStructPropertyDesc(InProperty), StructName(*UnLua::LowLevel::GetMetatableName(StructProperty->Struct))
+    virtual int32 GetSize() const override
     {
-        FClassDesc *ClassDesc = UnLua::FClassRegistry::RegisterReflectedType(StructProperty->Struct);
-        StructSize = ClassDesc->GetSize();
-        UserdataPadding = ClassDesc->GetUserdataPadding();
-        bFirstPropOfScriptStruct = false;
+        return StructSize;
     }
 
     virtual bool CopyBack(lua_State *L, int32 SrcIndexInStack, void *DestContainerPtr) override
@@ -1201,8 +1210,7 @@ public:
     {
         if (Dest && Src && IsOutParameter())
         {
-            FMemory::Memcpy(Dest, Src, StructSize);        // shallow copy is enough
-            //StructProperty->CopySingleValue(Dest, Src);
+            StructProperty->CopySingleValue(Dest, Src);
             return true;
         }
         return false;
@@ -1275,7 +1283,7 @@ public:
                 return false;
             }
 
-            FClassDesc* CurrentClassDesc = UnLua::FClassRegistry::Find(MetatableName);
+            FClassDesc* CurrentClassDesc = UnLua::FLuaEnv::FindEnv(L)->GetClassRegistry()->Find(MetatableName);
             if (!CurrentClassDesc)
             {
                 ErrorMsg = FString::Printf(TEXT("metatable of userdata needed in registry but got no found"));
@@ -1295,7 +1303,7 @@ public:
 #endif
 
 private:
-    TStringConversion<TStringConvert<TCHAR, ANSICHAR>> StructName;
+    FTCHARToUTF8 StructName;
     int32 StructSize;
     uint8 UserdataPadding;
 };

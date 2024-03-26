@@ -185,7 +185,7 @@ private:
 
     void SetupPackagingSettings()
     {
-        auto ScriptPaths = TArray<FString>{TEXT("Script")};
+        auto ScriptPaths = TArray<FString>{TEXT("Script"), TEXT("../Plugins/UnLua/Content/Script")};
 
         const auto Plugins = IPluginManager::Get().GetEnabledPlugins();
         for (const auto Plugin : Plugins)

@@ -407,8 +407,6 @@ private:
      */
     FORCEINLINE void Destruct(int32 Index, int32 Count = 1)
     {
-        if (!Inner.IsValid())
-            return;
         uint8* Dest = GetData(Index);
         for (int32 i = 0; i < Count; ++i)
         {

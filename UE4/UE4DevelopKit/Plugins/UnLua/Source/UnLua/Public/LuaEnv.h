@@ -144,6 +144,7 @@ namespace UnLua
             const FTCHARToUTF8 Bytes(*Chunk);
             return LoadBuffer(InL, Bytes.Get(), Bytes.Length(), TCHAR_TO_UTF8(*ChunkName));
         }
+
     private:
         void AddSearcher(lua_CFunction Searcher, int Index) const;
 

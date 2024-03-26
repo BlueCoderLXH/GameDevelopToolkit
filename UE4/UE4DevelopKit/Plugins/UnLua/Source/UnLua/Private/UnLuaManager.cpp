@@ -30,7 +30,7 @@
 static const TCHAR* SReadableInputEvent[] = { TEXT("Pressed"), TEXT("Released"), TEXT("Repeat"), TEXT("DoubleClick"), TEXT("Axis"), TEXT("Max") };
 
 UUnLuaManager::UUnLuaManager()
-    : Env(nullptr), InputActionFunc(nullptr), InputAxisFunc(nullptr), InputTouchFunc(nullptr), InputVectorAxisFunc(nullptr), InputGestureFunc(nullptr), AnimNotifyFunc(nullptr)
+    : InputActionFunc(nullptr), InputAxisFunc(nullptr), InputTouchFunc(nullptr), InputVectorAxisFunc(nullptr), InputGestureFunc(nullptr), AnimNotifyFunc(nullptr)
 {
     if (HasAnyFlags(RF_ClassDefaultObject))
     {
@@ -94,10 +94,7 @@ bool UUnLuaManager::Bind(UObject *Object, const TCHAR *InModuleName, int32 Initi
     Env->GetObjectRegistry()->Bind(Object);
 
     // try call user first user function handler
-    int32 FunctionRef = LUA_NOREF;                  // push hard coded Lua function 'Initialize'
-    if(!Object->IsA(UClass::StaticClass())){
-        FunctionRef = PushFunction(L, Object, "Initialize"); 
-    }
+    int32 FunctionRef = PushFunction(L, Object, "Initialize");                  // push hard coded Lua function 'Initialize'
     if (FunctionRef != LUA_NOREF)
     {
         if (InitializerTableRef != LUA_NOREF)
@@ -181,7 +178,6 @@ void UUnLuaManager::CleanupDefaultInputs()
  */
 bool UUnLuaManager::ReplaceInputs(AActor *Actor, UInputComponent *InputComponent)
 {
-    return true;
     if (!Actor || !InputComponent)
         return false;
 
@@ -262,7 +258,17 @@ bool UUnLuaManager::BindClass(UClass* Class, const FString& InModuleName, FStrin
         return false;
 
     if (Classes.Contains(Class))
+    {
+#if WITH_EDITOR
+        // 兼容蓝图Recompile导致FuncMap被清空的情况
+        if (Class->FindFunctionByName("__UClassBindSucceeded", EIncludeSuperFlag::Type::ExcludeSuper))
+            return true;
+        
+        ULuaFunction::RestoreOverrides(Class);
+#else
         return true;
+#endif
+    }
 
     const auto  L = Env->GetMainState();
     const auto Top = lua_gettop(L);
@@ -323,20 +329,34 @@ bool UUnLuaManager::BindClass(UClass* Class, const FString& InModuleName, FStrin
         }
     }
 
-    // if (auto BPGC = Cast<UBlueprintGeneratedClass>(Class))
-    // {
-    //     lua_rawgeti(L, LUA_REGISTRYINDEX, Ref);
-    //     lua_getglobal(L, "UnLua");
-    //     if (lua_getfield(L, -1, "Input") != LUA_TTABLE)
-    //     {
-    //         lua_pop(L, 2);
-    //         return true;
-    //     }
-    //     UnLua::FLuaTable InputTable(Env, -1);
-    //     UnLua::FLuaTable ModuleTable(Env, -3);
-    //     InputTable.Call("PerformBindings", ModuleTable, this, BPGC);
-    //     lua_pop(L, 3);
-    // }
+#if WITH_EDITOR
+    // 兼容蓝图Recompile导致FuncMap被清空的情况
+    for (const auto& Iter : BindInfo.UEFunctions)
+    {
+        auto& FuncName = Iter.Key;
+        auto& Function = Iter.Value;
+        if (Class->FindFunctionByName(FuncName, EIncludeSuperFlag::Type::ExcludeSuper))
+        {
+            Class->AddFunctionToFunctionMap(Function, "__UClassBindSucceeded");
+            break;
+        }
+    }
+#endif
+
+    if (auto BPGC = Cast<UBlueprintGeneratedClass>(Class))
+    {
+        lua_rawgeti(L, LUA_REGISTRYINDEX, Ref);
+        lua_getglobal(L, "UnLua");
+        if (lua_getfield(L, -1, "Input") != LUA_TTABLE)
+        {
+            lua_pop(L, 2);
+            return true;
+        }
+        UnLua::FLuaTable InputTable(Env, -1);
+        UnLua::FLuaTable ModuleTable(Env, -3);
+        InputTable.Call("PerformBindings", ModuleTable, this, BPGC);
+        lua_pop(L, 3);
+    }
 
     return true;
 }

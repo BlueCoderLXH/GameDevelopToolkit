@@ -27,7 +27,7 @@ public:
 
     FLuaSet(const FScriptSet *InScriptSet, TSharedPtr<UnLua::ITypeInterface> InElementInterface, FScriptSetFlag Flag = OwnedByOther)
         : Set((FScriptSet*)InScriptSet), SetLayout(FScriptSet::GetScriptLayout(InElementInterface->GetSize(), InElementInterface->GetAlignment()))
-        , ElementInterface(InElementInterface), Interface(nullptr), ElementCache(nullptr), ScriptSetFlag(Flag)
+        , ElementInterface(InElementInterface), ElementCache(nullptr), ScriptSetFlag(Flag)
     {
         // allocate cache for a single element
         ElementCache = FMemory::Malloc(ElementInterface->GetSize(), ElementInterface->GetAlignment());
@@ -198,7 +198,7 @@ public:
      */
     FORCEINLINE void Rehash()
     {
-        Set->Rehash(SetLayout, [=](const void* Src) { return ElementInterface->GetValueTypeHash(Src); });
+        Set->Rehash(SetLayout, [this](const void* Src) { return ElementInterface->GetValueTypeHash(Src); });
     }
 
     /**

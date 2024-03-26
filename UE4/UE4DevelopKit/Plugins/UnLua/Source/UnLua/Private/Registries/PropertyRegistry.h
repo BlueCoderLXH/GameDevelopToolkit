@@ -37,7 +37,7 @@ namespace UnLua
         /**
          * Create a type interface according to Lua parameter's type
          */
-        TSharedPtr<ITypeInterface> CreateTypeInterface(lua_State* L, int32 Index);
+        UNLUA_API TSharedPtr<ITypeInterface> CreateTypeInterface(lua_State* L, int32 Index);
 
     private:
         TSharedPtr<ITypeInterface> GetBoolProperty();

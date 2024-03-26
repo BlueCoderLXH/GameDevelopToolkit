@@ -14,7 +14,11 @@
 
 #include "Misc/EngineVersionComparison.h"
 #include "UnLuaIntelliSenseGenerator.h"
+#if UE_VERSION_NEWER_THAN(5, 1, 0)
+#include "AssetRegistry/AssetRegistryModule.h"
+#else
 #include "AssetRegistryModule.h"
+#endif
 #include "CoreUObject.h"
 #include "UnLua.h"
 #include "UnLuaEditorSettings.h"
@@ -42,11 +46,11 @@ void FUnLuaIntelliSenseGenerator::Initialize()
 
     OutputDir = IPluginManager::Get().FindPlugin("UnLua")->GetBaseDir() + "/Intermediate/IntelliSense";
 
-    // FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
-    // AssetRegistryModule.Get().OnAssetAdded().AddRaw(this, &FUnLuaIntelliSenseGenerator::OnAssetAdded);
-    // AssetRegistryModule.Get().OnAssetRemoved().AddRaw(this, &FUnLuaIntelliSenseGenerator::OnAssetRemoved);
-    // AssetRegistryModule.Get().OnAssetRenamed().AddRaw(this, &FUnLuaIntelliSenseGenerator::OnAssetRenamed);
-    // AssetRegistryModule.Get().OnAssetUpdated().AddRaw(this, &FUnLuaIntelliSenseGenerator::OnAssetUpdated);
+    FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+    AssetRegistryModule.Get().OnAssetAdded().AddRaw(this, &FUnLuaIntelliSenseGenerator::OnAssetAdded);
+    AssetRegistryModule.Get().OnAssetRemoved().AddRaw(this, &FUnLuaIntelliSenseGenerator::OnAssetRemoved);
+    AssetRegistryModule.Get().OnAssetRenamed().AddRaw(this, &FUnLuaIntelliSenseGenerator::OnAssetRenamed);
+    AssetRegistryModule.Get().OnAssetUpdated().AddRaw(this, &FUnLuaIntelliSenseGenerator::OnAssetUpdated);
 
     bInitialized = true;
 }
@@ -104,8 +108,13 @@ void FUnLuaIntelliSenseGenerator::UpdateAll()
 
 bool FUnLuaIntelliSenseGenerator::IsBlueprint(const FAssetData& AssetData)
 {
+#if UE_VERSION_OLDER_THAN(5, 1, 0)
     const FName AssetClass = AssetData.AssetClass;
     return AssetClass == UBlueprint::StaticClass()->GetFName() || AssetClass == UWidgetBlueprint::StaticClass()->GetFName();
+#else
+    const auto AssetClassPath = AssetData.AssetClassPath.ToString();
+    return AssetClassPath == UBlueprint::StaticClass()->GetName() || AssetClassPath == UWidgetBlueprint::StaticClass()->GetName();
+#endif
 }
 
 bool FUnLuaIntelliSenseGenerator::ShouldExport(const FAssetData& AssetData, bool bLoad)

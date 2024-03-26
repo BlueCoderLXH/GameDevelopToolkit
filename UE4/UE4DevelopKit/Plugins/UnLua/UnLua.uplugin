@@ -1,7 +1,7 @@
 {
     "FileVersion": 3,
     "Version": 2,
-    "VersionName": "2.3.3",
+    "VersionName": "2.3.6",
     "FriendlyName": "UnLua",
     "Description": "Lua scripting plugin",
     "Category": "Scripting",
@@ -21,11 +21,6 @@
         }
     ],
     "Modules": [
-        {
-            "Name": "Lua",
-            "Type": "Runtime",
-            "LoadingPhase": "PreDefault"
-        },
         {
             "Name": "UnLua",
             "Type": "Runtime",
