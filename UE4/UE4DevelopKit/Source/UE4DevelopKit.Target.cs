@@ -10,5 +10,10 @@ public class UE4DevelopKitTarget : TargetRules
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		ExtraModuleNames.AddRange( new string[] { "UE4DevelopKit" } );
+		
+		if (Target.Platform == UnrealTargetPlatform.Win64 && Target.Configuration == UnrealTargetConfiguration.Test)
+		{
+			bUseLoggingInShipping = true;
+		}
 	}
 }

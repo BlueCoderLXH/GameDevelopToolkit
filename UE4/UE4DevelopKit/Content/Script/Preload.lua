@@ -4,6 +4,8 @@
 --- DateTime: 2024/03/25 16:14
 ---
 local do_require = function()
+    require 'Test.VMTest'
+
     print("Preload Lua OK!")
 end
 

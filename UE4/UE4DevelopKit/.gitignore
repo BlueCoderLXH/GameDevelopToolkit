@@ -41,6 +41,8 @@
 *.sdf
 *.VC.db
 *.VC.opendb
+*.user
+*.pdb
 
 # Precompiled Assets
 SourceArt/**/*.png
@@ -77,3 +79,6 @@ Plugins/*/*/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+# Packages
+Packages
