@@ -13,7 +13,7 @@ TAutoConsoleVariable<int32> CVarVMTest_OutLoops(
 
 TAutoConsoleVariable<int32> CVarVMTest_InLoops(
 	TEXT("vmtest.inloops"),
-	10000,
+	100,
 	TEXT("vmtest.inloops"),
 	ECVF_Default);
 
@@ -31,18 +31,25 @@ void AVMTest::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (bNativizedMode)
-	{
-		RunBpNativizedWrap();
-	}
-	else
-	{
-		RunBpWrap();
+	UE_LOG(LogUDK, Log, TEXT("AVMTest::BeginPlay"));
 
-		RunCppWrap();
+	// Wait for executing cmd
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
+	{
+		if (bNativizedMode)
+		{
+			RunBpNativizedWrap();
+		}
+		else
+		{
+			RunBpWrap();
 
-		RunLuaWrap();
-	}
+			RunCppWrap();
+
+			RunLuaWrap();
+		}		
+	}, 1, false);
 }
 
 void AVMTest::RunBpNativizedWrap()
@@ -60,7 +67,7 @@ void AVMTest::RunBpNativizedWrap()
 		}
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("AVMTest RunBp(Nativized) Result:%d"), TestResult);	
+	UE_LOG(LogUDK, Log, TEXT("AVMTest RunBp(Nativized) Result:%d"), TestResult);	
 }
 
 void AVMTest::RunBpWrap()
@@ -78,7 +85,7 @@ void AVMTest::RunBpWrap()
 		}
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("AVMTest RunBp(Normal) Result:%d"), TestResult);		
+	UE_LOG(LogUDK, Log, TEXT("AVMTest RunBp(Normal) Result:%d"), TestResult);		
 }
 
 void AVMTest::RunCppWrap()
@@ -95,7 +102,8 @@ void AVMTest::RunCppWrap()
 			TestResult = RunCpp();
 		}
 	}
-	UE_LOG(LogTemp, Log, TEXT("AVMTest RunCpp Result:%d"), TestResult);	
+	
+	UE_LOG(LogUDK, Log, TEXT("AVMTest RunCpp Result:%d"), TestResult);	
 }
 
 void AVMTest::RunLuaWrap()
@@ -112,7 +120,8 @@ void AVMTest::RunLuaWrap()
 			TestResult = RunLua();
 		}
 	}
-	UE_LOG(LogTemp, Log, TEXT("AVMTest RunLua Result:%d"), TestResult);	
+	
+	UE_LOG(LogUDK, Log, TEXT("AVMTest RunLua Result:%d"), TestResult);	
 }
 
 int32 AVMTest::RunCpp()

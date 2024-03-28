@@ -8,7 +8,7 @@ VMTest = { }
 
 function VMTest.RunLua()
     local Sum = 0
-    for i=1,10000 do
+    for i=1,100 do
         Sum = Sum + i
     end
     return Sum
