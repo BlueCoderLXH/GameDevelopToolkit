@@ -7,13 +7,20 @@ public class UE4DevelopKit : ModuleRules
 	public UE4DevelopKit(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+		
+		PublicIncludePaths.AddRange(new string[]
+		{
+			"UE4DevelopKit/Character",
+			"UE4DevelopKit/GameMode"
+		});
 	
 		PublicDependencyModuleNames.AddRange(new string[]
 		{
 			"Core", 
 			"CoreUObject",
 			"Engine",
-			"InputCore"
+			"InputCore",
+			"HeadMountedDisplay"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[]

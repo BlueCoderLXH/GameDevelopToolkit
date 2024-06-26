@@ -1,0 +1,14 @@
+{
+	"players": [
+		{
+			"name": "moshun",
+			"health": 0,
+			"SectionMatID": [ 0, 0, 0, 0 ]
+		},
+		{
+			"name": "moshun",
+			"health": 1,
+			"SectionMatID": [ 1, 1, 1, 1 ]
+		}
+	]
+}
