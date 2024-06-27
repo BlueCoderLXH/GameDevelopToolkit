@@ -14,6 +14,3 @@ class UE4DEVELOPKIT_API AWCTestGameMode : public AGameModeBase
 public:
 	AWCTestGameMode();
 };
-
-
-
