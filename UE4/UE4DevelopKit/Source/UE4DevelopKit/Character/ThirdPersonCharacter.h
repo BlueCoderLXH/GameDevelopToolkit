@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "WCTestCharacter.generated.h"
+#include "ThirdPersonCharacter.generated.h"
 
 UCLASS(config=Game)
-class UE4DEVELOPKIT_API AWCTestCharacter : public ACharacter
+class UE4DEVELOPKIT_API AThirdPersonCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
@@ -19,7 +19,7 @@ class UE4DEVELOPKIT_API AWCTestCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 public:
-	AWCTestCharacter();
+	AThirdPersonCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)

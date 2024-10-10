@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "WCTestGameMode.h"
-#include "WCTestCharacter.h"
+#include "ThirdPersonCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
 AWCTestGameMode::AWCTestGameMode()

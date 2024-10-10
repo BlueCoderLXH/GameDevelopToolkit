@@ -1,6 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "WCTestCharacter.h"
+#include "ThirdPersonCharacter.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -8,11 +8,13 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "UE4DevelopKit/Movement/GameCMCBase.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AWCTestCharacter
 
-AWCTestCharacter::AWCTestCharacter()
+AThirdPersonCharacter::AThirdPersonCharacter(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UGameCMCBase>(ACharacter::CharacterMovementComponentName))
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -50,34 +52,34 @@ AWCTestCharacter::AWCTestCharacter()
 //////////////////////////////////////////////////////////////////////////
 // Input
 
-void AWCTestCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
+void AThirdPersonCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// Set up gameplay key bindings
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
-	PlayerInputComponent->BindAxis("MoveForward", this, &AWCTestCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &AWCTestCharacter::MoveRight);
+	PlayerInputComponent->BindAxis("MoveForward", this, &AThirdPersonCharacter::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &AThirdPersonCharacter::MoveRight);
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("TurnRate", this, &AWCTestCharacter::TurnAtRate);
+	PlayerInputComponent->BindAxis("TurnRate", this, &AThirdPersonCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-	PlayerInputComponent->BindAxis("LookUpRate", this, &AWCTestCharacter::LookUpAtRate);
+	PlayerInputComponent->BindAxis("LookUpRate", this, &AThirdPersonCharacter::LookUpAtRate);
 
 	// handle touch devices
-	PlayerInputComponent->BindTouch(IE_Pressed, this, &AWCTestCharacter::TouchStarted);
-	PlayerInputComponent->BindTouch(IE_Released, this, &AWCTestCharacter::TouchStopped);
+	PlayerInputComponent->BindTouch(IE_Pressed, this, &AThirdPersonCharacter::TouchStarted);
+	PlayerInputComponent->BindTouch(IE_Released, this, &AThirdPersonCharacter::TouchStopped);
 
 	// VR headset functionality
-	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AWCTestCharacter::OnResetVR);
+	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AThirdPersonCharacter::OnResetVR);
 }
 
 
-void AWCTestCharacter::OnResetVR()
+void AThirdPersonCharacter::OnResetVR()
 {
 	// If WCTest is added to a project via 'Add Feature' in the Unreal Editor the dependency on HeadMountedDisplay in WCTest.Build.cs is not automatically propagated
 	// and a linker error will result.
@@ -88,29 +90,29 @@ void AWCTestCharacter::OnResetVR()
 	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
 }
 
-void AWCTestCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
+void AThirdPersonCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
 {
 		Jump();
 }
 
-void AWCTestCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
+void AThirdPersonCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
 {
 		StopJumping();
 }
 
-void AWCTestCharacter::TurnAtRate(float Rate)
+void AThirdPersonCharacter::TurnAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
-void AWCTestCharacter::LookUpAtRate(float Rate)
+void AThirdPersonCharacter::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
-void AWCTestCharacter::MoveForward(float Value)
+void AThirdPersonCharacter::MoveForward(float Value)
 {
 	if ((Controller != nullptr) && (Value != 0.0f))
 	{
@@ -124,7 +126,7 @@ void AWCTestCharacter::MoveForward(float Value)
 	}
 }
 
-void AWCTestCharacter::MoveRight(float Value)
+void AThirdPersonCharacter::MoveRight(float Value)
 {
 	if ( (Controller != nullptr) && (Value != 0.0f) )
 	{
