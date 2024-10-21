@@ -102,6 +102,12 @@ public:
 	/** Adds unique managed layer to the world */
 	void AddManagedLayer(const FWorldTileLayer& InLayer);
 
+	/** Modify runtime layer to the world */
+	void ModifyLayer(const FWorldTileLayer& InNewLayer, const FWorldTileLayer& InOldLayer, const bool bDelete);
+	
+	/** Modify unique managed layer to the world */
+	void ModifyManagedLayer(const FWorldTileLayer& InNewLayer, const FWorldTileLayer& InOldLayer, const bool bDelete);
+
 	/** Sets provided layer as selected */
 	void SetSelectedLayer(const FWorldTileLayer& InLayer); 
 	
@@ -255,6 +261,9 @@ public:
 
 	/** Assign selected levels to current layer */
 	void AssignSelectedLevelsToLayer_Executed(FWorldTileLayer InLayer);
+
+	/** Assign modified levels to current layer */
+	void AssignModifiedLevelsToNewLayer(const FWorldTileLayer& InNewLayer, const FWorldTileLayer& InOldLayer);
 
 private:
 	/** List of tiles currently not affected by user selection set */

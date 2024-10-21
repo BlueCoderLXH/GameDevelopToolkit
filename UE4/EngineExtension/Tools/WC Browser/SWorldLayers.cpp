@@ -15,6 +15,170 @@
 
 //----------------------------------------------------------------
 //
+//					SModifyWorldLayerPopup
+//
+//----------------------------------------------------------------
+BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
+void SModifyWorldLayerPopup::Construct(const FArguments& InArgs)
+{
+	OnModifyLayer	= InArgs._OnModifyLayer;
+	OldLayerData	= InArgs._InLayer;
+	LayerData		= InArgs._InLayer;
+	bDelete			= false;
+	
+	ChildSlot
+	[
+		SNew(SBorder)
+		.BorderImage(FEditorStyle::GetBrush("Menu.Background"))
+		.Padding(10)
+		[
+			SNew(SVerticalBox)
+
+			+SVerticalBox::Slot()
+			.AutoHeight()
+			.Padding(2,2,0,0)
+			[
+				SNew(SHorizontalBox)
+
+				+SHorizontalBox::Slot()
+				.AutoWidth()
+				[
+					SNew(STextBlock)
+					.Text(LOCTEXT("Layer_Name", "Name:"))
+				]
+
+				+SHorizontalBox::Slot()
+				.Padding(4,0,0,0)
+				[
+					SNew(SEditableTextBox)
+					.Text(this, &SModifyWorldLayerPopup::GetLayerName)
+					.OnTextChanged(this, &SModifyWorldLayerPopup::SetLayerName)
+					.OnTextCommitted(this, &SModifyWorldLayerPopup::OnNameCommitted)
+					.SelectAllTextWhenFocused(true)
+					.ClearKeyboardFocusOnCommit(false)
+				]
+
+			]
+
+			+SVerticalBox::Slot()
+			.AutoHeight()
+			.Padding(2,2,0,0)
+			[
+				SNew(SHorizontalBox)
+
+				+SHorizontalBox::Slot()
+				.AutoWidth()
+				[
+					SNew(SCheckBox)
+					.IsChecked(this, &SModifyWorldLayerPopup::GetDistanceStreamingState)
+					.OnCheckStateChanged(this, &SModifyWorldLayerPopup::OnDistanceStreamingStateChanged)
+				]
+
+				+SHorizontalBox::Slot()
+				.AutoWidth()
+				[
+					SNew(SNumericEntryBox<int32>)
+					.IsEnabled(this, &SModifyWorldLayerPopup::IsDistanceStreamingEnabled)
+					.Value(this, &SModifyWorldLayerPopup::GetStreamingDistance)
+					.MinValue(1)
+					.MaxValue(TNumericLimits<int32>::Max())
+					.OnValueChanged(this, &SModifyWorldLayerPopup::SetStreamingDistance)
+					.OnValueCommitted(this, &SModifyWorldLayerPopup::OnDistanceCommitted)
+					.LabelPadding(0)
+					.Label()
+					[
+						SNumericEntryBox<int32>::BuildLabel(
+							LOCTEXT("LayerStreamingDistance", "Streaming distance"), 
+							FLinearColor::White, SNumericEntryBox<int32>::RedLabelBackgroundColor
+							)
+
+					]
+				]
+			]
+
+			+SVerticalBox::Slot()
+			.AutoHeight()
+			.Padding(2,2,0,0)
+			[
+				SNew(SHorizontalBox)
+
+				+SHorizontalBox::Slot()
+				[
+					SNew(SButton)
+					.OnClicked(this, &SModifyWorldLayerPopup::OnClickedModify)
+					.IsEnabled(this, &SModifyWorldLayerPopup::CanModifyLayer)
+					.Text(LOCTEXT("Layer_Modify", "Modify"))
+					.HAlign(HAlign_Center)
+					.ToolTipText(LOCTEXT("Layer_Modify_ToolTip", "Confim to modify this layer"))
+				]
+
+				+SHorizontalBox::Slot()
+				[
+					SNew(SButton)
+					.OnClicked(this, &SModifyWorldLayerPopup::OnClickedDelete)
+					.Text(LOCTEXT("Layer_Delete", "Delete"))
+					.HAlign(HAlign_Center)
+					.ToolTipText(LOCTEXT("Layer_Delete_ToolTip", "Confim to delete this layer"))
+				]
+			]
+		]
+	];
+}
+END_SLATE_FUNCTION_BUILD_OPTIMIZATION
+
+FReply SModifyWorldLayerPopup::OnClickedModify()
+{
+	return TryModifyLayer();
+}
+
+FReply SModifyWorldLayerPopup::OnClickedDelete()
+{
+	LayerData = FWorldTileLayer();
+	bDelete = true;
+	return TryModifyLayer();
+}
+
+void SModifyWorldLayerPopup::OnNameCommitted(const FText& InText, ETextCommit::Type CommitType)
+{
+	if (CommitType == ETextCommit::OnEnter)
+	{
+		TryModifyLayer();
+	}	
+}
+
+void SModifyWorldLayerPopup::OnDistanceCommitted(int32 InValue, ETextCommit::Type CommitType)
+{
+	if (CommitType == ETextCommit::OnEnter)
+	{
+		TryModifyLayer();
+	}
+}
+
+FReply SModifyWorldLayerPopup::TryModifyLayer()
+{
+	if (CanModifyLayer())
+	{
+		this->ClearContent();
+		return OnModifyLayer.Execute(LayerData, OldLayerData, bDelete);
+	}
+	
+	// Return an unhandled reply if the layer should not be created
+	return FReply::Unhandled();
+}
+
+bool SModifyWorldLayerPopup::CanModifyLayer() const
+{
+	const bool bValidStreamingDistance = LayerData.DistanceStreamingEnabled ? LayerData.StreamingDistance > 0 : true;
+
+	return (bValidStreamingDistance &&
+			LayerData.Name.Len() > 0 &&
+			LayerData != OldLayerData &&
+			OnModifyLayer.IsBound());
+}
+
+//----------------------------------------------------------------
+//
+//					SNewWorldLayerPopup
 //
 //----------------------------------------------------------------
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
@@ -229,7 +393,8 @@ void SWorldLayerButton::Construct(const FArguments& InArgs)
 {
 	WorldModel = InArgs._InWorldModel;
 	WorldLayer = InArgs._WorldLayer;
-
+	OnRightClickMenu = InArgs._OnRightClickMenu;
+	
 	TSharedPtr<SLayerCheckBox> CheckBox;
 	
 	ChildSlot
@@ -289,6 +454,11 @@ FReply SWorldLayerButton::OnCtrlClicked()
 
 TSharedRef<SWidget> SWorldLayerButton::GetRightClickMenu()
 {
+	if (OnRightClickMenu.IsBound())
+	{
+		return OnRightClickMenu.Execute(WorldLayer);
+	}
+	
 	return SNullWidget::NullWidget;
 }
 

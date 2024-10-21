@@ -1141,6 +1141,7 @@ void SWorldComposition::PopulateLayersList()
 		.Padding(1,1,0,0)
 		[
 			SNew(SWorldLayerButton)
+				.OnRightClickMenu(this, &SWorldComposition::OnLayerRightClickMenu)
 				.InWorldModel(TileWorldModel)
 				.WorldLayer(WorldLayer)
 		];
@@ -1194,7 +1195,30 @@ FReply SWorldComposition::CreateNewLayer(const FWorldTileLayer& NewLayer)
 	{
 		NewLayerMenu.Pin()->Dismiss();
 	}
-		
+
+	return FReply::Handled();
+}
+
+TSharedRef<SWidget> SWorldComposition::OnLayerRightClickMenu(const FWorldTileLayer& InLayer)
+{
+	if (TileWorldModel->IsReadOnly())
+	{
+		return SNullWidget::NullWidget;
+	}
+
+	TSharedRef<SModifyWorldLayerPopup> ModifyLayerWidget =
+		SNew(SModifyWorldLayerPopup)
+		.InLayer(InLayer)
+		.OnModifyLayer(this, &SWorldComposition::ModifyLayer);
+	
+	return ModifyLayerWidget;
+}
+
+FReply SWorldComposition::ModifyLayer(const FWorldTileLayer& InNewLayer, const FWorldTileLayer& InOldLayer, const bool bDelete)
+{
+	TileWorldModel->ModifyManagedLayer(InNewLayer, InOldLayer, bDelete);
+	PopulateLayersList();
+	
 	return FReply::Handled();
 }
 

@@ -45,6 +45,12 @@ private:
 	/** Creates a new managed layer */
 	FReply CreateNewLayer(const FWorldTileLayer& NewLayer);
 
+	/** Creates a popup window for the specified layer */
+	TSharedRef<SWidget> OnLayerRightClickMenu(const FWorldTileLayer& InLayer);
+
+	/** Modify the specified layer */
+	FReply ModifyLayer(const FWorldTileLayer& InNewLayer, const FWorldTileLayer& InOldLayer, const bool bDelete);
+
 	/** Top status bar details */
 	FText GetZoomText() const;
 	FText GetCurrentOriginText() const;

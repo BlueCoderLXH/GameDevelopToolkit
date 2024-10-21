@@ -1329,7 +1329,7 @@ void FWorldTileCollectionModel::AddLayer(const FWorldTileLayer& InLayer)
 	{
 		return;
 	}
-	
+
 	AllLayers.AddUnique(InLayer);
 }
 
@@ -1339,9 +1339,72 @@ void FWorldTileCollectionModel::AddManagedLayer(const FWorldTileLayer& InLayer)
 	{
 		return;
 	}
-	
+
+	// ManagedLayers
 	ManagedLayers.AddUnique(InLayer);
-	AllLayers.AddUnique(InLayer);
+
+	// AllLayers
+	AddLayer(InLayer);
+}
+
+void FWorldTileCollectionModel::ModifyLayer(const FWorldTileLayer& InNewLayer, const FWorldTileLayer& InOldLayer, const bool bDelete)
+{
+	if (IsReadOnly())
+	{
+		return;
+	}
+
+	if (bDelete)
+	{
+		AllLayers.Remove(InOldLayer);
+	}
+	else
+	{
+		FWorldTileLayer* ExistLayer = AllLayers.FindByPredicate([&](const FWorldTileLayer& Layer)
+		{
+			return InOldLayer.Name == Layer.Name;
+		});
+
+		if (ExistLayer)
+		{
+			ExistLayer->Name = InNewLayer.Name;
+			ExistLayer->DistanceStreamingEnabled = InNewLayer.DistanceStreamingEnabled;
+			ExistLayer->StreamingDistance = InNewLayer.StreamingDistance;
+		}
+	}
+
+	AssignModifiedLevelsToNewLayer(InNewLayer, InOldLayer);
+}
+
+void FWorldTileCollectionModel::ModifyManagedLayer(const FWorldTileLayer& InNewLayer, const FWorldTileLayer& InOldLayer, const bool bDelete)
+{
+	if (IsReadOnly())
+	{
+		return;
+	}
+
+	// ManagedLayers
+	if (bDelete)
+	{
+		ManagedLayers.Remove(InOldLayer);
+	}
+	else
+	{
+		FWorldTileLayer* ExistLayer = ManagedLayers.FindByPredicate([&](const FWorldTileLayer& Layer)
+		{
+			return InOldLayer.Name == Layer.Name;
+		});
+
+		if (ExistLayer)
+		{
+			ExistLayer->Name = InNewLayer.Name;
+			ExistLayer->DistanceStreamingEnabled = InNewLayer.DistanceStreamingEnabled;
+			ExistLayer->StreamingDistance = InNewLayer.StreamingDistance;
+		}
+	}
+
+	// AllLayers
+	ModifyLayer(InNewLayer, InOldLayer, bDelete);	
 }
 
 void FWorldTileCollectionModel::SetSelectedLayer(const FWorldTileLayer& InLayer)
@@ -1404,6 +1467,25 @@ void FWorldTileCollectionModel::AssignSelectedLevelsToLayer_Executed(FWorldTileL
 	for(auto It = SelectedLevelsList.CreateConstIterator(); It; ++It)
 	{
 		StaticCastSharedPtr<FWorldTileModel>(*It)->AssignToLayer(InLayer);
+	}
+
+	PopulateFilteredLevelsList();
+}
+
+void FWorldTileCollectionModel::AssignModifiedLevelsToNewLayer(const FWorldTileLayer& InNewLayer, const FWorldTileLayer& InOldLayer)
+{
+	if (IsReadOnly())
+	{
+		return;
+	}
+
+	for(auto It = AllLevelsList.CreateConstIterator(); It; ++It)
+	{
+		const TSharedPtr<FWorldTileModel> WorldTileModel = StaticCastSharedPtr<FWorldTileModel>(*It);
+		if (WorldTileModel->TileDetails->Layer.Name == InOldLayer.Name)
+		{
+			WorldTileModel->AssignToLayer(InNewLayer);
+		}
 	}
 
 	PopulateFilteredLevelsList();

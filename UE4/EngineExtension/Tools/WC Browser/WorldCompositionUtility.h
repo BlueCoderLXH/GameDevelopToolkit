@@ -32,6 +32,11 @@ public:
 
 	}
 
+	bool operator!=(const FWorldTileLayer& OtherLayer) const
+	{
+		return	!(*this == OtherLayer);
+	}	
+
 	friend FArchive& operator<<(FArchive& Ar, FWorldTileLayer& D);
 	friend void operator<<(FStructuredArchive::FSlot Slot, FWorldTileLayer& D);
 
