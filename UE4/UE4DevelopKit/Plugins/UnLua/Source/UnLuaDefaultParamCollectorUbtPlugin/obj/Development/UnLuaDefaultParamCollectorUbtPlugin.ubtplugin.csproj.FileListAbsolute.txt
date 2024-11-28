@@ -1,0 +1,11 @@
+F:\Learn\UE5\Test\Binaries\DotNET\UnrealBuildTool\Plugins\UnLuaDefaultParamCollectorUbtPlugin\UnLuaDefaultParamCollectorUbtPlugin.deps.json
+F:\Learn\UE5\Test\Binaries\DotNET\UnrealBuildTool\Plugins\UnLuaDefaultParamCollectorUbtPlugin\UnLuaDefaultParamCollectorUbtPlugin.dll
+F:\Learn\UE5\Test\Binaries\DotNET\UnrealBuildTool\Plugins\UnLuaDefaultParamCollectorUbtPlugin\ref\UnLuaDefaultParamCollectorUbtPlugin.dll
+F:\Learn\UE5\Test\Binaries\DotNET\UnrealBuildTool\Plugins\UnLuaDefaultParamCollectorUbtPlugin\UnLuaDefaultParamCollectorUbtPlugin.pdb
+F:\Learn\UE5\Test\Plugins\UnLua\Source\UnLuaDefaultParamCollectorUbtPlugin\obj\Development\UnLuaDefaultParamCollectorUbtPlugin.ubtplugin.csproj.AssemblyReference.cache
+F:\Learn\UE5\Test\Plugins\UnLua\Source\UnLuaDefaultParamCollectorUbtPlugin\obj\Development\UnLuaDefaultParamCollectorUbtPlugin.ubtplugin.GeneratedMSBuildEditorConfig.editorconfig
+F:\Learn\UE5\Test\Plugins\UnLua\Source\UnLuaDefaultParamCollectorUbtPlugin\obj\Development\UnLuaDefaultParamCollectorUbtPlugin.ubtplugin.csproj.CoreCompileInputs.cache
+F:\Learn\UE5\Test\Plugins\UnLua\Source\UnLuaDefaultParamCollectorUbtPlugin\obj\Development\UnLuaDefaultParamCollectorUbtPlugin.ubtplugin.csproj.CopyComplete
+F:\Learn\UE5\Test\Plugins\UnLua\Source\UnLuaDefaultParamCollectorUbtPlugin\obj\Development\UnLuaDefaultParamCollectorUbtPlugin.dll
+F:\Learn\UE5\Test\Plugins\UnLua\Source\UnLuaDefaultParamCollectorUbtPlugin\obj\Development\refint\UnLuaDefaultParamCollectorUbtPlugin.dll
+F:\Learn\UE5\Test\Plugins\UnLua\Source\UnLuaDefaultParamCollectorUbtPlugin\obj\Development\UnLuaDefaultParamCollectorUbtPlugin.pdb
